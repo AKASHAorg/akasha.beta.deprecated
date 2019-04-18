@@ -21,7 +21,10 @@ const saveSettings = (table, payload) => {
                 Object.assign(rec, payload)
             );
         } else {
-            getSettingsCollection().insert(Object.assign({ opType: GLOBAL_TYPE, name: table }, payload));
+            getSettingsCollection().insert(Object.assign({
+                opType: GLOBAL_TYPE,
+                name: table
+            }, payload));
         }
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, payload));
     } catch (error) {
@@ -52,7 +55,10 @@ export const userSettingsSave = (ethAddress, payload) => {
                 Object.assign(rec, payload)
             );
         } else {
-            getSettingsCollection().insert(Object.assign({ opType: USER_TYPE, name: ethAddress }, payload));
+            getSettingsCollection().insert(Object.assign({
+                opType: USER_TYPE,
+                name: ethAddress
+            }, payload));
         }
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => payload);
     } catch (error) {
@@ -67,7 +73,10 @@ export const userSettingsAddTrustedDomain = (ethAddress, domain) => {
             }
             user.trustedDomains.push(domain);
         });
-        const userSettings = getSettingsCollection().findOne({ opType: USER_TYPE, name: ethAddress });
+        const userSettings = getSettingsCollection().findOne({
+            opType: USER_TYPE,
+            name: ethAddress
+        });
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() =>
             Object.assign({}, userSettings)
         );

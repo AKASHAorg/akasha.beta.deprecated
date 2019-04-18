@@ -24,7 +24,7 @@ export const getVoteOfS = {
 
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(
     function* (data: { list: { entryId: string, akashaId?: string, ethAddress?: string }[] }) {
       const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
@@ -44,7 +44,7 @@ export default function init(sp, getService) {
             ...req,
             vote: vote.toString(),
             essence: (web3Api.instance.utils.toBN(
-              web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(karma[0])))
+                web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(karma[0])))
             ).toNumber(),
             claimed: karma[1],
           };

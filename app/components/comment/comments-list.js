@@ -6,8 +6,12 @@ import { Spin } from 'antd';
 import { entryMessages } from '../../locale-data/messages';
 import { CommentThread, DataLoader, OptimisticComment } from '../';
 import { commentsIterator } from '../../local-flux/actions/comments-actions';
-import { actionSelectors, commentSelectors, entrySelectors,
-    profileSelectors } from '../../local-flux/selectors';
+import {
+    actionSelectors,
+    commentSelectors,
+    entrySelectors,
+    profileSelectors
+} from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
 
 class CommentList extends Component {
@@ -23,8 +27,10 @@ class CommentList extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        const { comments, commentsCount, commentsFetched, fetchingComments, fetchingMoreComments,
-            pendingComments } = this.props;
+        const {
+            comments, commentsCount, commentsFetched, fetchingComments, fetchingMoreComments,
+            pendingComments
+        } = this.props;
         if (
             !nextProps.comments.equals(comments) ||
             nextProps.commentsCount !== commentsCount ||
@@ -62,76 +68,78 @@ class CommentList extends Component {
     };
 
     render () { // eslint-disable-line complexity
-        const { comments, commentsCount, commentsFetched, containerRef, entryId, fetchingComments,
+        const {
+            comments, commentsCount, commentsFetched, containerRef, entryId, fetchingComments,
             fetchingMoreComments, getTriggerRef, intl, loggedProfileData, moreComments,
-            pendingComments } = this.props;
+            pendingComments
+        } = this.props;
         const optimisticComments = pendingComments
             .filter(action => action.getIn(['payload', 'parent']) === '0')
             .reverse()
             .toArray();
         if (!commentsFetched && !fetchingComments && commentsCount) {
             return (
-              <div className="comment-list">
-                <div
-                  className="flex-center-x content-link comment-list__load-comments"
-                  onClick={this.loadComments}
-                >
-                  {intl.formatMessage(entryMessages.loadComments, { commentsCount })}
+                <div className="comment-list">
+                    <div
+                        className="flex-center-x content-link comment-list__load-comments"
+                        onClick={ this.loadComments }
+                    >
+                        { intl.formatMessage(entryMessages.loadComments, { commentsCount }) }
+                    </div>
                 </div>
-              </div>
             )
         }
 
         return (
-          <div className="comment-list">
-            {optimisticComments && optimisticComments.map(commAction => (
-              <OptimisticComment
-                comment={commAction}
-                containerRef={containerRef}
-                key={commAction.id}
-                loggedProfileData={loggedProfileData}
-              />
-            ))}
-            {!fetchingComments && comments.filter(c => c.entryId === entryId).map(comm => (
-              <CommentThread
-                comment={comm}
-                containerRef={containerRef}
-                entryId={entryId}
-                key={comm.commentId}
-                onReply={this.handleReply}
-                onReplyClose={this.resetReplies}
-                pendingComments={pendingComments}
-                replyTo={this.state.replyTo}
-              />
-            ))}
-            {fetchingComments &&
-              <div className="flex-center comment-list__loader-wrapper">
-                <Spin />
-              </div>
-            }
-            {!fetchingComments && !commentsCount && !optimisticComments.length && !comments.size &&
-              <div className="comment-list__placeholder">
-                <div>{intl.formatMessage(entryMessages.noCommentsFound)}</div>
-                <div>
-                  <div
-                    className="comment-list__placeholder-link"
-                    onClick={this._handleNewComment}
-                  >
-                    {intl.formatMessage(entryMessages.leaveAComment)}
-                  </div>
+            <div className="comment-list">
+                { optimisticComments && optimisticComments.map(commAction => (
+                    <OptimisticComment
+                        comment={ commAction }
+                        containerRef={ containerRef }
+                        key={ commAction.id }
+                        loggedProfileData={ loggedProfileData }
+                    />
+                )) }
+                { !fetchingComments && comments.filter(c => c.entryId === entryId).map(comm => (
+                    <CommentThread
+                        comment={ comm }
+                        containerRef={ containerRef }
+                        entryId={ entryId }
+                        key={ comm.commentId }
+                        onReply={ this.handleReply }
+                        onReplyClose={ this.resetReplies }
+                        pendingComments={ pendingComments }
+                        replyTo={ this.state.replyTo }
+                    />
+                )) }
+                { fetchingComments &&
+                <div className="flex-center comment-list__loader-wrapper">
+                    <Spin/>
                 </div>
-              </div>
-            }
-            {moreComments &&
-              <div className="comment-list__loader-wrapper_more">
-                <DataLoader flag={fetchingMoreComments} size="small">
-                  <div className="flex-center">
-                    <div className="comment-list__trigger" ref={getTriggerRef} />
-                  </div>
-                </DataLoader>
-              </div>
-            }
-          </div>
+                }
+                { !fetchingComments && !commentsCount && !optimisticComments.length && !comments.size &&
+                <div className="comment-list__placeholder">
+                    <div>{ intl.formatMessage(entryMessages.noCommentsFound) }</div>
+                    <div>
+                        <div
+                            className="comment-list__placeholder-link"
+                            onClick={ this._handleNewComment }
+                        >
+                            { intl.formatMessage(entryMessages.leaveAComment) }
+                        </div>
+                    </div>
+                </div>
+                }
+                { moreComments &&
+                <div className="comment-list__loader-wrapper_more">
+                    <DataLoader flag={ fetchingMoreComments } size="small">
+                        <div className="flex-center">
+                            <div className="comment-list__trigger" ref={ getTriggerRef }/>
+                        </div>
+                    </DataLoader>
+                </div>
+                }
+            </div>
         );
     }
 }

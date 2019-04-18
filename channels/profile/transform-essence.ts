@@ -10,7 +10,7 @@ export const transformEssence = {
   },
   required: ['amount', 'token'],
 };
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
@@ -21,7 +21,7 @@ export default function init(sp, getService) {
 
     const bnAmount = web3Api.instance.toWei(data.amount, 'ether');
     const txData = contracts.instance.Essence.transformEssence
-    .request(bnAmount, { gas: 100000 });
+      .request(bnAmount, { gas: 100000 });
 
     const receipt = yield contracts.send(txData, data.token, cb);
     return { receipt };

@@ -4,14 +4,14 @@ import { AUTH_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
 
 export const randomBytesAsync = Promise.promisify(window.crypto.getRandomValues);
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   class Auth {
 
-    public regenSession(token: string) {
+    public regenSession (token: string) {
       return true;
     }
 
-    public login(acc: string, timer: number = 30, registering = false) {
+    public login (acc: string, timer: number = 30, registering = false) {
       const arr = new Uint32Array(32);
       return randomBytesAsync(arr)
         .then((buff: Buffer) => {
@@ -26,7 +26,7 @@ export default function init(sp, getService) {
         });
     }
 
-    public logout() {
+    public logout () {
       this._flushSession();
     }
 
@@ -35,7 +35,7 @@ export default function init(sp, getService) {
      * @param token
      * @returns {boolean}
      */
-    public isLogged(token: any) {
+    public isLogged (token: any) {
       return Promise.resolve(true);
     }
 
@@ -45,7 +45,7 @@ export default function init(sp, getService) {
      * @param token
      * @returns {any}
      */
-    public signData(data: {}, token: string) {
+    public signData (data: {}, token: string) {
       return this.isLogged(token)
         .then(function (logged) {
           if (!logged) {
@@ -55,7 +55,7 @@ export default function init(sp, getService) {
         });
     }
 
-    public signMessage(data: {}, token: string) {
+    public signMessage (data: {}, token: string) {
       const web3Api = getService(CORE_MODULE.WEB3_API);
       return this.isLogged(token)
         .then(function (logged) {
@@ -72,7 +72,7 @@ export default function init(sp, getService) {
      *
      * @private
      */
-    private _flushSession() {
+    private _flushSession () {
       (getService(CORE_MODULE.RESPONSES)).gethStatus.akashaKey = '';
       (getService(CORE_MODULE.RESPONSES)).gethStatus.shouldLogout = false;
       console.log('flushed session');

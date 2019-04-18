@@ -20,48 +20,50 @@ class PanelContainerHeader extends Component {
         } = this.props;
         return (
             <div
-                className={`row middle-xs ${styles.root}`}
-                style={{
+                className={ `row middle-xs ${ styles.root }` }
+                style={ {
                     minHeight: headerMinHeight,
-                    height: `${shrinked ? headerHeight - 24 : headerHeight}px`,
+                    height: `${ shrinked ? headerHeight - 24 : headerHeight }px`,
                     background: muiTheme.palette.canvasColor,
-                    boxShadow: shrinked ? `0px 3px 3px -1px ${muiTheme.palette.paperShadowColor}` : 'none',
+                    boxShadow: shrinked ? `0px 3px 3px -1px ${ muiTheme.palette.paperShadowColor }` : 'none',
                     borderBottom:
-                        showBorder && !shrinked ? `1px solid ${muiTheme.palette.borderColor}` : 'none',
+                        showBorder && !shrinked ? `1px solid ${ muiTheme.palette.borderColor }` : 'none',
                     ...headerStyle
-                }}
+                } }
             >
-                {icon && <div className={`${styles.headerIcon} col-xs-2`}>{icon}</div>}
-                <div className={`${styles.headerTitle} col-xs-12`}>
-                    {children && children}
-                    {!children && (
+                { icon && <div className={ `${ styles.headerIcon } col-xs-2` }>{ icon }</div> }
+                <div className={ `${ styles.headerTitle } col-xs-12` }>
+                    { children && children }
+                    { !children && (
                         <div className="row middle-xs">
                             <div className="col-xs-8">
                                 <div className="row">
                                     <h3
-                                        className={`col-xs-12 start-xs ${styles.title}`}
-                                        style={{ fontWeight: 300 }}
+                                        className={ `col-xs-12 start-xs ${ styles.title }` }
+                                        style={ { fontWeight: 300 } }
                                     >
-                                        {title}
+                                        { title }
                                     </h3>
-                                    {subTitle && (
-                                        <div className={`col-xs-12 start-xs ${styles.subtitle}`}>
-                                            {subTitle}
+                                    { subTitle && (
+                                        <div
+                                            className={ `col-xs-12 start-xs ${ styles.subtitle }` }>
+                                            { subTitle }
                                         </div>
-                                    )}
+                                    ) }
                                 </div>
                             </div>
                             <div className="col-xs-4">
-                                <div className="row">{headerActions && headerActions}</div>
+                                <div className="row">{ headerActions && headerActions }</div>
                             </div>
                         </div>
-                    )}
+                    ) }
                 </div>
-                {header && header}
+                { header && header }
             </div>
         );
     }
 }
+
 PanelContainerHeader.propTypes = {
     children: PropTypes.node,
     header: PropTypes.node,

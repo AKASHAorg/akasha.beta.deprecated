@@ -6,7 +6,7 @@
 // const initialState = new TempProfileModel();
 
 // const tempProfileState = createReducer(initialState, {
-    
+
 // });
 
 // export default tempProfileState;

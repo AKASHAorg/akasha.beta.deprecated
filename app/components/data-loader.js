@@ -16,7 +16,9 @@ class DataLoader extends Component {
     componentDidMount () {
         const { timeout } = this.props;
         if (timeout) {
-            this.timeout = setTimeout(() => { this.updateLoadingState(); }, timeout);
+            this.timeout = setTimeout(() => {
+                this.updateLoadingState();
+            }, timeout);
         }
     }
 
@@ -30,7 +32,9 @@ class DataLoader extends Component {
                 timeoutExpired: !timeout
             });
             if (timeout) {
-                this.timeout = setTimeout(() => { this.updateLoadingState(); }, timeout);
+                this.timeout = setTimeout(() => {
+                    this.updateLoadingState();
+                }, timeout);
             }
         } else if ((!timeout || timeoutExpired) && loading !== flag) {
             this.setState({
@@ -55,18 +59,18 @@ class DataLoader extends Component {
     render () {
         const { size, style, message, className } = this.props;
         if (this.state.loading) {
-            const innerClassName = size ? `data-loader__inner_${size}` : 'data-loader__inner';
+            const innerClassName = size ? `data-loader__inner_${ size }` : 'data-loader__inner';
             return (
-              <div className={`data-loader ${className || ''}`} style={style}>
-                <div className={innerClassName}>
-                  <Spin size={size} />
+                <div className={ `data-loader ${ className || '' }` } style={ style }>
+                    <div className={ innerClassName }>
+                        <Spin size={ size }/>
+                    </div>
+                    { message &&
+                    <div className="data-loader__message">
+                        { message }
+                    </div>
+                    }
                 </div>
-                {message &&
-                  <div className="data-loader__message">
-                    {message}
-                  </div>
-                }
-              </div>
             );
         }
         return this.props.children;

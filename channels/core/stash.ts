@@ -1,7 +1,7 @@
 import * as LRU from 'lru-cache';
 import { CORE_MODULE } from '@akashaproject/common/constants';
 
-export default function init(sp) {
+export default function init (sp) {
   class Entries {
 
     public options = { max: 64, maxAge: 1000 * 60 * 60 };
@@ -9,59 +9,59 @@ export default function init(sp) {
     protected SHORT_PREFIX = 'S-';
     protected entries;
 
-    constructor() {
+    constructor () {
       this.loadOptions();
     }
 
-    get records() {
+    get records () {
       return this.entries;
     }
 
-    setOptions(newOptions: {}) {
+    setOptions (newOptions: {}) {
       this.options = Object.assign({}, this.options, newOptions);
       return this;
     }
 
-    loadOptions() {
+    loadOptions () {
       if (this.entries) {
         this.entries.reset();
       }
       this.entries = LRU(this.options);
     }
 
-    setFull(hash, data) {
+    setFull (hash, data) {
       this.entries.set(`${this.FULL_PREFIX}${hash}`, data);
     }
 
-    getFull(hash) {
+    getFull (hash) {
       return this.entries.get(`${this.FULL_PREFIX}${hash}`);
     }
 
-    hasFull(hash) {
+    hasFull (hash) {
       return this.entries.has(`${this.FULL_PREFIX}${hash}`);
     }
 
-    setShort(hash, data) {
+    setShort (hash, data) {
       this.entries.set(`${this.SHORT_PREFIX}${hash}`, data);
     }
 
-    getShort(hash) {
+    getShort (hash) {
       return this.entries.get(`${this.SHORT_PREFIX}${hash}`);
     }
 
-    hasShort(hash) {
+    hasShort (hash) {
       return this.entries.has(`${this.SHORT_PREFIX}${hash}`);
     }
 
-    removeFull(hash) {
+    removeFull (hash) {
       this.entries.del(`${this.FULL_PREFIX}${hash}`);
     }
 
-    removeShort(hash) {
+    removeShort (hash) {
       this.entries.del(`${this.SHORT_PREFIX}${hash}`);
     }
 
-    flush() {
+    flush () {
       this.entries.reset();
     }
 

@@ -30,7 +30,7 @@ import updateProfileInit from './update-profile';
 import votesIteratorInit from './votes-iterator';
 import { PROFILE_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
 
   const currentBalance = currentBalanceInit(sp, getService);
   const commentsCount = commentsCountInit(sp, getService);

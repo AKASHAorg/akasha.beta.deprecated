@@ -11,7 +11,7 @@ const claimVoteS = {
   required: ['entryId', 'token'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, claimVoteS, { throwError: true });

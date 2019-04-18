@@ -5,7 +5,7 @@ import findProfilesInit from './find-profiles';
 import indexes from './indexes';
 import { SEARCH_MODULE } from '@akashaproject/common/constants';
 
-const init = async function init(sp, getService) {
+const init = async function init (sp, getService) {
   const query = queryInit(sp, getService);
   const flush = flushInit(sp, getService);
   const findTags = findTagsInit(sp, getService);

@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE, NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
+import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE, NOTIFICATIONS_MODULE, } from '@akashaproject/common/constants';
 const publishS = {
     id: '/publish',
     type: 'object',

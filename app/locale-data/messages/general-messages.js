@@ -342,7 +342,7 @@ const generalMessages = defineMessages({
     },
     noPeersAvailable: {
         id: 'app.general.noPeersAvailable',
-        description: "couldn't find any IPFS peers for a specific content",
+        description: 'couldn\'t find any IPFS peers for a specific content',
         defaultMessage: 'No peers available'
     },
     notes: {

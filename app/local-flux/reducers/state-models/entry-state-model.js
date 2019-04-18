@@ -1,4 +1,4 @@
-import { List, Map, Record, fromJS } from 'immutable';
+import { fromJS, List, Map, Record } from 'immutable';
 import { CardInfo } from './draft-state-model';
 
 export const EntryAuthor = Record({

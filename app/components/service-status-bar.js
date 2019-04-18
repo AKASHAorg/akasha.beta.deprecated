@@ -101,55 +101,61 @@ class ServiceStatusBar extends Component {
         const ipfsState = serviceState.stopped; //this.getIpfsState();
         const gethColor = this.getCircleColor(gethState);
         const ipfsColor = this.getCircleColor(ipfsState);
-        const gethIcon = withCircles ? `geth${gethColor}` : 'geth';
-        const ipfsIcon = withCircles ? `ipfs${ipfsColor}` : 'ipfs';
+        const gethIcon = withCircles ? `geth${ gethColor }` : 'geth';
+        const ipfsIcon = withCircles ? `ipfs${ ipfsColor }` : 'ipfs';
 
         return (
             <div className="service-status-bar">
-                <Tooltip title={this.getTooltip(gethState)}>
+                <Tooltip title={ this.getTooltip(gethState) }>
                     <div
                         className="content-link flex-center service-status-bar__button"
-                        onClick={toggleGethDetails}
+                        onClick={ toggleGethDetails }
                     >
-                        <Icon className="service-status-bar__geth-icon" type={gethIcon} />
-                        {!withCircles && gethColor === 'Red' && <div className="service-status-bar__dot" />}
+                        <Icon className="service-status-bar__geth-icon" type={ gethIcon }/>
+                        { !withCircles && gethColor === 'Red' &&
+                        <div className="service-status-bar__dot"/> }
                     </div>
                 </Tooltip>
-                <Tooltip title={this.getTooltip(ipfsState)}>
+                <Tooltip title={ this.getTooltip(ipfsState) }>
                     <div
                         className="content-link flex-center service-status-bar__button"
-                        onClick={toggleIpfsDetails}
+                        onClick={ toggleIpfsDetails }
                     >
-                        <Icon className="service-status-bar__ipfs-icon" type={ipfsIcon} />
-                        {!withCircles && ipfsColor === 'Red' && <div className="service-status-bar__dot" />}
+                        <Icon className="service-status-bar__ipfs-icon" type={ ipfsIcon }/>
+                        { !withCircles && ipfsColor === 'Red' &&
+                        <div className="service-status-bar__dot"/> }
                     </div>
                 </Tooltip>
-                {withCircles && (
+                { withCircles && (
                     <Select
                         className="service-status-bar__select"
                         dropdownClassName="service-status-bar__select-dropdown"
-                        onChange={this.handleChange}
+                        onChange={ this.handleChange }
                         size="small"
-                        value={generalSettings.get('locale')}
+                        value={ generalSettings.get('locale') }
                     >
-                        <Option value="en-US">{intl.formatMessage(settingsMessages.english)}</Option>
+                        <Option
+                            value="en-US">{ intl.formatMessage(settingsMessages.english) }</Option>
                         <Option value="zh-CN">
-                            {intl.formatMessage(settingsMessages.chineseSimplified)}
+                            { intl.formatMessage(settingsMessages.chineseSimplified) }
                         </Option>
-                        <Option value="fi-FI">{intl.formatMessage(settingsMessages.finnish)}</Option>
-                        <Option value="id-ID">{intl.formatMessage(settingsMessages.indonesian)}</Option>
-                        <Option value="es-ES">{intl.formatMessage(settingsMessages.spanish)}</Option>
+                        <Option
+                            value="fi-FI">{ intl.formatMessage(settingsMessages.finnish) }</Option>
+                        <Option
+                            value="id-ID">{ intl.formatMessage(settingsMessages.indonesian) }</Option>
+                        <Option
+                            value="es-ES">{ intl.formatMessage(settingsMessages.spanish) }</Option>
                         <Option
                             className="flex-center-y service-status-bar__translate-option"
                             value="translate"
                         >
                             <a className="unstyled-link" href="https://crowdin.com/project/akasha">
-                                {intl.formatMessage(generalMessages.translate)}
+                                { intl.formatMessage(generalMessages.translate) }
                             </a>
-                            <Icon className="service-status-bar__link-icon" type="link" />
+                            <Icon className="service-status-bar__link-icon" type="link"/>
                         </Option>
                     </Select>
-                )}
+                ) }
             </div>
         );
     }

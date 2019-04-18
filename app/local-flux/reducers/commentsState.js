@@ -1,4 +1,4 @@
-import {List, Map} from 'immutable';
+import { List, Map } from 'immutable';
 import { isEmpty } from 'ramda';
 import * as types from '../constants';
 import { createReducer } from './utils';
@@ -28,8 +28,8 @@ const initialState = new CommentsStateModel();
 const commentsState = createReducer(initialState, {
     [types.CLEAN_STORE]: () => initialState,
 
-    [types.COMMENTS_CHECK_NEW_SUCCESS]: (state, {data, request}) => {
-        const {collection, lastBlock} = data;
+    [types.COMMENTS_CHECK_NEW_SUCCESS]: (state, { data, request }) => {
+        const { collection, lastBlock } = data;
         if (!collection.length) {
             return state.setIn(['newComments', 'lastBlock'], lastBlock);
         }
@@ -43,13 +43,13 @@ const commentsState = createReducer(initialState, {
         });
         return state.merge({
             byId,
-            newComments: state.get('newComments').merge({lastBlock, comments})
+            newComments: state.get('newComments').merge({ lastBlock, comments })
         });
     },
 
     [types.COMMENTS_CLEAN]: () => initialState,
 
-    [`${COMMENTS_MODULE.getComment}`]: (state, { context, entryId, commentId, author, parent }) => {
+    [`${ COMMENTS_MODULE.getComment }`]: (state, { context, entryId, commentId, author, parent }) => {
         let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
         pendingComments = pendingComments.set(commentId, true);
         if (state.getIn(['byId', commentId])) {
@@ -62,14 +62,14 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [`${COMMENTS_MODULE.getComment}_ERROR`]: (state, { request }) => {
+    [`${ COMMENTS_MODULE.getComment }_ERROR`]: (state, { request }) => {
         const { context, commentId } = request;
         let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
         pendingComments = pendingComments.set(commentId, false);
         return state.setIn(['flags', 'pendingComments', context], pendingComments);
     },
 
-    [`${COMMENTS_MODULE.getComment}_SUCCESS`]: (state, {data, request}) => {
+    [`${ COMMENTS_MODULE.getComment }_SUCCESS`]: (state, { data, request }) => {
         let byId = state.get('byId');
         if (!data.parent || data.parent === state.hexZero) {
             data.parent = '0';
@@ -92,8 +92,8 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [`${COMMENTS_MODULE.getScore}_SUCCESS`]: (state, {data}) => {
-        const {commentId, score} = data;
+    [`${ COMMENTS_MODULE.getScore }_SUCCESS`]: (state, { data }) => {
+        const { commentId, score } = data;
         if (score === state.getIn(['byId', commentId, 'score'])) {
             return state;
         }
@@ -106,7 +106,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [`${COMMENTS_MODULE.getVoteOf}_SUCCESS`]: (state, {data}) => {
+    [`${ COMMENTS_MODULE.getVoteOf }_SUCCESS`]: (state, { data }) => {
         const votes = {};
         data.collection.forEach((res) => {
             votes[res.commentId] = res.vote;
@@ -114,13 +114,13 @@ const commentsState = createReducer(initialState, {
         return state.mergeIn(['votes'], new Map(votes));
     },
 
-    [`${COMMENTS_MODULE.commentsIterator}`]: (state, {parent}) =>
+    [`${ COMMENTS_MODULE.commentsIterator }`]: (state, { parent }) =>
         state.setIn(['flags', 'fetchingComments', parent], true),
 
-    [`${COMMENTS_MODULE.commentsIterator}_ERROR`]: (state, {request}) =>
+    [`${ COMMENTS_MODULE.commentsIterator }_ERROR`]: (state, { request }) =>
         state.setIn(['flags', 'fetchingComments', request.parent], false),
 
-    [`${COMMENTS_MODULE.commentsIterator}_SUCCESS`]: (state, {data, request}) => {
+    [`${ COMMENTS_MODULE.commentsIterator }_SUCCESS`]: (state, { data, request }) => {
         let byId = state.get('byId');
         const { context, parent } = request;
         let newState = state;
@@ -150,7 +150,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_ITERATOR_REVERSED_SUCCESS]: (state, {data, request}) => {
+    [types.COMMENTS_ITERATOR_REVERSED_SUCCESS]: (state, { data, request }) => {
         let byId = state.get('byId');
         const parent = request.parent;
         let list = state.getIn(['byParent', parent]) || new List();
@@ -197,13 +197,13 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_MORE_ITERATOR]: (state, {parent}) =>
+    [types.COMMENTS_MORE_ITERATOR]: (state, { parent }) =>
         state.setIn(['flags', 'fetchingMoreComments', parent], true),
 
-    [types.COMMENTS_MORE_ITERATOR_ERROR]: (state, {request}) =>
+    [types.COMMENTS_MORE_ITERATOR_ERROR]: (state, { request }) =>
         state.setIn(['flags', 'fetchingMoreComments', request.parent], false),
 
-    [types.COMMENTS_MORE_ITERATOR_SUCCESS]: (state, {data, request}) => {
+    [types.COMMENTS_MORE_ITERATOR_SUCCESS]: (state, { data, request }) => {
         let byId = state.get('byId');
         const parent = request.parent;
         let list = state.getIn(['byParent', parent]) || new List();
@@ -223,7 +223,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [`${COMMENTS_MODULE.resolveCommentsIpfsHash}`]: (state, {ipfsHashes, commentIds}) => {
+    [`${ COMMENTS_MODULE.resolveCommentsIpfsHash }`]: (state, { ipfsHashes, commentIds }) => {
         let byHash = state.get('byHash');
         let resolvingComments = state.getIn(['flags', 'resolvingComments']);
         ipfsHashes.forEach((hash, index) => {
@@ -236,10 +236,10 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [`${COMMENTS_MODULE.resolveCommentsIpfsHash}_ERROR`]: (state, {data}) =>
+    [`${ COMMENTS_MODULE.resolveCommentsIpfsHash }_ERROR`]: (state, { data }) =>
         state.setIn(['flags', 'resolvingComments', data], false),
 
-    [`${COMMENTS_MODULE.resolveCommentsIpfsHash}_SUCCESS`]: (state, {data}) => {
+    [`${ COMMENTS_MODULE.resolveCommentsIpfsHash }_SUCCESS`]: (state, { data }) => {
         if (!data.ipfsHash || isEmpty(data)) {
             return state;
         }

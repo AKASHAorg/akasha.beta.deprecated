@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { differenceWith, propEq, findIndex, update, indexOf, remove } from 'ramda';
+import { differenceWith, findIndex, indexOf, propEq, remove, update } from 'ramda';
 import throttle from 'lodash.throttle';
 import { Map } from 'immutable';
 import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
 import { DataLoader } from '../';
-import * as columnTypes from '../../constants/columns';
 
 const VIEWPORT_VISIBLE_BUFFER_SIZE = 5;
 
@@ -49,8 +48,8 @@ class ColManager extends Component {
             this.props.onItemRequest(this.props.column.toJS());
             this.loadingMore.push(column.id);
         }
-        if(column.itemsList.size > 0 && this.items[id].length === 0) {
-            if(!this.colFirstEntry.has(id)) {
+        if (column.itemsList.size > 0 && this.items[id].length === 0) {
+            if (!this.colFirstEntry.has(id)) {
                 this.colFirstEntry = this.colFirstEntry.set(id, column.itemsList.first());
             }
             this._mapItemsToState(column.itemsList, column);
@@ -71,7 +70,7 @@ class ColManager extends Component {
             this.containerHeight = newContainerHeight;
             this._updateOffsets(this.lastScrollTop[id], column);
         }
-        if(this.props.onRefLink) {
+        if (this.props.onRefLink) {
             this.props.onRefLink(this);
         }
     }
@@ -103,6 +102,7 @@ class ColManager extends Component {
         // do not update the state!
         this._prepareUpdates(prevProps, { canUpdateState: false });
     }
+
     // callable from outside of the component!
     loadNewItems = () => {
         const { column } = this.props;
@@ -138,7 +138,7 @@ class ColManager extends Component {
     }
 
     _createRequestPooling = (id) => {
-        if(!this.unmounting && !this.poolingInterval[id]) {
+        if (!this.unmounting && !this.poolingInterval[id]) {
             this.poolingInterval[id] = setInterval(() => {
                 this.props.onItemPooling(this.props.column.toJS());
             }, this.poolingDelay);
@@ -209,8 +209,10 @@ class ColManager extends Component {
      */
     /* eslint-disable complexity */
     _doUpdates = (updateParams) => {
-        const { isNewColumn, shouldRequestItems, hasNewItems, hasUnseenNewItems,
-            column, options, newItemsLoaded, oldColumn } = updateParams;
+        const {
+            isNewColumn, shouldRequestItems, hasNewItems, hasUnseenNewItems,
+            column, options, newItemsLoaded, oldColumn
+        } = updateParams;
         const { canUpdateState } = options;
         const { id } = column;
         if (hasUnseenNewItems && this.lastScrollTop[id] === 0 && canUpdateState) {
@@ -249,7 +251,7 @@ class ColManager extends Component {
         window.removeEventListener('resize', this._debouncedResize);
         this.scrollPending = window.clearTimeout(this.scrollPending);
         this.requestPoolingTimeout = window.clearTimeout(this.requestPoolingTimeout);
-        if(this.props.onUnmount) {
+        if (this.props.onUnmount) {
             this.props.onUnmount(this.props.column);
         }
         this.unmounting = true;
@@ -270,7 +272,7 @@ class ColManager extends Component {
         const mappedItems = this.items[id].slice();
         let diff = [];
         // when loadMore triggers
-        if(items.size > mappedItems.length) {
+        if (items.size > mappedItems.length) {
             const jsItems = items.toJS().map(v => ({ id: v }));
             const eqKey = (x, y) => x.id === y.id;
             if (options.prepend) {
@@ -393,8 +395,11 @@ class ColManager extends Component {
             const sameHeight = (stateCellIdx > -1) && items[id][stateCellIdx].height === cellHeight;
             if (!sameHeight) {
                 this.avgItemHeight = Math.ceil(this._calculateAverage(cellHeight));
-                this.items[id] = update(stateCellIdx, { id: cellId, height: cellHeight }, this.items[id]);
-                if(this.scrollPending === -1 && !this.unmounting) {
+                this.items[id] = update(stateCellIdx, {
+                    id: cellId,
+                    height: cellHeight
+                }, this.items[id]);
+                if (this.scrollPending === -1 && !this.unmounting) {
                     this._updateOffsets(this.lastScrollTop[id], props.column);
                 }
             }
@@ -403,7 +408,7 @@ class ColManager extends Component {
     _handleCellSizeChange = cellSize => this._handleCellMount(cellSize);
 
     _handleScroll = () => {
-        if(this.scrollPending !== -1) {
+        if (this.scrollPending !== -1) {
             clearTimeout(this.scrollPending);
             this.scrollPending = -1;
         }
@@ -440,68 +445,68 @@ class ColManager extends Component {
         const topSliceMeasure = Math.ceil(this._getSliceMeasure(0, topIndexTo));
         const bottomSliceMeasure = Math.ceil(this._getSliceMeasure(bottomIndexFrom, items[id].length));
         return (
-          <div
-            ref={this._createRootNodeRef}
-            className="column-manager"
-          >
             <div
-              className="col-manager__top-offset"
-              style={{
-                  height: topSliceMeasure
-              }}
-            />
-            {items[id].slice(topIndexTo, bottomIndexFrom).map((item) => { // eslint-disable-line max-statements
-                let isPending = other.pendingEntries ? other.pendingEntries.get(item.id) : false;
-                let markAsNew = false;
-                if (!isPending && column.newItems && column.newItems.includes(item.id)) {
-                    isPending = true;
+                ref={ this._createRootNodeRef }
+                className="column-manager"
+            >
+                <div
+                    className="col-manager__top-offset"
+                    style={ {
+                        height: topSliceMeasure
+                    } }
+                />
+                { items[id].slice(topIndexTo, bottomIndexFrom).map((item) => { // eslint-disable-line max-statements
+                    let isPending = other.pendingEntries ? other.pendingEntries.get(item.id) : false;
+                    let markAsNew = false;
+                    if (!isPending && column.newItems && column.newItems.includes(item.id)) {
+                        isPending = true;
+                    }
+                    const lastSeenID = this.colFirstEntry.get(id);
+                    const currentItemIndex = items[id].findIndex(i => i.id === item.id);
+                    const lastSeenItemIndex = items[id].findIndex(i => i.id === lastSeenID);
+                    const isNewItem = lastSeenID && lastSeenItemIndex > currentItemIndex;
+                    if (isNewItem) {
+                        markAsNew = true;
+                    }
+                    return (
+                        <CellManager
+                            column={ column }
+                            key={ item.id }
+                            id={ item.id }
+                            onMount={ this._handleCellMount(item.id) }
+                            onSizeChange={ this._handleCellSizeChange(item.id) }
+                            isPending={ isPending }
+                            large={ column.get('large') }
+                            markAsNew={ markAsNew }
+                        >
+                            { cellProps => React.cloneElement(this.props.itemCard, {
+                                ...cellProps,
+                                ...other,
+                                itemId: item.id,
+                                isPending,
+                                contextId: column.get('id'),
+                                markAsNew,
+                            }) }
+                        </CellManager>
+                    );
+                }) }
+                <div
+                    className="col-manager__bottom-offset"
+                    style={ {
+                        height: bottomSliceMeasure
+                    } }
+                />
+                { bottomSliceMeasure < 30 && bottomIndexFrom > 0 && flags.moreItems &&
+                <DataLoader flag/>
                 }
-                const lastSeenID = this.colFirstEntry.get(id);
-                const currentItemIndex = items[id].findIndex(i => i.id === item.id);
-                const lastSeenItemIndex = items[id].findIndex(i => i.id === lastSeenID);
-                const isNewItem = lastSeenID && lastSeenItemIndex > currentItemIndex;
-                if (isNewItem) {
-                    markAsNew = true;
-                }
-                return (
-                  <CellManager
-                    column={column}
-                    key={item.id}
-                    id={item.id}
-                    onMount={this._handleCellMount(item.id)}
-                    onSizeChange={this._handleCellSizeChange(item.id)}
-                    isPending={isPending}
-                    large={column.get('large')}
-                    markAsNew={markAsNew}
-                  >
-                    {cellProps => React.cloneElement(this.props.itemCard, {
-                        ...cellProps,
-                        ...other,
-                        itemId: item.id,
-                        isPending,
-                        contextId: column.get('id'),
-                        markAsNew,
-                    })}
-                  </CellManager>
-                );
-                })}
-            <div
-              className="col-manager__bottom-offset"
-              style={{
-                height: bottomSliceMeasure
-              }}
-            />
-            {bottomSliceMeasure < 30 && bottomIndexFrom > 0 && flags.moreItems &&
-              <DataLoader flag />
-            }
-          </div>
+            </div>
         );
     }
 }
 
 ColManager.defaultProps = {
     initialItemHeight: 270,
-    itemCard: <EntryCard />,
+    itemCard: <EntryCard/>,
     columnHeight: 600,
 };
 

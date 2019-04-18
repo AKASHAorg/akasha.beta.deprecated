@@ -15,6 +15,7 @@ class FullSizeImageViewer extends Component {
             loadingImage: true
         };
     }
+
     componentWillReceiveProps = (nextProps) => {
         const { fullSizeImages } = nextProps;
         if (fullSizeImages.size > 0) {
@@ -31,7 +32,8 @@ class FullSizeImageViewer extends Component {
             });
         }
     }
-    _getImages = () => {}
+    _getImages = () => {
+    }
     _handleViewerClose = () => {
         this.setState({
             loadingImage: true,
@@ -73,18 +75,19 @@ class FullSizeImageViewer extends Component {
             };
         });
     }
+
     render () {
         const { fullSizeImages, intl } = this.props;
         const { currentIndex, loadingImage } = this.state;
         const showViewer = fullSizeImages.size > 0 && fullSizeImages.get('images').size > 0;
         return (
-          <div
-            className={
-              `full-size-image-viewer full-size-image-viewer${showViewer ? '' : '__hidden'}`
-            }
-            onClick={this._handleViewerClose}
-          >
-            {/* <div
+            <div
+                className={
+                    `full-size-image-viewer full-size-image-viewer${ showViewer ? '' : '__hidden' }`
+                }
+                onClick={ this._handleViewerClose }
+            >
+                {/* <div
               className="full-size-image-viewer__close-button"
             >
               <Button
@@ -93,21 +96,21 @@ class FullSizeImageViewer extends Component {
                 type="primary"
                 onClick={this._handleViewerClose}
               />
-            </div> */}
-            <div
-              className="full-size-image-viewer__images"
-            >
-              {showViewer && loadingImage &&
-                <div className="full-size-image-viewer__loading-wrapper">
-                  <div className="full-size-image-viewer__loading">
-                    <Spin
-                      size="large"
-                      tip={intl.formatMessage(entryMessages.loadingImage)}
-                    />
-                  </div>
-                </div>
-              }
-              {/* {showViewer && fullSizeImages.get('images').size > 1 &&
+            </div> */ }
+                <div
+                    className="full-size-image-viewer__images"
+                >
+                    { showViewer && loadingImage &&
+                    <div className="full-size-image-viewer__loading-wrapper">
+                        <div className="full-size-image-viewer__loading">
+                            <Spin
+                                size="large"
+                                tip={ intl.formatMessage(entryMessages.loadingImage) }
+                            />
+                        </div>
+                    </div>
+                    }
+                    {/* {showViewer && fullSizeImages.get('images').size > 1 &&
                 <div
                   onClick={this._incrementIndex}
                   className="full-size-image-viewer__arrow full-size-image-viewer__arrow_left"
@@ -117,19 +120,19 @@ class FullSizeImageViewer extends Component {
                     className="full-size-image-viewer__arrow_icon"
                   />
                 </div>
-              } */}
-              {showViewer &&
-                <img
-                  className={
-                      `full-size-image-viewer__image
-                      full-size-image-viewer__image${loadingImage ? '_loading' : ''}`
-                  }
-                  src={fullSizeImages.getIn(['images', currentIndex]).src}
-                  onLoad={this._handleImageLoad}
-                  alt=""
-                />
-              }
-              {/* {showViewer && fullSizeImages.get('images').size > 1 &&
+              } */ }
+                    { showViewer &&
+                    <img
+                        className={
+                            `full-size-image-viewer__image
+                      full-size-image-viewer__image${ loadingImage ? '_loading' : '' }`
+                        }
+                        src={ fullSizeImages.getIn(['images', currentIndex]).src }
+                        onLoad={ this._handleImageLoad }
+                        alt=""
+                    />
+                    }
+                    {/* {showViewer && fullSizeImages.get('images').size > 1 &&
                 <div
                   className="full-size-image-viewer__arrow full-size-image-viewer__arrow_right"
                   onClick={this._decrementIndex}
@@ -139,13 +142,13 @@ class FullSizeImageViewer extends Component {
                     className="full-size-image-viewer__arrow_icon"
                   />
                 </div>
-              } */}
-              <div
-                className="full-size-image-viewer__bg-overlay"
-                // onClick={this._handleViewerClose}
-              />
+              } */ }
+                    <div
+                        className="full-size-image-viewer__bg-overlay"
+                        // onClick={this._handleViewerClose}
+                    />
+                </div>
             </div>
-          </div>
         );
     }
 }

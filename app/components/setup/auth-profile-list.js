@@ -42,7 +42,7 @@ class AuthProfileList extends Component {
     }
 
     checkIfVisible = (selectedEthAddress) => {
-        const el = document.getElementById(`ethAddress-${selectedEthAddress}`);
+        const el = document.getElementById(`ethAddress-${ selectedEthAddress }`);
         const { visible, scrollTop } = isVisible(el, this.container);
         if (el && this.container && !visible) {
             this.container.scrollTop -= scrollTop;
@@ -73,7 +73,8 @@ class AuthProfileList extends Component {
         });
     };
 
-    onSubmitLogin = () => {};
+    onSubmitLogin = () => {
+    };
 
     onMouseEnter = (ethAddress) => {
         this.setState({
@@ -96,7 +97,7 @@ class AuthProfileList extends Component {
     renderListItem = (profile) => {
         const { hoveredEthAddress, selectedEthAddress } = this.state;
         const hasName = profile.get('firstName') || profile.get('lastName');
-        const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+        const profileName = `${ profile.get('firstName') } ${ profile.get('lastName') }`;
         const avatar = profile.get('avatar');
         const akashaId = profile.get('akashaId');
         const ethAddress = profile.get('ethAddress');
@@ -112,52 +113,52 @@ class AuthProfileList extends Component {
             'auth-profile-list__profile-card_with-opacity': withOpacity
         });
         const header = (
-          <div className="auth-profile-list__card-header">
-            <Avatar
-              className="auth-profile-list__avatar"
-              firstName={profile.get('firstName')}
-              image={avatar}
-              lastName={profile.get('lastName')}
-            />
-            <div className="auth-profile-list__header-text">
-              <div className="overflow-ellipsis heading auth-profile-list__name">
-                {title}
-              </div>
-              {subtitle &&
-                <div className="auth-profile-list__akasha-id">
-                  @{subtitle}
+            <div className="auth-profile-list__card-header">
+                <Avatar
+                    className="auth-profile-list__avatar"
+                    firstName={ profile.get('firstName') }
+                    image={ avatar }
+                    lastName={ profile.get('lastName') }
+                />
+                <div className="auth-profile-list__header-text">
+                    <div className="overflow-ellipsis heading auth-profile-list__name">
+                        { title }
+                    </div>
+                    { subtitle &&
+                    <div className="auth-profile-list__akasha-id">
+                        @{ subtitle }
+                    </div>
+                    }
                 </div>
-              }
             </div>
-          </div>
         );
 
         return (
-          <div
-            className={cardClass}
-            id={`ethAddress-${ethAddress}`}
-            key={ethAddress}
-            onClick={onClick}
-            onMouseEnter={() => this.onMouseEnter(ethAddress)}
-            onMouseLeave={this.onMouseLeave}
-          >
-            {header}
-            <ReactCSSTransitionGroup
-              transitionName="loginForm"
-              transitionEnterTimeout={200}
-              transitionLeaveTimeout={200}
+            <div
+                className={ cardClass }
+                id={ `ethAddress-${ ethAddress }` }
+                key={ ethAddress }
+                onClick={ onClick }
+                onMouseEnter={ () => this.onMouseEnter(ethAddress) }
+                onMouseLeave={ this.onMouseLeave }
             >
-              {isSelected &&
-                <LoginForm
-                  akashaId={akashaId}
-                  ethAddress={ethAddress}
-                  getInputRef={this.getInputRef}
-                  onCancel={this.onCancelLogin}
-                  onSubmit={this.onSubmitLogin}
-                />
-              }
-            </ReactCSSTransitionGroup>
-          </div>
+                { header }
+                <ReactCSSTransitionGroup
+                    transitionName="loginForm"
+                    transitionEnterTimeout={ 200 }
+                    transitionLeaveTimeout={ 200 }
+                >
+                    { isSelected &&
+                    <LoginForm
+                        akashaId={ akashaId }
+                        ethAddress={ ethAddress }
+                        getInputRef={ this.getInputRef }
+                        onCancel={ this.onCancelLogin }
+                        onSubmit={ this.onSubmitLogin }
+                    />
+                    }
+                </ReactCSSTransitionGroup>
+            </div>
         );
     };
 
@@ -167,30 +168,30 @@ class AuthProfileList extends Component {
         if (profiles.size === 0 && !fetchingProfiles) {
             this.getContainerRef(null);
             return (
-              <div className="auth-profile-list__root">
-                <div className="auth-profile-list__placeholder">
-                  <div className="content-link auth-profile-list__placeholder-link">
-                    <a href="http://akasha.helpscoutdocs.com/article/16-how-to-migrate-accounts">
-                      {intl.formatMessage(setupMessages.noProfilesFound)}
-                    </a>
-                  </div>
+                <div className="auth-profile-list__root">
+                    <div className="auth-profile-list__placeholder">
+                        <div className="content-link auth-profile-list__placeholder-link">
+                            <a href="http://akasha.helpscoutdocs.com/article/16-how-to-migrate-accounts">
+                                { intl.formatMessage(setupMessages.noProfilesFound) }
+                            </a>
+                        </div>
+                    </div>
                 </div>
-              </div>
             );
         }
 
         return (
-          <DataLoader flag={fetchingProfiles} style={{ paddingTop: '100px' }}>
-            <div className="auth-profile-list__root">
-              <div
-                id="select-popup-container"
-                className="auth-profile-list__list-wrapper"
-                ref={this.getContainerRef}
-              >
-                {profiles.map(profile => this.renderListItem(profile))}
-              </div>
-            </div>
-          </DataLoader>
+            <DataLoader flag={ fetchingProfiles } style={ { paddingTop: '100px' } }>
+                <div className="auth-profile-list__root">
+                    <div
+                        id="select-popup-container"
+                        className="auth-profile-list__list-wrapper"
+                        ref={ this.getContainerRef }
+                    >
+                        { profiles.map(profile => this.renderListItem(profile)) }
+                    </div>
+                </div>
+            </DataLoader>
         );
     }
 }

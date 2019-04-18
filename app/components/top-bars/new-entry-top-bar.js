@@ -9,8 +9,8 @@ const NewEntryTopBar = props => (
     <div className="new-entry-top-bar">
         <div className="new-entry-top-bar__inner">
             <Button
-                icon={props.showSecondarySidebar ? 'double-left' : 'double-right'}
-                onClick={props.secondarySidebarToggle}
+                icon={ props.showSecondarySidebar ? 'double-left' : 'double-right' }
+                onClick={ props.secondarySidebarToggle }
             />
         </div>
     </div>

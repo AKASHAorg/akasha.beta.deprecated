@@ -10,21 +10,21 @@ const LinkDecorator = (passedProps) => {
         const onNavigation = (ev) => {
             ev.preventDefault();
             if (isInternalLink(url)) {
-                const internalUrl = `/${url.replace('/#', '')}`
+                const internalUrl = `/${ url.replace('/#', '') }`
                 history.push(internalUrl);
             } else {
                 onOutsideNavigation(url);
             }
         };
         return (
-          <a
-            className="editor__link"
-            href={url}
-            title={url}
-            onClick={onNavigation}
-          >
-            {props.children}
-          </a>
+            <a
+                className="editor__link"
+                href={ url }
+                title={ url }
+                onClick={ onNavigation }
+            >
+                { props.children }
+            </a>
         );
     };
     Link.propTypes = {

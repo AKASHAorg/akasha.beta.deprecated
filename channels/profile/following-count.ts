@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
 import { getFollowersCountSchema } from './followers-count';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();

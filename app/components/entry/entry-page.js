@@ -3,8 +3,15 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
 import classNames from 'classnames';
-import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageContent,
-    EntryPageHeader, Icon } from '../';
+import {
+    CommentEditor,
+    CommentsList,
+    DataLoader,
+    EntryPageActions,
+    EntryPageContent,
+    EntryPageHeader,
+    Icon
+} from '../';
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
 import { generalMessages } from '../../locale-data/messages/general-messages';
@@ -49,7 +56,7 @@ class EntryPage extends Component {
         const { newComments } = this.props;
         if ((prevProps.newComments.size > 0) && (newComments.size === 0)) {
             const targetId = prevProps.newComments.first().commentId;
-            const node = document.getElementById(`comment-${targetId}`);
+            const node = document.getElementById(`comment-${ targetId }`);
             if (node) {
                 node.scrollIntoViewIfNeeded(true);
             }
@@ -75,17 +82,28 @@ class EntryPage extends Component {
             this.checkNewComments,
             CHECK_NEW_COMMENTS_INTERVAL
         );
-        const prefixed = ethAddress === '0' ? undefined : `0x${ethAddress}`;
+        const prefixed = ethAddress === '0' ? undefined : `0x${ ethAddress }`;
         const version = parseInt(match.params.version, 10);
         const versionNr = isNaN(Number(version)) ? null : Number(version);
-        this.props.dispatchAction(entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr }));
+        this.props.dispatchAction(entryGetFull({
+            akashaId,
+            entryId,
+            ethAddress: prefixed,
+            version: versionNr
+        }));
     };
 
-    getContainerRef = (el) => { this.container = el; };
+    getContainerRef = (el) => {
+        this.container = el;
+    };
 
-    getListHeaderRef = (el) => { this.listHeader = el; };
+    getListHeaderRef = (el) => {
+        this.listHeader = el;
+    };
 
-    getTriggerRef = (el) => { this.trigger = el; };
+    getTriggerRef = (el) => {
+        this.trigger = el;
+    };
 
     getEditorRef = (editor) => {
         this.commentEditor = editor && editor.refs.clickAwayableElement;
@@ -149,108 +167,114 @@ class EntryPage extends Component {
         const component = !entry || fetchingFullEntry ?
             null :
             (<div className="entry-page__inner">
-              <div id="content-section" className="entry-page__content">
-                <EntryPageHeader
-                  containerRef={this.container}
-                  latestVersion={latestVersion}
-                />
-                {entry.content &&
-                  <EntryPageContent
-                    baseUrl={baseUrl}
-                    commentEditor={this.commentEditor}
-                    containerRef={this.container}
-                    entry={entry}
-                    fullSizeImageAdd={fullSizeImageAdd}
-                    highlightSave={highlightSave}
-                    intl={intl}
-                    latestVersion={latestVersion}
-                    licenses={licenses}
-                    toggleOutsideNavigation={toggleOutsideNavigation}
-                  />
-                }
-                {!entry.content &&
-                  <div className="entry-page__unresolved-placeholder">
-                    <DataLoader flag={resolvingIpfsHash}>
-                      <div className="heading flex-center">
-                        {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
-                      </div>
-                      <div className="flex-center">
-                        <span className="content-link entry-page__retry-button" onClick={this.onRetry}>
-                          {this.props.intl.formatMessage(generalMessages.retry)}
+                <div id="content-section" className="entry-page__content">
+                    <EntryPageHeader
+                        containerRef={ this.container }
+                        latestVersion={ latestVersion }
+                    />
+                    { entry.content &&
+                    <EntryPageContent
+                        baseUrl={ baseUrl }
+                        commentEditor={ this.commentEditor }
+                        containerRef={ this.container }
+                        entry={ entry }
+                        fullSizeImageAdd={ fullSizeImageAdd }
+                        highlightSave={ highlightSave }
+                        intl={ intl }
+                        latestVersion={ latestVersion }
+                        licenses={ licenses }
+                        toggleOutsideNavigation={ toggleOutsideNavigation }
+                    />
+                    }
+                    { !entry.content &&
+                    <div className="entry-page__unresolved-placeholder">
+                        <DataLoader flag={ resolvingIpfsHash }>
+                            <div className="heading flex-center">
+                                { this.props.intl.formatMessage(generalMessages.noPeersAvailable) }
+                            </div>
+                            <div className="flex-center">
+                        <span className="content-link entry-page__retry-button"
+                              onClick={ this.onRetry }>
+                          { this.props.intl.formatMessage(generalMessages.retry) }
                         </span>
-                      </div>
-                    </DataLoader>
-                  </div>
-                }
-                {entry.content &&
-                  <EntryPageActions containerRef={this.container} entry={entry} isFullEntry />
-                }
-              </div>
-              <div className="entry-page__comments">
-                <div className="entry-page__comments-header">
+                            </div>
+                        </DataLoader>
+                    </div>
+                    }
+                    { entry.content &&
+                    <EntryPageActions containerRef={ this.container } entry={ entry } isFullEntry/>
+                    }
+                </div>
+                <div className="entry-page__comments">
+                    <div className="entry-page__comments-header">
                   <span className="entry-page__comments-title">
-                    {commentsCount ?
+                    { commentsCount ?
                         intl.formatMessage(entryMessages.publicDiscussion) :
                         intl.formatMessage(entryMessages.writeComment)
                     }
                   </span>
-                  {!!commentsCount &&
-                    <div className="flex-center">
+                        { !!commentsCount &&
+                        <div className="flex-center">
                       <span>
-                        {intl.formatMessage(entryMessages.commentsCount, { count: commentsCount })}
+                        { intl.formatMessage(entryMessages.commentsCount, { count: commentsCount }) }
                       </span>
-                      <Icon className="entry-page__comment-icon" type="commentLarge" />
-                    </div>
-                  }
-                </div>
-                <CommentEditor
-                  actionAdd={actionAdd}
-                  containerRef={this.container}
-                  entryId={entry.get('entryId')}
-                  entryTitle={entry.getIn(['content', 'title'])}
-                  ethAddress={entry.getIn(['author', 'ethAddress'])}
-                  intl={intl}
-                  loggedProfileData={loggedProfileData}
-                  parent="0"
-                  ref={this.getEditorRef}
-                  onEnable={this._handleEditorEnableSwitch}
-                />
-                <div
-                  id="comments-section"
-                  ref={(el) => { this.commentsSectionRef = el; }}
-                >
-                  <div className="entry-page__new-comments-wrapper" ref={this.getListHeaderRef}>
-                    {newComments.size > 0 &&
-                      <div className={buttonWrapperClass}>
-                        <div style={{ position: 'relative' }}>
-                          <div className="content-link entry-page__new-comments" onClick={commentsLoadNew}>
-                            {intl.formatMessage(entryMessages.newComments, {
-                                count: newComments.size
-                            })}
-                          </div>
+                            <Icon className="entry-page__comment-icon" type="commentLarge"/>
                         </div>
-                      </div>
-                    }
-                  </div>
-                  <CommentsList
-                    containerRef={this.container}
-                    getTriggerRef={this.getTriggerRef}
-                    onNewCommentButtonClick={this._handleEditorFocus}
-                  />
+                        }
+                    </div>
+                    <CommentEditor
+                        actionAdd={ actionAdd }
+                        containerRef={ this.container }
+                        entryId={ entry.get('entryId') }
+                        entryTitle={ entry.getIn(['content', 'title']) }
+                        ethAddress={ entry.getIn(['author', 'ethAddress']) }
+                        intl={ intl }
+                        loggedProfileData={ loggedProfileData }
+                        parent="0"
+                        ref={ this.getEditorRef }
+                        onEnable={ this._handleEditorEnableSwitch }
+                    />
+                    <div
+                        id="comments-section"
+                        ref={ (el) => {
+                            this.commentsSectionRef = el;
+                        } }
+                    >
+                        <div className="entry-page__new-comments-wrapper"
+                             ref={ this.getListHeaderRef }>
+                            { newComments.size > 0 &&
+                            <div className={ buttonWrapperClass }>
+                                <div style={ { position: 'relative' } }>
+                                    <div className="content-link entry-page__new-comments"
+                                         onClick={ commentsLoadNew }>
+                                        { intl.formatMessage(entryMessages.newComments, {
+                                            count: newComments.size
+                                        }) }
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                        <CommentsList
+                            containerRef={ this.container }
+                            getTriggerRef={ this.getTriggerRef }
+                            onNewCommentButtonClick={ this._handleEditorFocus }
+                        />
+                    </div>
                 </div>
-              </div>
             </div>);
 
         return (
-          <div
-            className="entry-page"
-            id="entry-page-root"
-            ref={this.getContainerRef}
-          >
-            <DataLoader flag={!entry || fetchingFullEntry} size="large" style={{ paddingTop: '120px' }}>
-              {component}
-            </DataLoader>
-          </div>
+            <div
+                className="entry-page"
+                id="entry-page-root"
+                ref={ this.getContainerRef }
+            >
+                <DataLoader flag={ !entry || fetchingFullEntry } size="large"
+                            style={ { paddingTop: '120px' } }>
+                    { component }
+                </DataLoader>
+            </div>
         );
     }
 }

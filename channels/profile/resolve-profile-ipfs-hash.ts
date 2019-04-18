@@ -18,7 +18,7 @@ export const resolveProfileIpfsHash = {
   required: ['ipfsHash'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data, cb: any) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
@@ -30,13 +30,13 @@ export default function init(sp, getService) {
     const resolve = (data.full) ? resolveProfile : getShortProfile;
     data.ipfsHash.forEach((profileHash) => {
       resolve(profileHash, false)
-      .timeout(settings.get(GENERAL_SETTINGS.OP_WAIT_TIME) || 15000)
-      .then((profile) => {
-        cb(null, { profile, ipfsHash: profileHash });
-      })
-      .catch((err) => {
-        cb({ message: err.message, ipfsHash: profileHash });
-      });
+        .timeout(settings.get(GENERAL_SETTINGS.OP_WAIT_TIME) || 15000)
+        .then((profile) => {
+          cb(null, { profile, ipfsHash: profileHash });
+        })
+        .catch((err) => {
+          cb({ message: err.message, ipfsHash: profileHash });
+        });
     });
     return {};
   });

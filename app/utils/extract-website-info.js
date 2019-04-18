@@ -31,6 +31,7 @@ class WebsiteParser {
     url: string;
     parsedUrl: Object;
     uploadImageToIpfs: Object;
+
     constructor (params: Object) {
         this.url = ParserUtils.formatUrl(params.url);
         this.parsedUrl = ParserUtils.parseUrl(this.url);
@@ -50,13 +51,13 @@ class WebsiteParser {
         let { title, description, body_description, body_image, tags } = websiteData;
         if (!tags) tags = [];
         return tags.reduce((descriptionObject, tagObj) => {
-            if(tagObj.property) {
+            if (tagObj.property) {
                 descriptionObject[tagObj.property] = tagObj.content;
             } else if (tagObj.name) {
                 descriptionObject[tagObj.name] = tagObj.content;
             }
             return descriptionObject;
-        }, {title, description, body_description, body_image});
+        }, { title, description, body_description, body_image });
     }
     parseTagsByPriority = (websiteData: Object) => {
         const descr = this.parseDescription(websiteData);
@@ -85,8 +86,8 @@ class WebsiteParser {
      */
     filterData = (websiteData: AkashaParserResponse) => {
         const { outputDescription } = this.parseTagsByPriority(websiteData);
-        
-        if(outputDescription.image) {
+
+        if (outputDescription.image) {
             return ParserUtils.resizeImage(ParserUtils.getAbsoluteUrl(outputDescription.image, this.parsedUrl), {
                 ipfsFile: true
             }).then(image => ({
@@ -104,7 +105,7 @@ class WebsiteParser {
         new Promise((resolve, reject) => {
             const ch: Object = window.Channel;
             ch.client.entry.getEntry.once((ev, resp) => {
-                if(resp.error) {
+                if (resp.error) {
                     reject('some error occured when fetching entry');
                 }
                 return resolve(resp.data);
@@ -121,9 +122,9 @@ class WebsiteParser {
         }
         return null;
     }
-    getEntryType = (entry : Object) : number => {
+    getEntryType = (entry: Object): number => {
         let { type } = entry;
-        if(!type && entry.cardInfo.title.length) {
+        if (!type && entry.cardInfo.title.length) {
             type = 1;
         }
         return type;
@@ -158,7 +159,7 @@ class WebsiteParser {
         let documentName = '';
         const isAkashaInternalLink = isInternalLink(this.parsedUrl.host);
 
-        if(isAkashaInternalLink) {
+        if (isAkashaInternalLink) {
             const entryId = this.getEntryIdFromUrl();
             if (entryId) {
                 return this.requestAkashaEntry(entryId).then(this.getInternalLinkInfoByEntryType);
@@ -174,8 +175,8 @@ class WebsiteParser {
             return Promise.resolve({
                 url: this.parsedUrl.href,
                 info: {
-                    title: `${documentName}`,
-                    description: `This links to a ${extension.toUpperCase()} file`
+                    title: `${ documentName }`,
+                    description: `This links to a ${ extension.toUpperCase() } file`
                 }
             });
         } else if (extension && !supportedDocs.includes(extension)) {

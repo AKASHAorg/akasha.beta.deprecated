@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { CORE_MODULE, buildCall, TX_MODULE } from '@akashaproject/common/constants';
+import { buildCall, CORE_MODULE, TX_MODULE } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
     class Web3Helper {
         constructor() {

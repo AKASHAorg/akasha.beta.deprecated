@@ -1,6 +1,6 @@
 import { CORE_MODULE, GENERAL_SETTINGS } from '@akashaproject/common/constants';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   class GethStatus {
     public shouldLogout: boolean = false;
@@ -12,39 +12,39 @@ export default function init(sp, getService) {
     private gethVersion: string;
     private gethAkashaKey: string;
 
-    public get process() {
+    public get process () {
       return this.gethProcess;
     }
 
-    public set process(status: boolean) {
+    public set process (status: boolean) {
       this.gethProcess = status;
     }
 
-    public get api() {
+    public get api () {
       return this.gethApi;
     }
 
-    public set api(status: boolean) {
+    public set api (status: boolean) {
       this.gethApi = status;
     }
 
-    public get networkID() {
+    public get networkID () {
       return this.gethNetworkID;
     }
 
-    public set networkID(id: number) {
+    public set networkID (id: number) {
       this.gethNetworkID = id;
     }
 
-    public get version() {
+    public get version () {
       return this.gethVersion;
     }
 
-    public set version(nr: string) {
+    public set version (nr: string) {
       this.gethVersion = nr;
     }
 
-    public get ethKey() {
+    public get ethKey () {
       getService(CORE_MODULE.WEB3_API).instance.eth.getAccounts((err, accList) => {
         if (err) {
           throw err;
@@ -68,15 +68,15 @@ export default function init(sp, getService) {
       return this.gethKey;
     }
 
-    public set ethKey(address: string) {
+    public set ethKey (address: string) {
       this.gethKey = address;
     }
 
-    public get akashaKey() {
+    public get akashaKey () {
       return this.gethAkashaKey;
     }
 
-    public set akashaKey(address: string) {
+    public set akashaKey (address: string) {
       this.gethAkashaKey = address;
     }
 

@@ -18,17 +18,17 @@ import { PROFILE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants
 /* ======== cleaned ============= */
 
 export const getCurrentProfile = () => action(PROFILE_MODULE.getCurrentProfile, {});
-export const getCurrentProfileError = error => action(`${PROFILE_MODULE.getCurrentProfile}_ERROR`, { error });
+export const getCurrentProfileError = error => action(`${ PROFILE_MODULE.getCurrentProfile }_ERROR`, { error });
 
 /* ========= dirty ============== */
 
 export const profileBondAeth = ({ actionId, amount }) =>
-    action(`${PROFILE_MODULE.bondAeth}`, { actionId, amount });
+    action(`${ PROFILE_MODULE.bondAeth }`, { actionId, amount });
 
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
 
-export const profileCommentsIterator = column => action(`${PROFILE_MODULE.commentsIterator}`, { column });
+export const profileCommentsIterator = column => action(`${ PROFILE_MODULE.commentsIterator }`, { column });
 
 export const profileCreateEthAddress = ({ passphrase, passphrase1 }) =>
     action(types.PROFILE_CREATE_ETH_ADDRESS, { passphrase, passphrase1 });
@@ -41,9 +41,9 @@ export const profileCreateEthAddressSuccess = data =>
     action(types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS, { data });
 
 export const profileCycleAeth = ({ actionId, amount }) =>
-    action(`${PROFILE_MODULE.cycleAeth}`, { actionId, amount });
+    action(`${ PROFILE_MODULE.cycleAeth }`, { actionId, amount });
 
-export const profileCyclingStates = () => action(`${PROFILE_MODULE.cyclingStates}`);
+export const profileCyclingStates = () => action(`${ PROFILE_MODULE.cyclingStates }`);
 
 export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
 export const profileDeleteLoggedError = error => {
@@ -53,7 +53,7 @@ export const profileDeleteLoggedError = error => {
 };
 export const profileDeleteLoggedSuccess = () => action(types.PROFILE_DELETE_LOGGED_SUCCESS);
 
-export const profileExists = akashaId => action(`${REGISTRY_MODULE.profileExists}`, { akashaId });
+export const profileExists = akashaId => action(`${ REGISTRY_MODULE.profileExists }`, { akashaId });
 
 export const profileFaucet = ({ actionId, ethAddress, withNotification }) =>
     action(types.PROFILE_FAUCET, { actionId, ethAddress, withNotification });
@@ -66,24 +66,24 @@ export const profileFaucetSuccess = (data, request) =>
     action(types.PROFILE_FAUCET_SUCCESS, { data, request });
 
 export const profileFollow = ({ actionId, ethAddress }) =>
-    action(`${PROFILE_MODULE.followProfile}`, { actionId, ethAddress });
+    action(`${ PROFILE_MODULE.followProfile }`, { actionId, ethAddress });
 
 export const profileFollowersIterator = ({ column, batching }) =>
-    action(`${PROFILE_MODULE.followersIterator}`, { column, batching });
+    action(`${ PROFILE_MODULE.followersIterator }`, { column, batching });
 
 export const profileFollowingsIterator = ({ column, limit, allFollowings, batching }) =>
-    action(`${PROFILE_MODULE.followingIterator}`, { column, limit, allFollowings, batching });
+    action(`${ PROFILE_MODULE.followingIterator }`, { column, limit, allFollowings, batching });
 
 export const profileFreeAeth = ({ actionId, amount }) =>
-    action(`${PROFILE_MODULE.freeAeth}`, { actionId, amount });
+    action(`${ PROFILE_MODULE.freeAeth }`, { actionId, amount });
 
-export const profileGetBalance = () => action(`${PROFILE_MODULE.getBalance}`);
+export const profileGetBalance = () => action(`${ PROFILE_MODULE.getBalance }`);
 
-export const profileGetByAddress = ethAddress => action(`${PROFILE_MODULE.getByAddress}`, { ethAddress });
+export const profileGetByAddress = ethAddress => action(`${ PROFILE_MODULE.getByAddress }`, { ethAddress });
 
-export const profileGetData = payload => action(`${PROFILE_MODULE.profileData}`, payload);
+export const profileGetData = payload => action(`${ PROFILE_MODULE.profileData }`, payload);
 
-export const profileGetList = ethAddresses => action(`${PROFILE_MODULE.getProfileList}`, { ethAddresses });
+export const profileGetList = ethAddresses => action(`${ PROFILE_MODULE.getProfileList }`, { ethAddresses });
 
 export const profileGetLocal = polling => action(types.PROFILE_GET_LOCAL, { polling });
 
@@ -111,9 +111,9 @@ export const profileGetPublishingCostSuccess = data =>
 export const profileGetPublishingCostError = error =>
     action(types.PROFILE_GET_PUBLISHING_COST_ERROR, { error });
 
-export const profileIsFollower = followings => action(`${PROFILE_MODULE.isFollower}`, { followings });
+export const profileIsFollower = followings => action(`${ PROFILE_MODULE.isFollower }`, { followings });
 
-export const profileKarmaRanking = () => action(`${PROFILE_MODULE.karmaRanking}`);
+export const profileKarmaRanking = () => action(`${ PROFILE_MODULE.karmaRanking }`);
 
 export const profileKarmaRankingLoadMore = data => action(types.PROFILE_KARMA_RANKING_LOAD_MORE, { data });
 
@@ -135,7 +135,7 @@ export const profileLogoutError = error => {
 };
 
 export const profileLogoutSuccess = () => action(types.PROFILE_LOGOUT_SUCCESS);
-export const profileManaBurned = () => action(`${PROFILE_MODULE.manaBurned}`);
+export const profileManaBurned = () => action(`${ PROFILE_MODULE.manaBurned }`);
 
 export const profileMoreCommentsIterator = column => action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
 // export const profileMoreCommentsIteratorError = (error, request) => {
@@ -171,19 +171,19 @@ export const profileMoreFollowingsIterator = ({ column, batching }) =>
 //     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data, request, batching });
 
 export const profileRegister = ({
-    actionId,
-    akashaId,
-    address,
-    about,
-    avatar,
-    backgroundImage,
-    donationsEnabled,
-    firstName,
-    lastName,
-    links,
-    ethAddress
-}) =>
-    action(`${REGISTRY_MODULE.registerProfile}`, {
+                                    actionId,
+                                    akashaId,
+                                    address,
+                                    about,
+                                    avatar,
+                                    backgroundImage,
+                                    donationsEnabled,
+                                    firstName,
+                                    lastName,
+                                    links,
+                                    ethAddress
+                                }) =>
+    action(`${ REGISTRY_MODULE.registerProfile }`, {
         actionId,
         akashaId,
         address,
@@ -202,7 +202,7 @@ export const profileResetEssenceEvents = () => action(types.PROFILE_RESET_ESSENC
 export const profileResetFaucet = () => action(types.PROFILE_RESET_FAUCET);
 
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
-    action(`${PROFILE_MODULE.resolveProfileIpfsHash}`, { ipfsHash, columnId, akashaIds });
+    action(`${ PROFILE_MODULE.resolveProfileIpfsHash }`, { ipfsHash, columnId, akashaIds });
 
 export const profileSaveLastBlockNr = () => action(types.PROFILE_SAVE_LAST_BLOCK_NR);
 export const profileSaveLastBlockNrError = error => {
@@ -217,7 +217,7 @@ export const profileSaveLoggedError = error => {
 };
 
 export const profileSendTip = ({ actionId, akashaId, ethAddress, message, receiver, value, tokenAmount }) =>
-    action(`${PROFILE_MODULE.sendTip}`, {
+    action(`${ PROFILE_MODULE.sendTip }`, {
         actionId,
         akashaId,
         ethAddress,
@@ -243,19 +243,19 @@ export const profileToggleDonationsError = (error, request) => {
 export const profileToggleDonationsSuccess = data => action(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, { data });
 
 export const profileTransferAeth = ({ actionId, akashaId, ethAddress, tokenAmount }) =>
-    action(`${PROFILE_MODULE.transfer}`, { actionId, akashaId, ethAddress, tokenAmount });
+    action(`${ PROFILE_MODULE.transfer }`, { actionId, akashaId, ethAddress, tokenAmount });
 
 export const profileTransferEth = ({ actionId, akashaId, ethAddress, value }) =>
-    action(`${PROFILE_MODULE.transfer}`, { actionId, akashaId, ethAddress, value });
+    action(`${ PROFILE_MODULE.transfer }`, { actionId, akashaId, ethAddress, value });
 
 export const profileTransformEssence = ({ actionId, amount }) =>
-    action(`${PROFILE_MODULE.transformEssence}`, { actionId, amount });
+    action(`${ PROFILE_MODULE.transformEssence }`, { actionId, amount });
 
 export const profileUnfollow = ({ actionId, ethAddress }) =>
-    action(`${PROFILE_MODULE.unFollowProfile}`, { actionId, ethAddress });
+    action(`${ PROFILE_MODULE.unFollowProfile }`, { actionId, ethAddress });
 
 export const profileUpdate = ({ actionId, about, avatar, backgroundImage, firstName, lastName, links }) =>
-    action(`${PROFILE_MODULE.updateProfileData}`, {
+    action(`${ PROFILE_MODULE.updateProfileData }`, {
         actionId,
         about,
         avatar,
@@ -271,4 +271,4 @@ export const profileUpdateLoggedError = error => {
     return action(types.PROFILE_UPDATE_LOGGED_ERROR, { error });
 };
 
-export const profileEssenceIterator = () => action(`${PROFILE_MODULE.essenceIterator}`);
+export const profileEssenceIterator = () => action(`${ PROFILE_MODULE.essenceIterator }`);

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Redirect from 'react-router-dom/Redirect';
+import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Button, Icon } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
-import { SyncStatus, StartScreen } from '../';
+import { StartScreen, SyncStatus } from '../';
 import { LogsDetailsContainer } from '../../containers/';
 
 class Sync extends Component {
@@ -156,79 +156,79 @@ class Sync extends Component {
 
         const { action, buttonIcon } = this.getActionLabels();
         if (!configurationSaved) {
-            return <Redirect to="/setup/configuration" />;
+            return <Redirect to="/setup/configuration"/>;
         } else if (gethSyncStatus.get('synced') && ipfsStatus.get('process') && !ipfsPortsRequested) {
-            return <Redirect to="/setup/authenticate" />;
+            return <Redirect to="/setup/authenticate"/>;
         }
 
         return (
             <div className="setup-content sync">
                 <div className="setup-content__column setup-pages_left">
-                    {!this.state.showDetails && <StartScreen />}
-                    {this.state.showDetails && (
+                    { !this.state.showDetails && <StartScreen/> }
+                    { this.state.showDetails && (
                         <div className="sync__logs-container">
-                            <LogsDetailsContainer />
+                            <LogsDetailsContainer/>
                         </div>
-                    )}
+                    ) }
                 </div>
                 <div className="setup-content__column setup-pages_right sync__content">
                     <div className="sync__status-container">
                         <SyncStatus
-                            gethStarting={gethStarting}
-                            gethStatus={gethStatus}
-                            gethSyncStatus={gethSyncStatus}
-                            intl={intl}
-                            ipfsStatus={ipfsStatus}
-                            syncActionId={syncActionId}
+                            gethStarting={ gethStarting }
+                            gethStatus={ gethStatus }
+                            gethSyncStatus={ gethSyncStatus }
+                            intl={ intl }
+                            ipfsStatus={ ipfsStatus }
+                            syncActionId={ syncActionId }
                         />
                     </div>
                     <div className="flex-center sync__actions">
-                        {syncActionId !== 4 && (
+                        { syncActionId !== 4 && (
                             <div className="flex-center-y">
-                                <Button className="sync__button" onClick={this.toggleDetails}>
+                                <Button className="sync__button" onClick={ this.toggleDetails }>
                                     <div className="flex-center-y">
-                                        <Icon className="sync__logs-icon" type="eye-o" />
-                                        <span>{intl.formatMessage(setupMessages.details)}</span>
+                                        <Icon className="sync__logs-icon" type="eye-o"/>
+                                        <span>{ intl.formatMessage(setupMessages.details) }</span>
                                     </div>
                                 </Button>
                                 <Button
                                     className="sync__button"
-                                    style={{ marginLeft: '12px' }}
-                                    onClick={this.handlePause}
-                                    disabled={gethBusyState}
+                                    style={ { marginLeft: '12px' } }
+                                    onClick={ this.handlePause }
+                                    disabled={ gethBusyState }
                                 >
                                     <div className="flex-center-y lowercase">
-                                        <Icon className="sync__pause-icon" type={buttonIcon} />
-                                        <span>{action}</span>
+                                        <Icon className="sync__pause-icon" type={ buttonIcon }/>
+                                        <span>{ action }</span>
                                     </div>
                                 </Button>
                                 <Button
                                     className="sync__button"
-                                    style={{ marginLeft: '12px' }}
-                                    onClick={this.handleCancel}
-                                    disabled={gethBusyState}
+                                    style={ { marginLeft: '12px' } }
+                                    onClick={ this.handleCancel }
+                                    disabled={ gethBusyState }
                                 >
                                     <div className="flex-center-y lowercase">
-                                        <div className="sync__stop-icon" />
-                                        <span>{intl.formatMessage(generalMessages.cancel)}</span>
+                                        <div className="sync__stop-icon"/>
+                                        <span>{ intl.formatMessage(generalMessages.cancel) }</span>
                                     </div>
                                 </Button>
                             </div>
-                        )}
-                        {syncActionId === 4 && !ipfsStatus.get('starting') && (
+                        ) }
+                        { syncActionId === 4 && !ipfsStatus.get('starting') && (
                             <Button
-                                disabled={ipfsBusyState || ipfsPortsRequested}
-                                onClick={this.handleNext}
+                                disabled={ ipfsBusyState || ipfsPortsRequested }
+                                onClick={ this.handleNext }
                                 type="primary"
                             >
-                                {intl.formatMessage(generalMessages.next)}
+                                { intl.formatMessage(generalMessages.next) }
                             </Button>
-                        )}
+                        ) }
                     </div>
                     <div className="sync__message">
-                        {syncActionId === 4 && !ipfsStatus.get('starting')
+                        { syncActionId === 4 && !ipfsStatus.get('starting')
                             ? intl.formatMessage(setupMessages.afterSyncFinish)
-                            : intl.formatMessage(setupMessages.onSyncStart)}
+                            : intl.formatMessage(setupMessages.onSyncStart) }
                     </div>
                 </div>
             </div>

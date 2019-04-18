@@ -1,7 +1,8 @@
-import React from "react";
+import React from 'react';
 
 const Chat = React.forwardRef((props, ref) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" {...props} ref={ref}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" { ...props }
+         ref={ ref }>
         <path
             fill="none"
             strokeWidth="1.5"
@@ -12,5 +13,5 @@ const Chat = React.forwardRef((props, ref) => (
         />
     </svg>
 ));
-Chat.displayName = "Chat";
+Chat.displayName = 'Chat';
 export default Chat;

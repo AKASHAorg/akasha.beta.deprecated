@@ -76,7 +76,10 @@ export default class DashboardStateModel extends DashboardState {
             return state;
         }
         if (!state.getIn(['columnById', id])) {
-            const newColumn = (new ColumnRecord({ id, value })).setIn(['flags', 'fetchingItems'], true);
+            const newColumn = (new ColumnRecord({
+                id,
+                value
+            })).setIn(['flags', 'fetchingItems'], true);
             return state.setIn(['columnById', id], newColumn);
         }
         if (id === columnTypes.newColumn) {
@@ -172,10 +175,10 @@ export default class DashboardStateModel extends DashboardState {
             return state;
         }
         /**
-        * In some cases this action is fired as a result of a previous fetch
-        * for example: user rapidly refreshes a column...
-        * To prevent that, make sure we already have something in itemsList
-        */
+         * In some cases this action is fired as a result of a previous fetch
+         * for example: user rapidly refreshes a column...
+         * To prevent that, make sure we already have something in itemsList
+         */
         if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
             return state;
         }
@@ -205,10 +208,10 @@ export default class DashboardStateModel extends DashboardState {
             return state;
         }
         /**
-        * In some cases this action is fired as a result of a previous fetch
-        * for example: user rapidly refreshes a column...
-        * To prevent that, make sure we already have something in itemsList
-        */
+         * In some cases this action is fired as a result of a previous fetch
+         * for example: user rapidly refreshes a column...
+         * To prevent that, make sure we already have something in itemsList
+         */
         if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
             return state;
         }
@@ -224,6 +227,7 @@ export default class DashboardStateModel extends DashboardState {
             lastIndex: data.lastIndex
         });
     }
+
     createDashboardRecord (data) {
         let dashboard = new DashboardRecord(data);
         dashboard = dashboard.set('columns', List(dashboard.columns.map(col => col.id)));

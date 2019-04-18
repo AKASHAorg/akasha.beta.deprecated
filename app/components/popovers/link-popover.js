@@ -15,7 +15,7 @@ class LinkPopover extends Component {
     onAddLink = (value) => {
         const isValid = isValidLink(value);
         if (isValid) {
-            const url = isInternalLink(value) ? `${value}` : prependHttp(value);
+            const url = isInternalLink(value) ? `${ value }` : prependHttp(value);
             this.props.onSubmit(url);
         } else {
             this.setState({ invalidLink: true });
@@ -46,29 +46,29 @@ class LinkPopover extends Component {
             'link-popover__input_invalid': invalidLink
         });
         const content = (
-          <input
-            autoFocus // eslint-disable-line jsx-a11y/no-autofocus
-            className={inputClassName}
-            onBlur={onClose}
-            onChange={this.onChange}
-            onKeyDown={this.onKeyDown}
-            placeholder={intl.formatMessage(entryMessages.linkPlaceholder)}
-            value={value}
-          />
+            <input
+                autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+                className={ inputClassName }
+                onBlur={ onClose }
+                onChange={ this.onChange }
+                onKeyDown={ this.onKeyDown }
+                placeholder={ intl.formatMessage(entryMessages.linkPlaceholder) }
+                value={ value }
+            />
         );
 
         return (
-          <div className="selectable-editor__popover-wrapper" style={{ top, left }}>
-            <Popover
-              content={content}
-              overlayClassName="link-popover"
-              onVisibleChange={this.onVisibleChange}
-              placement="top"
-              visible
-            >
-              <div className="selectable-editor__popover-inner" />
-            </Popover>
-          </div>
+            <div className="selectable-editor__popover-wrapper" style={ { top, left } }>
+                <Popover
+                    content={ content }
+                    overlayClassName="link-popover"
+                    onVisibleChange={ this.onVisibleChange }
+                    placement="top"
+                    visible
+                >
+                    <div className="selectable-editor__popover-inner"/>
+                </Popover>
+            </div>
         );
     }
 }

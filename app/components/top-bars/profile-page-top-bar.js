@@ -21,7 +21,7 @@ const ProfilePageTopBar = (props) => {
         const container = document.getElementById('profile-activity');
         const column = document.getElementById(id);
         const className = column.getAttribute('class');
-        column.setAttribute('class', `${className} column_focused`);
+        column.setAttribute('class', `${ className } column_focused`);
         setTimeout(() => removeClass(id), 500);
         const profileDetailsWidth = 352;
         const columnLeftOffset = column.offsetLeft - profileDetailsWidth;
@@ -30,37 +30,37 @@ const ProfilePageTopBar = (props) => {
     };
 
     return (
-      <div className="flex-center-y profile-page-top-bar">
-        <Navigation />
-        <Tooltip title={intl.formatMessage(profileMessages.entries)}>
-          <Icon
-            className="content-link profile-page-top-bar__column-icon"
-            onClick={() => scrollColumnIntoView('profile-entries')}
-            type="entries"
-          />
-        </Tooltip>
-        <Tooltip title={intl.formatMessage(profileMessages.comments)}>
-          <Icon
-            className="content-link profile-page-top-bar__column-icon"
-            onClick={() => scrollColumnIntoView('profile-comments')}
-            type="comment"
-          />
-        </Tooltip>
-        <Tooltip title={intl.formatMessage(profileMessages.followers)}>
-          <Icon
-            className="content-link profile-page-top-bar__column-icon"
-            onClick={() => scrollColumnIntoView('profile-followers')}
-            type="followers"
-          />
-        </Tooltip>
-        <Tooltip title={intl.formatMessage(profileMessages.followings)}>
-          <Icon
-            className="content-link profile-page-top-bar__column-icon"
-            onClick={() => scrollColumnIntoView('profile-followings')}
-            type="following"
-          />
-        </Tooltip>
-      </div>
+        <div className="flex-center-y profile-page-top-bar">
+            <Navigation/>
+            <Tooltip title={ intl.formatMessage(profileMessages.entries) }>
+                <Icon
+                    className="content-link profile-page-top-bar__column-icon"
+                    onClick={ () => scrollColumnIntoView('profile-entries') }
+                    type="entries"
+                />
+            </Tooltip>
+            <Tooltip title={ intl.formatMessage(profileMessages.comments) }>
+                <Icon
+                    className="content-link profile-page-top-bar__column-icon"
+                    onClick={ () => scrollColumnIntoView('profile-comments') }
+                    type="comment"
+                />
+            </Tooltip>
+            <Tooltip title={ intl.formatMessage(profileMessages.followers) }>
+                <Icon
+                    className="content-link profile-page-top-bar__column-icon"
+                    onClick={ () => scrollColumnIntoView('profile-followers') }
+                    type="followers"
+                />
+            </Tooltip>
+            <Tooltip title={ intl.formatMessage(profileMessages.followings) }>
+                <Icon
+                    className="content-link profile-page-top-bar__column-icon"
+                    onClick={ () => scrollColumnIntoView('profile-followings') }
+                    type="following"
+                />
+            </Tooltip>
+        </div>
     );
 };
 

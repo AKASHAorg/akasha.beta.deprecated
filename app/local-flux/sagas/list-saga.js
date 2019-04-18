@@ -1,5 +1,5 @@
 // @flow
-import { call, put, select, takeEvery, getContext } from 'redux-saga/effects';
+import { call, getContext, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/list-actions';
 import * as dashboardActions from '../actions/dashboard-actions';
 import * as types from '../constants';

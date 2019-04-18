@@ -1,10 +1,15 @@
 // @flow
-import { call, fork, put, select, takeEvery, getContext } from 'redux-saga/effects';
+import { call, fork, getContext, put, select, takeEvery } from 'redux-saga/effects';
 import delay from '@redux-saga/delay-p';
 import * as actions from '../actions/claimable-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as types from '../constants';
-import { externalProcessSelectors, profileSelectors, claimSelectors, entrySelectors } from '../selectors';
+import {
+    claimSelectors,
+    entrySelectors,
+    externalProcessSelectors,
+    profileSelectors
+} from '../selectors';
 import * as claimableService from '../services/claimable-service';
 import { ENTRY_MODULE } from '@akashaproject/common/constants';
 

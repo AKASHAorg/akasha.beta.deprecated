@@ -1,14 +1,21 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
-import { userSettingsClear, userSettingsRequest,
-    userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { externalProcessSelectors, profileSelectors, settingsSelectors } from '../../local-flux/selectors';
+import {
+    userSettingsClear,
+    userSettingsRequest,
+    userSettingsSave
+} from '../../local-flux/actions/settings-actions';
+import {
+    externalProcessSelectors,
+    profileSelectors,
+    settingsSelectors
+} from '../../local-flux/selectors';
 import { Input, RememberPassphrase } from '../';
 
 const FormItem = Form.Item;
@@ -28,7 +35,7 @@ class LoginForm extends Component {
     componentWillReceiveProps (nextProps) {
         const { history, loggedEthAddress, passwordPreference } = nextProps;
         if (passwordPreference.remember !== this.props.passwordPreference.remember ||
-                passwordPreference.time !== this.props.passwordPreference.time) {
+            passwordPreference.time !== this.props.passwordPreference.time) {
             this.setState({
                 isChecked: passwordPreference.remember || false,
                 unlockTime: passwordPreference.time || 5
@@ -97,7 +104,7 @@ class LoginForm extends Component {
         });
     };
     getLoginButtonState = () => {
-        const {intl, gethStatus, ipfsStatus } = this.props;
+        const { intl, gethStatus, ipfsStatus } = this.props;
         const isGethStopped = !gethStatus.get('api') || gethStatus.get('stopped');
         const isIpfsStopped = !ipfsStatus.get('started') && !ipfsStatus.get('process');
         let popoverTitle = '';
@@ -116,68 +123,69 @@ class LoginForm extends Component {
             popoverTitle
         }
     }
+
     render () {
         const { ethAddress, getInputRef, intl, loginErrors, loginPending } = this.props;
 
         return (
-          <div className="login-form">
-            <Form onSubmit={this.handleLogin}>
-              <Input
-                label={intl.formatMessage(formMessages.ethereumAddress)}
-                readOnly
-                size="large"
-                value={ethAddress}
-              />
-              <FormItem
-                className="login-form__form-item"
-                validateStatus={loginErrors.size ? 'error' : ''}
-                help={loginErrors.size ?
-                  <span className="input-error">{loginErrors.first().message}</span> :
-                  null
+            <div className="login-form">
+                <Form onSubmit={ this.handleLogin }>
+                    <Input
+                        label={ intl.formatMessage(formMessages.ethereumAddress) }
+                        readOnly
+                        size="large"
+                        value={ ethAddress }
+                    />
+                    <FormItem
+                        className="login-form__form-item"
+                        validateStatus={ loginErrors.size ? 'error' : '' }
+                        help={ loginErrors.size ?
+                            <span className="input-error">{ loginErrors.first().message }</span> :
+                            null
+                        }
+                    >
+                        <Input
+                            getInputRef={ getInputRef }
+                            label={ intl.formatMessage(formMessages.passphrase) }
+                            onChange={ this.onChange }
+                            placeholder={ intl.formatMessage(formMessages.passphrasePlaceholder) }
+                            size="large"
+                            type="password"
+                            value={ this.state.passphrase }
+                        />
+                    </FormItem>
+                    <RememberPassphrase
+                        handleCheck={ this.handleUnlockCheck }
+                        handleTimeChange={ this.handleUnlockTimeChange }
+                        isChecked={ this.state.isChecked }
+                        unlockTime={ this.state.unlockTime.toString() }
+                    />
+                    <div className="login-form__buttons-wrapper">
+                        <Button
+                            className="login-form__button"
+                            onClick={ this.handleCancel }
+                        >
+                            { intl.formatMessage(generalMessages.cancel) }
+                        </Button>
+                        <Button
+                            className="login-form__button"
+                            disabled={ this.getLoginButtonState().disabled }
+                            htmlType="submit"
+                            onClick={ this.handleLogin }
+                            loading={ loginPending }
+                            type="primary"
+                        >
+                            { intl.formatMessage(generalMessages.submit) }
+                        </Button>
+                    </div>
+                </Form>
+                { this.getLoginButtonState().popoverTitle &&
+                <div className="login-form__warning">
+                    <Icon type="exclamation-circle-o"/>
+                    { this.getLoginButtonState().popoverTitle }
+                </div>
                 }
-              >
-                <Input
-                  getInputRef={getInputRef}
-                  label={intl.formatMessage(formMessages.passphrase)}
-                  onChange={this.onChange}
-                  placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
-                  size="large"
-                  type="password"
-                  value={this.state.passphrase}
-                />
-              </FormItem>
-              <RememberPassphrase
-                handleCheck={this.handleUnlockCheck}
-                handleTimeChange={this.handleUnlockTimeChange}
-                isChecked={this.state.isChecked}
-                unlockTime={this.state.unlockTime.toString()}
-              />
-              <div className="login-form__buttons-wrapper">
-                <Button
-                  className="login-form__button"
-                  onClick={this.handleCancel}
-                >
-                  {intl.formatMessage(generalMessages.cancel)}
-                </Button>
-                <Button
-                  className="login-form__button"
-                  disabled={this.getLoginButtonState().disabled}
-                  htmlType="submit"
-                  onClick={this.handleLogin}
-                  loading={loginPending}
-                  type="primary"
-                  >
-                    {intl.formatMessage(generalMessages.submit)}
-                </Button>
-              </div>
-            </Form>
-            {this.getLoginButtonState().popoverTitle &&
-              <div className="login-form__warning">
-                <Icon type="exclamation-circle-o" />
-                {this.getLoginButtonState().popoverTitle}
-              </div>
-            }
-          </div>
+            </div>
         );
     }
 }

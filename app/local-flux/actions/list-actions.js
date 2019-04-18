@@ -30,7 +30,11 @@ export const listDeleteError = error => {
 
 export const listDeleteSuccess = id => action(types.LIST_DELETE_SUCCESS, { id });
 
-export const listEdit = ({ id, name, description }) => action(types.LIST_EDIT, { id, name, description });
+export const listEdit = ({ id, name, description }) => action(types.LIST_EDIT, {
+    id,
+    name,
+    description
+});
 
 export const listEditError = error => {
     error.code = 'LEE01';

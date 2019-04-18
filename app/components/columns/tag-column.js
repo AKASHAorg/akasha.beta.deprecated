@@ -7,9 +7,9 @@ import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, tagMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
-import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
+import { entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchTags } from '../../local-flux/actions/search-actions';
-import { dashboardSelectors, tagSelectors, searchSelectors } from '../../local-flux/selectors';
+import { dashboardSelectors, searchSelectors, tagSelectors } from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
 
 const DELAY = 60000;
@@ -98,26 +98,26 @@ class TagColumn extends Component {
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
-          <div className={className}>
-            <ColumnHeader
-              column={column}
-              dataSource={tagResults}
-              iconType="tag"
-              onRefresh={this.entryIterator}
-              onSearch={this.props.searchTags}
-            />
-            <Waypoint onEnter={this.firstLoad} horizontal />
-            <EntryList
-              contextId={column.get('id')}
-              entries={entriesList}
-              fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
-              fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-              fetchMoreEntries={this.entryMoreTagIterator}
-              large={column.get('large')}
-              moreEntries={column.getIn(['flags', 'moreEntries'])}
-              placeholderMessage={placeholderMessage}
-            />
-          </div>
+            <div className={ className }>
+                <ColumnHeader
+                    column={ column }
+                    dataSource={ tagResults }
+                    iconType="tag"
+                    onRefresh={ this.entryIterator }
+                    onSearch={ this.props.searchTags }
+                />
+                <Waypoint onEnter={ this.firstLoad } horizontal/>
+                <EntryList
+                    contextId={ column.get('id') }
+                    entries={ entriesList }
+                    fetchingEntries={ column.getIn(['flags', 'fetchingEntries']) }
+                    fetchingMoreEntries={ column.getIn(['flags', 'fetchingMoreEntries']) }
+                    fetchMoreEntries={ this.entryMoreTagIterator }
+                    large={ column.get('large') }
+                    moreEntries={ column.getIn(['flags', 'moreEntries']) }
+                    placeholderMessage={ placeholderMessage }
+                />
+            </div>
         );
     }
 }

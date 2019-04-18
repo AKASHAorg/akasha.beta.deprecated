@@ -19,7 +19,10 @@ export const transactionEmitMinedError = error => {
 
 // export const transactionEmitMinedSuccess = data =>
 //     action(types.TRANSACTION_EMIT_MINED_SUCCESS, { data });
-export const transactionGetStatus = (txs, ids) => action(types.TRANSACTION_GET_STATUS, { txs, ids });
+export const transactionGetStatus = (txs, ids) => action(types.TRANSACTION_GET_STATUS, {
+    txs,
+    ids
+});
 
 export const transactionGetStatusError = error => {
     error.code = 'TGSE01';

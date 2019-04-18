@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 class CellManager extends Component {
     baseNodeSize = {}
+
     componentDidMount () {
         const { onMount } = this.props;
         // if the card is in pending state don`t bother to update
@@ -25,12 +26,12 @@ class CellManager extends Component {
         const { onSizeChange, isPending } = this.props;
         if (isPending !== prevProps.isPending) {
             const refSize = this._baseNodeRef.getBoundingClientRect();
-            if ( refSize.height !== this.baseNodeSize.height) {
+            if (refSize.height !== this.baseNodeSize.height) {
                 ReactDOM.unstable_batchedUpdates(() => {
                     onSizeChange(refSize);
                     this.baseNodeSize = refSize;
                 });
-            // probably the entry cannot be resolved
+                // probably the entry cannot be resolved
             } else if (!isPending) {
                 onSizeChange(refSize);
                 this.baseNodeSize = refSize;
@@ -45,9 +46,9 @@ class CellManager extends Component {
     render () {
         const { children } = this.props;
         return (
-          <div ref={this._createBaseNodeRef}>
-            {children()}
-          </div>
+            <div ref={ this._createBaseNodeRef }>
+                { children() }
+            </div>
         );
     }
 }

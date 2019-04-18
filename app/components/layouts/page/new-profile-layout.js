@@ -1,6 +1,7 @@
 // @flow strict
 
 import * as React from 'react';
+
 /*::
     type Props = {
         children: React.Node
@@ -10,7 +11,7 @@ import * as React from 'react';
 function NewProfileLayout (props /* : Props */) {
     return (
         <>
-            <div>{props.children}</div>
+            <div>{ props.children }</div>
         </>
     );
 }

@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
-import { CORE_MODULE, buildCall, TX_MODULE } from '@akashaproject/common/constants';
+import { buildCall, CORE_MODULE, TX_MODULE } from '@akashaproject/common/constants';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   class Web3Helper {
     public watcher: any;
     public txQueue = new Map();
@@ -11,13 +11,13 @@ export default function init(sp, getService) {
     private args: any;
 
     // ex: rx.js channel with send method
-    public setChannel(channel: any) {
+    public setChannel (channel: any) {
       this.channel = channel;
       this.args = buildCall(TX_MODULE, TX_MODULE.emitMined, {});
     }
 
     // check if current used node is synchronized
-    public inSync() {
+    public inSync () {
       const rules = [
         getService(CORE_MODULE.WEB3_API).instance.eth.isSyncing(),
         getService(CORE_MODULE.WEB3_API).instance.eth.net.getPeerCount(),
@@ -31,15 +31,15 @@ export default function init(sp, getService) {
 
         if (!data[0] && data[1] > 0) {
           return (getService(CORE_MODULE.WEB3_API)).instance
-          .eth
-          .getBlock('latest')
-          .then((latestBlock: any): any => {
-            if ((latestBlock.timestamp + 60 * 2) > timeStamp) {
-              this.syncing = false;
-              return [];
-            }
-            return [data[1]];
-          });
+            .eth
+            .getBlock('latest')
+            .then((latestBlock: any): any => {
+              if ((latestBlock.timestamp + 60 * 2) > timeStamp) {
+                this.syncing = false;
+                return [];
+              }
+              return [data[1]];
+            });
         }
 
         return [data[1]];
@@ -47,7 +47,7 @@ export default function init(sp, getService) {
     }
 
     // watch every block until all tx queue is mined
-    public startTxWatch(): any {
+    public startTxWatch (): any {
       if (this.syncing) {
         return this.inSync().then(() => {
           if (this.syncing) {
@@ -74,7 +74,7 @@ export default function init(sp, getService) {
         for (const hash of this.getCurrentTxQueue()) {
           currentQueue.push(
             getService(CORE_MODULE.WEB3_API).instance
-            .eth.getTransactionReceipt(hash),
+              .eth.getTransactionReceipt(hash),
           );
         }
         Promise.all(currentQueue).then((receipt: any[]) => {
@@ -103,16 +103,16 @@ export default function init(sp, getService) {
     }
 
     // check if local node has access to provided address
-    public hasKey(address: string) {
+    public hasKey (address: string) {
       return getService(CORE_MODULE.WEB3_API).instance
-      .eth
-      .getAccounts()
-      .then((list: string[]) => {
-        return list.indexOf(address) !== -1;
-      });
+        .eth
+        .getAccounts()
+        .then((list: string[]) => {
+          return list.indexOf(address) !== -1;
+        });
     }
 
-    public stopTxWatch() {
+    public stopTxWatch () {
       this.watching = false;
       return (this.watcher) ? this.watcher.stopWatching(() => {
         this.watcher = null;
@@ -120,7 +120,7 @@ export default function init(sp, getService) {
     }
 
     // add tx to current queue
-    public addTxToWatch(tx: string, autoWatch = true) {
+    public addTxToWatch (tx: string, autoWatch = true) {
       this.txQueue.set(tx, '');
       if (!this.watching && autoWatch) {
         this.startTxWatch();
@@ -129,7 +129,7 @@ export default function init(sp, getService) {
     }
 
     // get current tx list
-    public getCurrentTxQueue() {
+    public getCurrentTxQueue () {
       return this.txQueue.keys();
     }
   }

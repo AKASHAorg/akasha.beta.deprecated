@@ -80,7 +80,9 @@ export { default as NavigateAwayModal } from './modals/navigate-away-modal';
 export { default as Navigation } from './top-bars/navigation';
 export { default as NavigationModal } from './modals/navigation-modal';
 export { default as NewColumn } from './columns/new-column';
-export { default as NewEntrySecondarySidebar } from './secondary-sidebars/new-entry-secondary-sidebar';
+export {
+    default as NewEntrySecondarySidebar
+}from './secondary-sidebars/new-entry-secondary-sidebar';
 export { default as NewEntryTopBar } from './top-bars/new-entry-top-bar';
 export { default as NewDashboardForm } from './forms/new-dashboard-form';
 export { default as NewDashboardModal } from './modals/new-dashboard-modal';

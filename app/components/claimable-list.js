@@ -1,19 +1,24 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
-import Link from "react-router-dom/Link";
-import { List } from "immutable";
-import { Button, Tooltip } from "antd";
-import classNames from "classnames";
-import { Waypoint } from "react-waypoint";
-import * as actionTypes from "../constants/action-types";
-import { actionAdd } from "../local-flux/actions/action-actions";
-import { claimableGetEntries } from "../local-flux/actions/claimable-actions";
-import { entryMessages, formMessages, generalMessages } from "../locale-data/messages";
-import { balanceToNumber } from "../utils/number-formatter";
-import { DataLoader } from "./";
-import { actionSelectors, claimSelectors, entrySelectors, profileSelectors } from "../local-flux/selectors";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
+import { List } from 'immutable';
+import { Button, Tooltip } from 'antd';
+import classNames from 'classnames';
+import { Waypoint } from 'react-waypoint';
+import * as actionTypes from '../constants/action-types';
+import { actionAdd } from '../local-flux/actions/action-actions';
+import { claimableGetEntries } from '../local-flux/actions/claimable-actions';
+import { entryMessages, formMessages, generalMessages } from '../locale-data/messages';
+import { balanceToNumber } from '../utils/number-formatter';
+import { DataLoader } from './';
+import {
+    actionSelectors,
+    claimSelectors,
+    entrySelectors,
+    profileSelectors
+} from '../local-flux/selectors';
 
 class ClaimableList extends Component {
     // eslint-disable-next-line complexity
@@ -60,7 +65,7 @@ class ClaimableList extends Component {
         return isVote ? canClaimVote.get(entryId) : canClaim.get(entryId);
     };
 
-    getEndPeriod = entryId => this.props.entries.getIn([entryId, "endPeriod"]);
+    getEndPeriod = entryId => this.props.entries.getIn([entryId, 'endPeriod']);
 
     isActive = claimableEntry => this.getEndPeriod(claimableEntry.entryId) > Date.now() / 1000;
 
@@ -73,7 +78,7 @@ class ClaimableList extends Component {
         const actions = [];
         if (claimableActions.size === 1) {
             const { entryId, isVote } = claimableActions.first().toJS();
-            const entryTitle = entries.getIn([entryId, "content", "title"]);
+            const entryTitle = entries.getIn([entryId, 'content', 'title']);
             const payload = { entryId, entryTitle };
             const type = isVote ? actionTypes.claimVote : actionTypes.claim;
             this.props.actionAdd(loggedEthAddress, type, payload);
@@ -81,7 +86,7 @@ class ClaimableList extends Component {
         }
         claimableActions.forEach(claimableAction => {
             const { entryId, isVote } = claimableAction.toJS();
-            const entryTitle = entries.getIn([entryId, "content", "title"]);
+            const entryTitle = entries.getIn([entryId, 'content', 'title']);
             const payload = { entryId, entryTitle };
             const type = isVote ? actionTypes.claimVote : actionTypes.claim;
             actions.push({ ethAddress: loggedEthAddress, actionType: type, payload });
@@ -102,9 +107,9 @@ class ClaimableList extends Component {
             pendingClaimVote
         } = this.props;
         const { entryId, isVote } = claimableEntry.toJS();
-        let entryTitle = entries.getIn([entryId, "content", "title"]);
-        const className = classNames("claimable-list__row", {
-            "claimable-list__row_last": index === claimableEntries.size - 1
+        let entryTitle = entries.getIn([entryId, 'content', 'title']);
+        const className = classNames('claimable-list__row', {
+            'claimable-list__row_last': index === claimableEntries.size - 1
         });
         const vote = entryVotes.get(entryId);
 
@@ -115,8 +120,8 @@ class ClaimableList extends Component {
         };
 
         const balance = isVote
-            ? balanceToNumber(vote && vote.get("essence"))
-            : balanceToNumber(entryBalance.getIn([entryId, "totalKarma"]));
+            ? balanceToNumber(vote && vote.get('essence'))
+            : balanceToNumber(entryBalance.getIn([entryId, 'totalKarma']));
         let timeDiff;
         const isActive = this.isActive(claimableEntry);
         if (isActive) {
@@ -131,51 +136,53 @@ class ClaimableList extends Component {
                 : intl.formatMessage(entryMessages.cannotClaimEntry);
         }
         return (
-            <div className={className} key={entryId}>
+            <div className={ className } key={ entryId }>
                 <div className="claimable-list__entry-info">
                     <div>
-                        {entryTitle && (
+                        { entryTitle && (
                             <Link
                                 className="unstyled-link"
-                                to={{
-                                    pathname: `/0x0/${entryId}`,
+                                to={ {
+                                    pathname: `/0x0/${ entryId }`,
                                     state: { overlay: true }
-                                }}
+                                } }
                             >
-                                <span className="content-link overflow-ellipsis claimable-list__entry-title">
-                                    {entryTitle}
+                                <span
+                                    className="content-link overflow-ellipsis claimable-list__entry-title">
+                                    { entryTitle }
                                 </span>
                             </Link>
-                        )}
-                        {!entryTitle && <div className="claimable-list__entry-title-placeholder" />}
+                        ) }
+                        { !entryTitle &&
+                        <div className="claimable-list__entry-title-placeholder"/> }
                     </div>
                     <div>
-                        {entryTitle ? (
-                            `${balance} ${intl.formatMessage(generalMessages.essence)}`
+                        { entryTitle ? (
+                            `${ balance } ${ intl.formatMessage(generalMessages.essence) }`
                         ) : (
-                            <div className="claimable-list__entry-balance-placeholder" />
-                        )}
+                            <div className="claimable-list__entry-balance-placeholder"/>
+                        ) }
                     </div>
                 </div>
                 <div className="flex-center claimable-list__button-wrapper">
-                    {!isActive && (
-                        <Tooltip arrowPointAtCenter title={buttonTooltip}>
+                    { !isActive && (
+                        <Tooltip arrowPointAtCenter title={ buttonTooltip }>
                             <Button
-                                disabled={loading || !this.canCollect(claimableEntry)}
-                                loading={loading}
-                                onClick={onCollect}
+                                disabled={ loading || !this.canCollect(claimableEntry) }
+                                loading={ loading }
+                                onClick={ onCollect }
                                 size="small"
                                 type="primary"
                             >
-                                {intl.formatMessage(generalMessages.collect)}
+                                { intl.formatMessage(generalMessages.collect) }
                             </Button>
                         </Tooltip>
-                    )}
-                    {isActive && (
+                    ) }
+                    { isActive && (
                         <div className="claimable-list__collect-in">
-                            {intl.formatMessage(generalMessages.collect)} {timeDiff}
+                            { intl.formatMessage(generalMessages.collect) } { timeDiff }
                         </div>
-                    )}
+                    ) }
                 </div>
             </div>
         );
@@ -204,8 +211,8 @@ class ClaimableList extends Component {
                 return false;
             }
             const balance = isVote
-                ? balanceToNumber(entryVotes.getIn([entryId, "essence"]))
-                : balanceToNumber(entryBalance.getIn([entryId, "totalKarma"]));
+                ? balanceToNumber(entryVotes.getIn([entryId, 'essence']))
+                : balanceToNumber(entryBalance.getIn([entryId, 'totalKarma']));
             return this.isActive(claimableEntry) || (balance && this.canCollect(claimableEntry));
         });
         entriesList.forEach(claimableEntry => {
@@ -222,55 +229,56 @@ class ClaimableList extends Component {
         return (
             <div className="claimable-list">
                 <div className="flex-center-y claimable-list__title">
-                    {intl.formatMessage(entryMessages.collectEssence)}
-                    <span className="flex-center claimable-list__counter">{collectableEntries.size}</span>
+                    { intl.formatMessage(entryMessages.collectEssence) }
+                    <span
+                        className="flex-center claimable-list__counter">{ collectableEntries.size }</span>
                     <div className="claimable-list__collect-all-wrapper">
                         <Button
                             className="claimable-list__collect-all"
-                            disabled={collectAllDisabled}
-                            onClick={onCollectAll}
+                            disabled={ collectAllDisabled }
+                            onClick={ onCollectAll }
                             size="small"
                             type="primary"
                         >
-                            {intl.formatMessage(generalMessages.collectAll)}
+                            { intl.formatMessage(generalMessages.collectAll) }
                         </Button>
                     </div>
                 </div>
                 <div className="claimable-list__list-wrapper">
-                    {!fetchingEntries && !moreClaimableEntries && entriesList.size === 0 && (
+                    { !fetchingEntries && !moreClaimableEntries && entriesList.size === 0 && (
                         <div className="claimable-list__list-placeholder-wrapper">
                             <div className="claimable-list__list-placeholder">
-                                <div className="claimable-list__list-placeholder_image" />
+                                <div className="claimable-list__list-placeholder_image"/>
                                 <div className="claimable-list__list-placeholder_text">
-                                    <div>{intl.formatMessage(generalMessages.noEssenceToCollectTitle)}</div>
+                                    <div>{ intl.formatMessage(generalMessages.noEssenceToCollectTitle) }</div>
                                     <div>
-                                        {intl.formatMessage(generalMessages.noEssenceToCollectDescription)}
+                                        { intl.formatMessage(generalMessages.noEssenceToCollectDescription) }
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    )}
-                    <DataLoader flag={fetchingEntries} style={{ paddingTop: "40px" }}>
+                    ) }
+                    <DataLoader flag={ fetchingEntries } style={ { paddingTop: '40px' } }>
                         <div className="claimable-list__list">
-                            {entriesList.map(this.renderRow)}
-                            {moreClaimableEntries && (
-                                <div style={{ height: "35px" }}>
-                                    <DataLoader flag={fetchingMoreEntries} size="small">
+                            { entriesList.map(this.renderRow) }
+                            { moreClaimableEntries && (
+                                <div style={ { height: '35px' } }>
+                                    <DataLoader flag={ fetchingMoreEntries } size="small">
                                         <div className="flex-center">
-                                            <Waypoint onEnter={this.claimableGetMore} />
+                                            <Waypoint onEnter={ this.claimableGetMore }/>
                                         </div>
                                     </DataLoader>
                                 </div>
-                            )}
+                            ) }
                         </div>
                     </DataLoader>
                 </div>
                 <div className="claimable-list__actions">
-                    <Button className="claimable-list__button" onClick={this.props.onHistory}>
-                        {intl.formatMessage(generalMessages.history)}
+                    <Button className="claimable-list__button" onClick={ this.props.onHistory }>
+                        { intl.formatMessage(generalMessages.history) }
                     </Button>
-                    <Button className="claimable-list__button" onClick={this.props.onForge}>
-                        {intl.formatMessage(formMessages.forgeAeth)}
+                    <Button className="claimable-list__button" onClick={ this.props.onForge }>
+                        { intl.formatMessage(formMessages.forgeAeth) }
                     </Button>
                 </div>
             </div>

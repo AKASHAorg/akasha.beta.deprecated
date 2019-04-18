@@ -10,9 +10,9 @@ const Balance = ({ balance, intl, short, type, elRef }) => {
     }
     const length = short ? 4 : 7;
     return (
-        <div ref={elRef} className="content-link flex-center-y balance">
-            <div className="balance__value">{balance && formatBalance(balance, length)}</div>
-            <div className="balance__symbol">{intl.formatMessage(generalMessages[type])}</div>
+        <div ref={ elRef } className="content-link flex-center-y balance">
+            <div className="balance__value">{ balance && formatBalance(balance, length) }</div>
+            <div className="balance__symbol">{ intl.formatMessage(generalMessages[type]) }</div>
         </div>
     );
 };

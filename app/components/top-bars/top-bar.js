@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import withRouter from 'react-router/withRouter';
-import Route from 'react-router-dom/Route';
-import Switch from 'react-router-dom/Switch';
+import { withRouter } from 'react-router';
+import { Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { DashboardTopBar, Navigation, ProfilePageTopBar, TopBarRight } from '../';
@@ -17,8 +17,8 @@ import {
     actionSelectors,
     appSelectors,
     entrySelectors,
-    profileSelectors,
-    notificationSelectors
+    notificationSelectors,
+    profileSelectors
 } from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
@@ -31,7 +31,8 @@ class TopBar extends PureComponent {
         }
     }
 
-    _renderComponent = (Component, injectedProps) => props => <Component {...injectedProps} {...props} />;
+    _renderComponent = (Component, injectedProps) => props =>
+        <Component { ...injectedProps } { ...props } />;
 
     render () {
         const {
@@ -51,27 +52,27 @@ class TopBar extends PureComponent {
             'top-bar_default': !fullEntry
         });
         return (
-            <div className={className}>
+            <div className={ className }>
                 <div className="top-bar__left-side">
                     <Switch>
-                        <Route component={DashboardTopBar} path="/dashboard/:dashboardId?" />
-                        <Route exact path="/0x:ethAddress" component={ProfilePageTopBar} />
-                        <Route component={Navigation} />
+                        <Route component={ DashboardTopBar } path="/dashboard/:dashboardId?"/>
+                        <Route exact path="/0x:ethAddress" component={ ProfilePageTopBar }/>
+                        <Route component={ Navigation }/>
                     </Switch>
                 </div>
                 <TopBarRight
-                    balance={balance}
-                    cyclingStates={cyclingStates}
-                    hasPendingActions={hasPendingActions}
-                    notificationsLoaded={notificationsLoaded}
-                    notificationsPanelOpen={notificationsPanelOpen}
-                    showNotificationsPanel={this.props.showNotificationsPanel}
-                    showTransactionsLog={this.props.showTransactionsLog}
-                    showWallet={showWallet}
-                    toggleAethWallet={this.props.toggleAethWallet}
-                    toggleEthWallet={this.props.toggleEthWallet}
-                    transactionsLogOpen={transactionsLogOpen}
-                    unreadNotifications={unreadNotifications}
+                    balance={ balance }
+                    cyclingStates={ cyclingStates }
+                    hasPendingActions={ hasPendingActions }
+                    notificationsLoaded={ notificationsLoaded }
+                    notificationsPanelOpen={ notificationsPanelOpen }
+                    showNotificationsPanel={ this.props.showNotificationsPanel }
+                    showTransactionsLog={ this.props.showTransactionsLog }
+                    showWallet={ showWallet }
+                    toggleAethWallet={ this.props.toggleAethWallet }
+                    toggleEthWallet={ this.props.toggleEthWallet }
+                    transactionsLogOpen={ transactionsLogOpen }
+                    unreadNotifications={ unreadNotifications }
                 />
             </div>
         );

@@ -1,6 +1,7 @@
 import * as Promise from 'bluebird';
-const searchIndex = require('search-index');
 import { CORE_MODULE } from '@akashaproject/common/constants';
+
+const searchIndex = require('search-index');
 
 export const dbs = {
   entry: {
@@ -34,7 +35,7 @@ export const dbs = {
 class StorageIndex {
   readonly options: any;
 
-  constructor(dbPath: string, opts: {additional?: any, prefix?: string}) {
+  constructor (dbPath: string, opts: { additional?: any, prefix?: string }) {
     this.options = Object.assign(
       {},
       {
@@ -47,9 +48,9 @@ class StorageIndex {
     );
   }
 
-  init() {
+  init () {
     return Promise
-    .fromCallback(cb => searchIndex(this.options, cb));
+      .fromCallback(cb => searchIndex(this.options, cb));
   }
 }
 
@@ -62,10 +63,10 @@ export default function (sp) {
 }
 
 // this should be initialized after initiating the module
-export const init = function init(prefix?:string) {
+export const init = function init (prefix?: string) {
   const waitFor = Object.keys(dbs).map((index) => {
     return new StorageIndex(dbs[index].path, { prefix, additional: dbs[index].additional }).init()
-    .then(si => dbs[index].searchIndex = si);
+      .then(si => dbs[index].searchIndex = si);
   });
   return Promise.all(waitFor);
 };

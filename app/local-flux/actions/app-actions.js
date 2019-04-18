@@ -34,7 +34,10 @@ export const secondarySidebarToggle = ({ forceToggle }) =>
 
 export const showNotification = notification =>
     action(types.SHOW_NOTIFICATION, { notification });
-export const showPreview = ({ columnType, value }) => action(types.SHOW_PREVIEW, { columnType, value });
+export const showPreview = ({ columnType, value }) => action(types.SHOW_PREVIEW, {
+    columnType,
+    value
+});
 export const showTerms = () => action(types.SHOW_TERMS);
 export const showNotificationsPanel = () => action(types.SHOW_NOTIFICATIONS_PANEL);
 export const showTransactionsLog = () => action(types.SHOW_TRANSACTIONS_LOG);

@@ -54,85 +54,85 @@ class SendTipForm extends Component {
         const maxAethAmount = balanceToNumber((aethBalance), 7);
         const rootClass = classNames('send-tip-form', className);
         const extraEth = (
-          <span className="send-tip-form__extra">
-            {intl.formatMessage(formMessages.maxAethAmountLabel, {
+            <span className="send-tip-form__extra">
+            { intl.formatMessage(formMessages.maxAethAmountLabel, {
                 balance: maxEthAmount
-            })}
+            }) }
           </span>
         );
         const extraAeth = (
-          <span className="send-tip-form__extra">
-            {intl.formatMessage(formMessages.maxAethAmountLabel, {
+            <span className="send-tip-form__extra">
+            { intl.formatMessage(formMessages.maxAethAmountLabel, {
                 balance: maxAethAmount
-            })}
+            }) }
           </span>
         );
 
         return (
-          <Form className={rootClass} hideRequiredMark onSubmit={this.onSubmit}>
-            <div className="overflow-ellipsis send-tip-form__title">
-              {intl.formatMessage(profileMessages.sendTip)}
-            </div>
-            <FormItem
-              className="send-tip-form__form-item"
-              colon={false}
-              help={amountError || extraEth}
-              label={
-                <span className="uppercase">
-                  {intl.formatMessage(formMessages.ethAmountLabel)}
+            <Form className={ rootClass } hideRequiredMark onSubmit={ this.onSubmit }>
+                <div className="overflow-ellipsis send-tip-form__title">
+                    { intl.formatMessage(profileMessages.sendTip) }
+                </div>
+                <FormItem
+                    className="send-tip-form__form-item"
+                    colon={ false }
+                    help={ amountError || extraEth }
+                    label={
+                        <span className="uppercase">
+                  { intl.formatMessage(formMessages.ethAmountLabel) }
                 </span>
-              }
-              validateStatus={amountError ? 'error' : ''}
-            >
-              {getFieldDecorator('ethAmount', {
-                  initialValue: 0,
-                  rules: [{
-                      required: true,
-                      message: intl.formatMessage(formMessages.amountRequired)
-                  }],
-              })(
-                <InputNumber
-                  autoFocus
-                  className="send-tip-form__amount"
-                  min={0}
-                  max={maxEthAmount}
-                  onKeyDown={this.handleKeyDown}
-                  placeholder={intl.formatMessage(profileMessages.tipAmount)}
-                  step={0.001}
-                  maxLength={22}
-                />
-              )}
-            </FormItem>
-            <FormItem
-              className="send-tip-form__form-item"
-              colon={false}
-              help={amountError || extraAeth}
-              label={
-                <span className="uppercase">
-                  {intl.formatMessage(formMessages.aethAmountLabel)}
+                    }
+                    validateStatus={ amountError ? 'error' : '' }
+                >
+                    { getFieldDecorator('ethAmount', {
+                        initialValue: 0,
+                        rules: [{
+                            required: true,
+                            message: intl.formatMessage(formMessages.amountRequired)
+                        }],
+                    })(
+                        <InputNumber
+                            autoFocus
+                            className="send-tip-form__amount"
+                            min={ 0 }
+                            max={ maxEthAmount }
+                            onKeyDown={ this.handleKeyDown }
+                            placeholder={ intl.formatMessage(profileMessages.tipAmount) }
+                            step={ 0.001 }
+                            maxLength={ 22 }
+                        />
+                    ) }
+                </FormItem>
+                <FormItem
+                    className="send-tip-form__form-item"
+                    colon={ false }
+                    help={ amountError || extraAeth }
+                    label={
+                        <span className="uppercase">
+                  { intl.formatMessage(formMessages.aethAmountLabel) }
                 </span>
-              }
-              validateStatus={amountError ? 'error' : ''}
-            >
-              {getFieldDecorator('aethAmount', {
-                  initialValue: 0,
-                  rules: [{
-                    required: true,
-                    message: intl.formatMessage(formMessages.amountRequired)
-                }],
-              })(
-                <InputNumber
-                  className="send-tip-form__amount"
-                  min={0}
-                  max={maxAethAmount}
-                  onKeyDown={this.handleKeyDown}
-                  placeholder={intl.formatMessage(profileMessages.tipAmount)}
-                  step={0.01}
-                  maxLength={22}
-                />
-              )}
-            </FormItem>
-            {/* <FormItem
+                    }
+                    validateStatus={ amountError ? 'error' : '' }
+                >
+                    { getFieldDecorator('aethAmount', {
+                        initialValue: 0,
+                        rules: [{
+                            required: true,
+                            message: intl.formatMessage(formMessages.amountRequired)
+                        }],
+                    })(
+                        <InputNumber
+                            className="send-tip-form__amount"
+                            min={ 0 }
+                            max={ maxAethAmount }
+                            onKeyDown={ this.handleKeyDown }
+                            placeholder={ intl.formatMessage(profileMessages.tipAmount) }
+                            step={ 0.01 }
+                            maxLength={ 22 }
+                        />
+                    ) }
+                </FormItem>
+                {/* <FormItem
               className="send-tip-form__form-item"
               colon={false}
               label={
@@ -148,28 +148,28 @@ class SendTipForm extends Component {
                   placeholder="Write something here"
                 />
               )}
-            </FormItem> */}
-            <div className="send-tip-form__actions">
-              {onCancel &&
-                <Button className="send-tip-form__button" onClick={onCancel}>
+            </FormItem> */ }
+                <div className="send-tip-form__actions">
+                    { onCancel &&
+                    <Button className="send-tip-form__button" onClick={ onCancel }>
                   <span className="send-tip-form__button-label">
-                    {intl.formatMessage(generalMessages.cancel)}
+                    { intl.formatMessage(generalMessages.cancel) }
                   </span>
-                </Button>
-              }
-              <Button
-                className="send-tip-form__button"
-                disabled={!!amountError || tipPending || emptyFields}
-                htmlType="submit"
-                onClick={this.onSubmit}
-                type="primary"
-              >
+                    </Button>
+                    }
+                    <Button
+                        className="send-tip-form__button"
+                        disabled={ !!amountError || tipPending || emptyFields }
+                        htmlType="submit"
+                        onClick={ this.onSubmit }
+                        type="primary"
+                    >
                 <span className="send-tip-form__button-label">
-                  {intl.formatMessage(generalMessages.send)}
+                  { intl.formatMessage(generalMessages.send) }
                 </span>
-              </Button>
-            </div>
-          </Form>
+                    </Button>
+                </div>
+            </Form>
         );
     }
 }

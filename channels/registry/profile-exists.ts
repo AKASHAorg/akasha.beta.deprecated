@@ -3,7 +3,7 @@ import { COMMON_MODULE, CORE_MODULE, REGISTRY_MODULE } from '@akashaproject/comm
 import { unpad } from 'ethereumjs-util';
 import { checkIdFormatSchema } from './check-id-format';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, checkIdFormatSchema, { throwError: true });
@@ -14,7 +14,7 @@ export default function init(sp, getService) {
     const contracts = getService(CORE_MODULE.CONTRACTS);
     try {
       normalisedId = getService(COMMON_MODULE.profileHelpers)
-      .normaliseId(data.akashaId);
+        .normaliseId(data.akashaId);
 
       const idHash = yield contracts.instance.ProfileRegistrar.hash(normalisedId);
       exists = yield contracts.instance.ProfileResolver.addr(idHash);
@@ -25,7 +25,7 @@ export default function init(sp, getService) {
       idValid = false;
     }
 
-    return { idValid, normalisedId, exists: !!unpad(exists),  akashaId: data.akashaId };
+    return { idValid, normalisedId, exists: !!unpad(exists), akashaId: data.akashaId };
   });
 
   const profileExists = { execute, name: 'profileExists' };

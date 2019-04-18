@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import { Button, Form, Modal } from 'antd';
 import * as actionTypes from '../../constants/action-types';
-import { actionDelete, actionPublish, actionAdd } from '../../local-flux/actions/action-actions';
+import { actionAdd, actionDelete, actionPublish } from '../../local-flux/actions/action-actions';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { actionSelectors, profileSelectors, settingsSelectors } from '../../local-flux/selectors';
@@ -118,30 +118,30 @@ class ConfirmationDialog extends Component {
     renderFooter = () => {
         const { intl } = this.props;
         return (
-          <div className="flex-center-y confirmation__footer">
-            <Button className="confirmation__footer-button" onClick={this.handleCancel}>
+            <div className="flex-center-y confirmation__footer">
+                <Button className="confirmation__footer-button" onClick={ this.handleCancel }>
               <span className="confirmation__button">
-                {intl.formatMessage(generalMessages.cancel)}
+                { intl.formatMessage(generalMessages.cancel) }
               </span>
-            </Button>
-            <Button
-              className="confirmation__footer-button"
-              id="confirmation__submit-button"
-              onClick={this.handleSubmit}
-              type="primary"
-            >
+                </Button>
+                <Button
+                    className="confirmation__footer-button"
+                    id="confirmation__submit-button"
+                    onClick={ this.handleSubmit }
+                    type="primary"
+                >
               <span className="confirmation__button">
-                {intl.formatMessage(generalMessages.submit)}
+                { intl.formatMessage(generalMessages.submit) }
               </span>
-            </Button>
-          </div>
+                </Button>
+            </div>
         );
     };
 
     render () {
         const { action, intl, loginErrors, loginPending, needAuth } = this.props;
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
-        const actionTypeTitle = `${actionType}Title`;
+        const actionTypeTitle = `${ actionType }Title`;
         const payload = action.get('payload') ? action.get('payload').toJS() : action.get('payload');
         const types = [actionTypes.follow, actionTypes.sendTip, actionTypes.transferAeth,
             actionTypes.transferEth, actionTypes.unfollow];
@@ -152,59 +152,60 @@ class ConfirmationDialog extends Component {
             payload.txCount = payload.actions.length;
         }
         return (
-          <Modal
-            visible
-            title={
-              <span className="confirmation__title">
-                {intl.formatMessage(confirmationMessages[actionTypeTitle])}
+            <Modal
+                visible
+                title={
+                    <span className="confirmation__title">
+                { intl.formatMessage(confirmationMessages[actionTypeTitle]) }
               </span>
-            }
-            footer={this.renderFooter()}
-            maskClosable={false}
-            style={{ top: 60, marginRight: 10 }}
-            confirmLoading={loginPending}
-            wrapClassName="confirmation"
-            width={450}
-          >
-            <div className="confirmation__message">
-              {intl.formatMessage(confirmationMessages[actionType], { ...payload })}
-            </div>
-            {!this.state.userIsLoggedIn &&
-              <div>
+                }
+                footer={ this.renderFooter() }
+                maskClosable={ false }
+                style={ { top: 60, marginRight: 10 } }
+                confirmLoading={ loginPending }
+                wrapClassName="confirmation"
+                width={ 450 }
+            >
                 <div className="confirmation__message">
-                  {intl.formatMessage(confirmationMessages.passphrase)}
+                    { intl.formatMessage(confirmationMessages[actionType], { ...payload }) }
                 </div>
-                <div className="confirmation__login-form">
-                  <Form>
-                    <FormItem
-                      validateStatus={loginErrors.size ? 'error' : ''}
-                      help={loginErrors.size ?
-                        <span className="input-error">{loginErrors.first().message}</span> :
-                            null
-                        }
-                    >
-                      <Input
-                        className="confirmation__input"
-                        id="confirmation__input"
-                        onChange={this.onPasswordChange}
-                        placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
-                        size="large"
-                        type="password"
-                        value={this.state.userPassword}
-                        onKeyPress={this.handleKeyPress}
-                      />
-                    </FormItem>
-                    <RememberPassphrase
-                      handleCheck={this.onRememberPasswordToggle}
-                      handleTimeChange={this.onunlockTimerChange}
-                      isChecked={this.state.unlockIsChecked}
-                      unlockTime={this.state.unlockTimer.toString()}
-                    />
-                  </Form>
+                { !this.state.userIsLoggedIn &&
+                <div>
+                    <div className="confirmation__message">
+                        { intl.formatMessage(confirmationMessages.passphrase) }
+                    </div>
+                    <div className="confirmation__login-form">
+                        <Form>
+                            <FormItem
+                                validateStatus={ loginErrors.size ? 'error' : '' }
+                                help={ loginErrors.size ?
+                                    <span
+                                        className="input-error">{ loginErrors.first().message }</span> :
+                                    null
+                                }
+                            >
+                                <Input
+                                    className="confirmation__input"
+                                    id="confirmation__input"
+                                    onChange={ this.onPasswordChange }
+                                    placeholder={ intl.formatMessage(formMessages.passphrasePlaceholder) }
+                                    size="large"
+                                    type="password"
+                                    value={ this.state.userPassword }
+                                    onKeyPress={ this.handleKeyPress }
+                                />
+                            </FormItem>
+                            <RememberPassphrase
+                                handleCheck={ this.onRememberPasswordToggle }
+                                handleTimeChange={ this.onunlockTimerChange }
+                                isChecked={ this.state.unlockIsChecked }
+                                unlockTime={ this.state.unlockTimer.toString() }
+                            />
+                        </Form>
+                    </div>
                 </div>
-              </div>
-            }
-          </Modal>
+                }
+            </Modal>
         );
     }
 }

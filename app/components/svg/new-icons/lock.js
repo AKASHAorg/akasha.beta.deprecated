@@ -1,7 +1,8 @@
-import React from "react";
+import React from 'react';
 
 const Lock = React.forwardRef((props, ref) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" {...props} ref={ref}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" { ...props }
+         ref={ ref }>
         <path
             fill="#2E3747"
             strokeWidth=".3"
@@ -10,5 +11,5 @@ const Lock = React.forwardRef((props, ref) => (
         />
     </svg>
 ));
-Lock.displayName = "Lock";
+Lock.displayName = 'Lock';
 export default Lock;

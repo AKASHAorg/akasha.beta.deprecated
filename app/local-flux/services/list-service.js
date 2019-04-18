@@ -5,7 +5,7 @@ export const addList = payload => {
     try {
         const timestamp = new Date().getTime();
         payload['timestamp'] = timestamp;
-        payload['id'] = `${timestamp}-${payload.ethAddress}`;
+        payload['id'] = `${ timestamp }-${ payload.ethAddress }`;
         const record = getListCollection().insert(payload);
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, record));
     } catch (error) {

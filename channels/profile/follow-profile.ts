@@ -12,7 +12,7 @@ export const followProfileSchema = {
   required: ['token'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();

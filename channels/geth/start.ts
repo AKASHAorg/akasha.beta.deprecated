@@ -10,7 +10,7 @@ const startServiceS = {
     cache: { type: 'number' },
   },
 };
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, startServiceS, { throwError: true });

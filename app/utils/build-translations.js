@@ -30,7 +30,7 @@ const getDefaultMessages = pattern =>
         .reduce((collection, descriptors) => {
             descriptors.forEach(({ id, defaultMessage }) => {
                 if (Object.prototype.hasOwnProperty.call(collection, id)) {
-                    throw new Error(`Duplicate message id: ${id}`);
+                    throw new Error(`Duplicate message id: ${ id }`);
                 }
                 collection[id] = defaultMessage;
             });
@@ -40,11 +40,11 @@ const getDefaultMessages = pattern =>
 
 getAvailableTranslations(TRANSLATIONS_FOLDER).then((translations) => {
     translations.forEach((translation) => {
-        const pattern = `${TRANSLATIONS_FOLDER}${translation}/**/*.json`;
+        const pattern = `${ TRANSLATIONS_FOLDER }${ translation }/**/*.json`;
         const defaultMessages = getDefaultMessages(pattern);
         try {
             mkdirpSync(LANG_DIR);
-            fs.writeFileSync(`${LANG_DIR}${translation}.json`, JSON.stringify(defaultMessages, null, 2));
+            fs.writeFileSync(`${ LANG_DIR }${ translation }.json`, JSON.stringify(defaultMessages, null, 2));
         } catch (ex) {
             console.error('UUPS!!', ex);
         }

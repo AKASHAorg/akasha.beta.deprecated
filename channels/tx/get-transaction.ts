@@ -14,7 +14,7 @@ export const getTransactionSchema = {
 
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
@@ -22,23 +22,23 @@ export default function init(sp, getService) {
     const web3Api = getService(CORE_MODULE.WEB3_API);
     const requests = data.transactionHash.map((txHash) => {
       return web3Api
-      .instance.eth
-      .getTransactionReceipt(txHash).then((receipt) => {
-        if (receipt) {
-          return Object.assign(
-            {},
-            receipt,
-            { success: receipt.status === '0x1' });
-        }
-        return web3Api.instance.eth
-        .getTransaction(txHash)
-        .then((txHashData) => {
-          if (txHashData) {
-            return { transactionHash: txHash, blockNumber: null };
+        .instance.eth
+        .getTransactionReceipt(txHash).then((receipt) => {
+          if (receipt) {
+            return Object.assign(
+              {},
+              receipt,
+              { success: receipt.status === '0x1' });
           }
-          return null;
+          return web3Api.instance.eth
+            .getTransaction(txHash)
+            .then((txHashData) => {
+              if (txHashData) {
+                return { transactionHash: txHash, blockNumber: null };
+              }
+              return null;
+            });
         });
-      });
     });
     return Promise.all(requests);
   });

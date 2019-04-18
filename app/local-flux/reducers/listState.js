@@ -64,7 +64,10 @@ const listState = createReducer(initialState, {
         }),
 
     [types.LIST_TOGGLE_ENTRY_SUCCESS]: (state, { data }) =>
-        state.setIn(['byId', data.id], state.createListRecord({...data, startIndex: data.entryIds.length})),
+        state.setIn(['byId', data.id], state.createListRecord({
+            ...data,
+            startIndex: data.entryIds.length
+        })),
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState
 });

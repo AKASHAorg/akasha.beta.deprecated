@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Radio, Select, Input } from 'antd';
+import { Button, Input, Radio, Select } from 'antd';
 import { entryMessages, validationMessages } from '../../locale-data/messages';
 import { ImageUploader } from '../';
 
@@ -55,117 +55,123 @@ class PublishOptionsPanel extends Component {
     }
 
     render () {
-        const { intl, onClose, licences, selectedLicence, featuredImage,
-            excerpt, baseUrl, errors, linkEntry } = this.props;
+        const {
+            intl, onClose, licences, selectedLicence, featuredImage,
+            excerpt, baseUrl, errors, linkEntry
+        } = this.props;
         const { scrolled } = this.state;
         return (
-          <div className="publish-options-panel">
-            <div
-              className={
-                  `publish-options-panel__header
-                  publish-options-panel__header${scrolled ? '_scrolled' : ''}`
-              }
-            >
-              <div className="publish-options-panel__header-title">
-                {intl.formatMessage(entryMessages.publishOptions)}
-              </div>
-              <div className="publish-options-panel__header-actions">
-                <Button
-                  icon="close"
-                  onClick={onClose}
-                  className="borderless"
-                />
-              </div>
-            </div>
-            <div
-              className={
-                  `publish-options-panel__content
-                  publish-options-panel__content${scrolled ? '_scrolled' : ''}`
-              }
-              id="publish-options-panel-content"
-              onScroll={this._handleContentScroll}
-            >
-              {!linkEntry &&
+            <div className="publish-options-panel">
                 <div
-                  className="publish-options-panel__featured-image-container"
-                >
-                  <h4
-                    className="publish-options-panel__container-title"
-                  >
-                    {intl.formatMessage(entryMessages.featuredImage)}
-                  </h4>
-                  <ImageUploader
-                    baseUrl={baseUrl}
-                    initialImage={featuredImage}
-                    intl={intl}
-                    minWidth={320}
-                    onChange={this._handleFeaturedImageChange}
-                    onImageClear={() => this._handleFeaturedImageChange({})}
-                    useIpfs
-                  />
-                  <small>{intl.formatMessage(entryMessages.allowedImageTypes)}</small>
-                  <div> &nbsp; </div>
-                </div>
-              }
-              <div
-                className="publish-options-panel__excerpt-container"
-              >
-                <h4
-                  className="publish-options-panel__container-title"
-                >
-                  {intl.formatMessage(entryMessages.excerpt)}
-                </h4>
-                <TextArea
-                  ref={(node) => { this.textareaNode = node; }}
-                  className="publish-options-panel__excerpt-textarea"
-                  placeholder="Write a short summary"
-                  autosize={{ minRows: 3 }}
-                  onChange={this._handleExcerptChange}
-                  value={excerpt}
-                />
-                {errors.excerpt &&
-                  <small className="edit-entry-page__error-text">{errors.excerpt}</small>
-                }
-                {!errors.excerpt &&
-                  <small>{intl.formatMessage(validationMessages.maxExcerptLength)}</small>
-                }
-              </div>
-              <div className="publish-options-panel__licence-container" id="publish-options-panel-license">
-                <h4 className="publish-options-panel__container-title">
-                  {intl.formatMessage(entryMessages.license)}
-                </h4>
-                <Select
-                  defaultValue={selectedLicence.get('parent')}
-                  style={{ width: '100%' }}
-                  className="publish-options-panel__licence-select"
-                  onChange={this._handleLicenceChange('parent')}
-                  value={selectedLicence.get('parent')}
-                >
-                  {licences.filter(lic => !lic.parent).map(parentLicence =>
-                    <Option key={parentLicence.get('id')}>{parentLicence.get('label')}</Option>
-                        ).toIndexedSeq()}
-                </Select>
-                {(licences.filter(lic => lic.get('parent') === selectedLicence.parent).size > 0) &&
-                  <RadioGroup
-                    className="publish-options-panel__licence-radio-group"
-                    onChange={this._handleLicenceChange('id')}
-                    value={selectedLicence.id}
-                  >
-                    {licences.filter(lic => lic.get('parent') === selectedLicence.get('parent'))
-                            .map(childLic => (
-                              <Radio
-                                className="publish-options-panel__licence-radio"
-                                key={childLic.id}
-                                value={childLic.id}
-                              >
-                                {childLic.label}
-                              </Radio>
-                            )).toIndexedSeq()}
-                  </RadioGroup>
+                    className={
+                        `publish-options-panel__header
+                  publish-options-panel__header${ scrolled ? '_scrolled' : '' }`
                     }
-              </div>
+                >
+                    <div className="publish-options-panel__header-title">
+                        { intl.formatMessage(entryMessages.publishOptions) }
+                    </div>
+                    <div className="publish-options-panel__header-actions">
+                        <Button
+                            icon="close"
+                            onClick={ onClose }
+                            className="borderless"
+                        />
+                    </div>
+                </div>
+                <div
+                    className={
+                        `publish-options-panel__content
+                  publish-options-panel__content${ scrolled ? '_scrolled' : '' }`
+                    }
+                    id="publish-options-panel-content"
+                    onScroll={ this._handleContentScroll }
+                >
+                    { !linkEntry &&
+                    <div
+                        className="publish-options-panel__featured-image-container"
+                    >
+                        <h4
+                            className="publish-options-panel__container-title"
+                        >
+                            { intl.formatMessage(entryMessages.featuredImage) }
+                        </h4>
+                        <ImageUploader
+                            baseUrl={ baseUrl }
+                            initialImage={ featuredImage }
+                            intl={ intl }
+                            minWidth={ 320 }
+                            onChange={ this._handleFeaturedImageChange }
+                            onImageClear={ () => this._handleFeaturedImageChange({}) }
+                            useIpfs
+                        />
+                        <small>{ intl.formatMessage(entryMessages.allowedImageTypes) }</small>
+                        <div> &nbsp; </div>
+                    </div>
+                    }
+                    <div
+                        className="publish-options-panel__excerpt-container"
+                    >
+                        <h4
+                            className="publish-options-panel__container-title"
+                        >
+                            { intl.formatMessage(entryMessages.excerpt) }
+                        </h4>
+                        <TextArea
+                            ref={ (node) => {
+                                this.textareaNode = node;
+                            } }
+                            className="publish-options-panel__excerpt-textarea"
+                            placeholder="Write a short summary"
+                            autosize={ { minRows: 3 } }
+                            onChange={ this._handleExcerptChange }
+                            value={ excerpt }
+                        />
+                        { errors.excerpt &&
+                        <small className="edit-entry-page__error-text">{ errors.excerpt }</small>
+                        }
+                        { !errors.excerpt &&
+                        <small>{ intl.formatMessage(validationMessages.maxExcerptLength) }</small>
+                        }
+                    </div>
+                    <div className="publish-options-panel__licence-container"
+                         id="publish-options-panel-license">
+                        <h4 className="publish-options-panel__container-title">
+                            { intl.formatMessage(entryMessages.license) }
+                        </h4>
+                        <Select
+                            defaultValue={ selectedLicence.get('parent') }
+                            style={ { width: '100%' } }
+                            className="publish-options-panel__licence-select"
+                            onChange={ this._handleLicenceChange('parent') }
+                            value={ selectedLicence.get('parent') }
+                        >
+                            { licences.filter(lic => !lic.parent).map(parentLicence =>
+                                <Option
+                                    key={ parentLicence.get('id') }>{ parentLicence.get('label') }</Option>
+                            ).toIndexedSeq() }
+                        </Select>
+                        { (licences.filter(lic => lic.get('parent') === selectedLicence.parent).size > 0) &&
+                        <RadioGroup
+                            className="publish-options-panel__licence-radio-group"
+                            onChange={ this._handleLicenceChange('id') }
+                            value={ selectedLicence.id }
+                        >
+                            { licences.filter(lic => lic.get('parent') === selectedLicence.get('parent'))
+                                .map(childLic => (
+                                    <Radio
+                                        className="publish-options-panel__licence-radio"
+                                        key={ childLic.id }
+                                        value={ childLic.id }
+                                    >
+                                        { childLic.label }
+                                    </Radio>
+                                )).toIndexedSeq() }
+                        </RadioGroup>
+                        }
+                    </div>
+                </div>
             </div>
-          </div>
         );
     }
 }

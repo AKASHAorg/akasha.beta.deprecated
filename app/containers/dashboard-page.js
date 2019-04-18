@@ -7,12 +7,17 @@ import { Dashboard, DataLoader } from '../components';
 import { toggleNewDashboardModal } from '../local-flux/actions/app-actions';
 import {
     dashboardHideTutorial,
+    dashboardReorderColumn,
     dashboardSetActive,
-    dashboardUpdateNewColumn,
-    dashboardReorderColumn
+    dashboardUpdateNewColumn
 } from '../local-flux/actions/dashboard-actions';
-import { appSelectors, entrySelectors, dashboardSelectors, settingsSelectors } from '../local-flux/selectors';
-import { setupMessages, generalMessages } from '../locale-data/messages';
+import {
+    appSelectors,
+    dashboardSelectors,
+    entrySelectors,
+    settingsSelectors
+} from '../local-flux/selectors';
+import { generalMessages, setupMessages } from '../locale-data/messages';
 
 class DashboardPage extends Component {
     state = {
@@ -59,65 +64,65 @@ class DashboardPage extends Component {
     render () {
         const { intl, columns, darkTheme, dashboards, homeReady, isHidden } = this.props;
         const modalFooterBtn = this.state.carouselEnd ? (
-            <Button key="submit" type="primary" onClick={this.handleClose}>
-                {intl.formatMessage(generalMessages.okTutorial)}
+            <Button key="submit" type="primary" onClick={ this.handleClose }>
+                { intl.formatMessage(generalMessages.okTutorial) }
             </Button>
         ) : (
-            <Button key="next" type="primary" onClick={() => this.slider.next()}>
-                {intl.formatMessage(generalMessages.next)}
+            <Button key="next" type="primary" onClick={ () => this.slider.next() }>
+                { intl.formatMessage(generalMessages.next) }
             </Button>
         );
 
         return (
-            <div style={{ height: '100%', display: isHidden ? 'none' : 'initial' }}>
+            <div style={ { height: '100%', display: isHidden ? 'none' : 'initial' } }>
                 <Modal
-                    title={intl.formatMessage(setupMessages.tutorialTitle)}
+                    title={ intl.formatMessage(setupMessages.tutorialTitle) }
                     className="tutorial-modal"
-                    visible={this.state.modalVisible}
-                    onOk={this.handleClose}
-                    onCancel={this.handleClose}
-                    footer={[modalFooterBtn]}
+                    visible={ this.state.modalVisible }
+                    onOk={ this.handleClose }
+                    onCancel={ this.handleClose }
+                    footer={ [modalFooterBtn] }
                     width="50%"
                 >
                     <Carousel
-                        ref={c => {
+                        ref={ c => {
                             this.slider = c;
-                        }}
-                        afterChange={this.handleCarouselChange}
+                        } }
+                        afterChange={ this.handleCarouselChange }
                     >
                         <div className="tutorial-modal__page">
-                            <div className="tutorial-modal__test-img" />
+                            <div className="tutorial-modal__test-img"/>
                             <div className="tutorial-modal__text">
-                                {intl.formatMessage(setupMessages.tutorialEth)}
+                                { intl.formatMessage(setupMessages.tutorialEth) }
                             </div>
                         </div>
                         <div className="tutorial-modal__page">
-                            <div className="tutorial-modal__aeth-wallet-img" />
+                            <div className="tutorial-modal__aeth-wallet-img"/>
                             <div className="tutorial-modal__text">
-                                {intl.formatMessage(setupMessages.tutorialMana)}
+                                { intl.formatMessage(setupMessages.tutorialMana) }
                             </div>
                         </div>
                         <div className="tutorial-modal__page">
-                            <div className="tutorial-modal__mana-popover-img" />
+                            <div className="tutorial-modal__mana-popover-img"/>
                             <div className="tutorial-modal__text">
-                                {intl.formatMessage(setupMessages.tutorialManaAlt)}
+                                { intl.formatMessage(setupMessages.tutorialManaAlt) }
                             </div>
                         </div>
                     </Carousel>
                 </Modal>
-                <DataLoader flag={!homeReady} size="large" style={{ paddingTop: '200px' }}>
-                    <div style={{ height: '100%' }}>
+                <DataLoader flag={ !homeReady } size="large" style={ { paddingTop: '200px' } }>
+                    <div style={ { height: '100%' } }>
                         <Dashboard
-                            columns={columns}
-                            darkTheme={darkTheme}
-                            dashboardCreateNew={this.props.toggleNewDashboardModal}
-                            dashboards={dashboards}
-                            getDashboardRef={this.getDashboardRef}
-                            navigateRight={this.navigateRight}
-                            updateNewColumn={this.props.dashboardUpdateNewColumn}
-                            dashboardReorderColumn={this.props.dashboardReorderColumn}
-                            activeDashboardId={this.props.activeDashboard}
-                            pendingEntries={this.props.pendingEntries}
+                            columns={ columns }
+                            darkTheme={ darkTheme }
+                            dashboardCreateNew={ this.props.toggleNewDashboardModal }
+                            dashboards={ dashboards }
+                            getDashboardRef={ this.getDashboardRef }
+                            navigateRight={ this.navigateRight }
+                            updateNewColumn={ this.props.dashboardUpdateNewColumn }
+                            dashboardReorderColumn={ this.props.dashboardReorderColumn }
+                            activeDashboardId={ this.props.activeDashboard }
+                            pendingEntries={ this.props.pendingEntries }
                         />
                     </div>
                 </DataLoader>

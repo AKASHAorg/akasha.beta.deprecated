@@ -61,7 +61,7 @@ class ImageBlock extends Component {
         return {
             width: gifPlaying ? files[closestMatch].width : files[fileKey].width,
             height: gifPlaying ? files[closestMatch].height : files[fileKey].height,
-            src: `${baseUrl}/${files[fileKey].src}`
+            src: `${ baseUrl }/${ files[fileKey].src }`
         };
     };
 
@@ -97,19 +97,19 @@ class ImageBlock extends Component {
         const { imageLoaded } = this.state;
         const image = this._getImageSrc();
         return (
-          <img
-            src={image.src}
-            alt=""
-            className="image-block__image"
-            onLoad={this._onLargeImageLoad}
-            style={{
-                opacity: imageLoaded ? 1 : 0,
-                display: imageLoaded ? 'block' : 'none',
-                width: image.width,
-                height: 'auto',
-                maxWidth: '100%',
-            }}
-          />
+            <img
+                src={ image.src }
+                alt=""
+                className="image-block__image"
+                onLoad={ this._onLargeImageLoad }
+                style={ {
+                    opacity: imageLoaded ? 1 : 0,
+                    display: imageLoaded ? 'block' : 'none',
+                    width: image.width,
+                    height: 'auto',
+                    maxWidth: '100%',
+                } }
+            />
         );
     };
 
@@ -121,45 +121,49 @@ class ImageBlock extends Component {
             'image-block__gif-play-icon_is-playing': isPlaying
         });
         return (
-          <div
-            className={`image-block image-block__readonly image-block__readonly_${media}`}
-            ref={(baseNode) => { this.baseNodeRef = baseNode; }}
-            onMouseEnter={files.gif && this.onMouseEnter}
-            onMouseLeave={files.gif && this.onMouseLeave}
-          >
-            {files.gif &&
-              <div className={gifClass}>
-                <Icon type="play-circle-o" />
-              </div>
-            }
             <div
-              className={
-                `image-block__image-placeholder-wrapper
-                image-block__image-placeholder-wrapper${imageLoaded ? '_loaded' : ''}`
-              }
-              ref={(node) => { this.placeholderNodeRef = node; }}
-              onClick={this._handleFullSizeSwitch}
+                className={ `image-block image-block__readonly image-block__readonly_${ media }` }
+                ref={ (baseNode) => {
+                    this.baseNodeRef = baseNode;
+                } }
+                onMouseEnter={ files.gif && this.onMouseEnter }
+                onMouseLeave={ files.gif && this.onMouseLeave }
             >
-              <div
-                className={
-                    `image-block__image-placeholder-wrapper_overlay
-                    image-block__image-placeholder-wrapper_${media}`
+                { files.gif &&
+                <div className={ gifClass }>
+                    <Icon type="play-circle-o"/>
+                </div>
                 }
-              >
-                <img
-                  src={`${baseUrl}/${files.xs.src}`}
-                  onLoad={this._handlePlaceholderLoad}
-                  className="image-block__image-placeholder"
-                  alt=""
-                />
-              </div>
-              {!isPlaying && this.renderImage()}
-              {isPlaying && this.renderImage()}
+                <div
+                    className={
+                        `image-block__image-placeholder-wrapper
+                image-block__image-placeholder-wrapper${ imageLoaded ? '_loaded' : '' }`
+                    }
+                    ref={ (node) => {
+                        this.placeholderNodeRef = node;
+                    } }
+                    onClick={ this._handleFullSizeSwitch }
+                >
+                    <div
+                        className={
+                            `image-block__image-placeholder-wrapper_overlay
+                    image-block__image-placeholder-wrapper_${ media }`
+                        }
+                    >
+                        <img
+                            src={ `${ baseUrl }/${ files.xs.src }` }
+                            onLoad={ this._handlePlaceholderLoad }
+                            className="image-block__image-placeholder"
+                            alt=""
+                        />
+                    </div>
+                    { !isPlaying && this.renderImage() }
+                    { isPlaying && this.renderImage() }
+                </div>
+                <div className="image-block__image-caption">
+                    <small>{ caption }</small>
+                </div>
             </div>
-            <div className="image-block__image-caption" >
-              <small>{caption}</small>
-            </div>
-          </div>
         );
     }
 }

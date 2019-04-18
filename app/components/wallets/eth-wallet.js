@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
@@ -6,7 +5,11 @@ import { Tabs } from 'antd';
 import { HistoryTable, Icon, TransferForm } from '../';
 import { sendTip, transferEth } from '../../constants/action-types';
 import { showNotification, toggleEthWallet } from '../../local-flux/actions/app-actions';
-import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
+import {
+    actionAdd,
+    actionClearHistory,
+    actionGetHistory
+} from '../../local-flux/actions/action-actions';
 import { profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchResetResults } from '../../local-flux/actions/search-actions';
 import { actionSelectors, profileSelectors, searchSelectors } from '../../local-flux/selectors';
@@ -47,19 +50,19 @@ class EthWallet extends Component {
         const rows = transactions.map(action => ({
             action: (
                 <span className="flex-center-y">
-                    <Icon className="eth-wallet__sent-icon" type="arrowUp" />
-                    {action.type === sendTip
+                    <Icon className="eth-wallet__sent-icon" type="arrowUp"/>
+                    { action.type === sendTip
                         ? intl.formatMessage(profileMessages.sentTip)
-                        : intl.formatMessage(generalMessages.sent)}
+                        : intl.formatMessage(generalMessages.sent) }
                 </span>
             ),
-            amount: <span>{action.getIn(['payload', 'value'])} ETH</span>,
+            amount: <span>{ action.getIn(['payload', 'value']) } ETH</span>,
             blockNumber: action.get('blockNumber'),
             id: action.get('id'),
             success: action.get('success')
         }));
 
-        return <HistoryTable rows={rows} />;
+        return <HistoryTable rows={ rows }/>;
     };
 
     render () {
@@ -68,33 +71,33 @@ class EthWallet extends Component {
         return (
             <div className="eth-wallet">
                 <div className="eth-wallet__header">
-                    <div>{intl.formatMessage(profileMessages.totalBalance)}</div>
+                    <div>{ intl.formatMessage(profileMessages.totalBalance) }</div>
                     <div>
-                        <span className="eth-wallet__balance">{balance.get('eth')}</span>
-                        <span>{intl.formatMessage(generalMessages.eth)}</span>
+                        <span className="eth-wallet__balance">{ balance.get('eth') }</span>
+                        <span>{ intl.formatMessage(generalMessages.eth) }</span>
                     </div>
                 </div>
                 <Tabs
-                    activeKey={activeTab}
-                    onChange={this.selectTab}
-                    tabBarStyle={{ height: '40px', marginBottom: '0px' }}
+                    activeKey={ activeTab }
+                    onChange={ this.selectTab }
+                    tabBarStyle={ { height: '40px', marginBottom: '0px' } }
                     type="card"
                 >
-                    <TabPane key={WALLET} tab={intl.formatMessage(generalMessages.wallet)}>
+                    <TabPane key={ WALLET } tab={ intl.formatMessage(generalMessages.wallet) }>
                         <TransferForm
-                            balance={balance.get('eth')}
-                            dataSource={profileResults}
-                            ethAddress={loggedEthAddress}
-                            onCancel={this.props.toggleEthWallet}
-                            onSubmit={this.onSubmit}
-                            pendingTransfer={pendingTransfer}
-                            searchProfiles={this.props.searchProfiles}
-                            showNotification={this.props.showNotification}
+                            balance={ balance.get('eth') }
+                            dataSource={ profileResults }
+                            ethAddress={ loggedEthAddress }
+                            onCancel={ this.props.toggleEthWallet }
+                            onSubmit={ this.onSubmit }
+                            pendingTransfer={ pendingTransfer }
+                            searchProfiles={ this.props.searchProfiles }
+                            showNotification={ this.props.showNotification }
                             type="eth"
                         />
                     </TabPane>
-                    <TabPane key={HISTORY} tab={intl.formatMessage(generalMessages.history)}>
-                        {this.renderHistory()}
+                    <TabPane key={ HISTORY } tab={ intl.formatMessage(generalMessages.history) }>
+                        { this.renderHistory() }
                     </TabPane>
                 </Tabs>
             </div>

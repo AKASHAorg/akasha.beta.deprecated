@@ -12,7 +12,7 @@ const initialState = new ExternalProcessStateModel();
 const eProcState = createReducer(initialState, {
     [types.CLEAR_SYNC_STATUS]: state => state.setIn(['geth', 'syncStatus'], new GethSyncStatus()),
 
-    [`${GETH_MODULE.start}_SUCCESS`]: (state, { payload }) => {
+    [`${ GETH_MODULE.start }_SUCCESS`]: (state, { payload }) => {
         const { data, services } = payload;
         const gethStatus = state.getIn(['geth', 'status']);
         // if geth was stopped and it is not upgrading, ignore this action
@@ -32,7 +32,7 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${GETH_MODULE.stop}_SUCCESS`]: (state, { payload }) => {
+    [`${ GETH_MODULE.stop }_SUCCESS`]: (state, { payload }) => {
         const { data, services } = payload;
         if (state.getIn(['geth', 'status', 'upgrading'])) {
             return state;
@@ -49,7 +49,7 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${GETH_MODULE.gethStatus}_SUCCESS`]: (state, { payload }) => {
+    [`${ GETH_MODULE.gethStatus }_SUCCESS`]: (state, { payload }) => {
         const { data, services } = payload;
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).set('statusFetched', true),
@@ -57,14 +57,14 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${IPFS_MODULE.start}_ERROR`]: (state, { payload }) => {
+    [`${ IPFS_MODULE.start }_ERROR`]: (state, { payload }) => {
         const ipfsStatus = state.computeIpfsStatus(payload);
         return state.mergeIn(['ipfs'], {
             status: state.getIn(['ipfs', 'status']).merge(ipfsStatus)
         });
     },
 
-    [`${IPFS_MODULE.start}_SUCCESS`]: (state, { payload }) => {
+    [`${ IPFS_MODULE.start }_SUCCESS`]: (state, { payload }) => {
         const { data, services } = payload;
         const status = Object.assign({}, data, services.ipfs);
         const ipfsStatus = state.computeIpfsStatus(status);
@@ -73,7 +73,7 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${IPFS_MODULE.stop}_SUCCESS`]: (state, { payload }) => {
+    [`${ IPFS_MODULE.stop }_SUCCESS`]: (state, { payload }) => {
         const { data, services } = payload;
         const status = Object.assign({}, data, services.ipfs);
         let newStatus;
@@ -90,14 +90,14 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${IPFS_MODULE.ipfsStatus}_SUCCESS`]: (state, { payload }) => {
+    [`${ IPFS_MODULE.ipfsStatus }_SUCCESS`]: (state, { payload }) => {
         const { data, services } = payload;
         state.mergeIn(['ipfs'], {
             status: state.getIn(['ipfs', 'status']).merge(Object.assign({}, data, services.ipfs))
         });
     },
 
-    [`${IPFS_MODULE.getPorts}_SUCCESS`]: (state, { payload }) =>
+    [`${ IPFS_MODULE.getPorts }_SUCCESS`]: (state, { payload }) =>
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).setIn(['portsRequested'], false),
             status: state.getIn(['ipfs', 'status']).merge({
@@ -107,7 +107,7 @@ const eProcState = createReducer(initialState, {
             })
         }),
 
-    [`${GETH_MODULE.syncStatus}_SUCCESS`]: (state, { payload }) =>
+    [`${ GETH_MODULE.syncStatus }_SUCCESS`]: (state, { payload }) =>
         // const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
         // let syncActionId = oldSyncActionId;
         // if (data.synced) {
@@ -121,7 +121,7 @@ const eProcState = createReducer(initialState, {
             syncStatus: state.getIn(['geth', 'syncStatus']).merge(payload)
         }),
 
-    [`${GETH_MODULE.logs}_SUCCESS`]: (state, { payload }) => {
+    [`${ GETH_MODULE.logs }_SUCCESS`]: (state, { payload }) => {
         if (!payload.length) {
             return state;
         }
@@ -135,7 +135,7 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${IPFS_MODULE.logs}_SUCCESS`]: (state, { payload }) => {
+    [`${ IPFS_MODULE.logs }_SUCCESS`]: (state, { payload }) => {
         if (!payload.length) {
             return state;
         }

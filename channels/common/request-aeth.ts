@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import { post as POST } from 'superagent';
 import { COMMON_MODULE, CORE_MODULE, GENERAL_SETTINGS } from './constants';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
     const FAUCET_URL = (getService(CORE_MODULE.SETTINGS)).get(GENERAL_SETTINGS.FAUCET_URL);
     const FAUCET_TOKEN = (getService(CORE_MODULE.SETTINGS)).get(GENERAL_SETTINGS.FAUCET_TOKEN);

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Popover, Slider, Tooltip } from 'antd';
 import classNames from 'classnames';
-import { profileSelectors, entrySelectors } from '../../local-flux/selectors';
+import { entrySelectors, profileSelectors } from '../../local-flux/selectors';
 import { entryMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { Icon } from '../';
 
@@ -87,7 +87,10 @@ class VotePopover extends Component {
     validateWeight = (rule, value, callback) => {
         const { intl } = this.props;
         if (!Number.isInteger(value)) {
-            callback(intl.formatMessage(formMessages.voteWeightIntegerError, { min: MIN, max: MAX }));
+            callback(intl.formatMessage(formMessages.voteWeightIntegerError, {
+                min: MIN,
+                max: MAX
+            }));
         }
         if (value < MIN || value > MAX) {
             callback(intl.formatMessage(formMessages.voteWeightRangeError, { min: MIN, max: MAX }));
@@ -107,64 +110,64 @@ class VotePopover extends Component {
 
         const weightError = getFieldError('weight');
         const extra = (
-          <span className="vote-popover__extra">
-            {intl.formatMessage(formMessages.voteWeightExtra, { min: MIN, max: MAX })}
+            <span className="vote-popover__extra">
+            { intl.formatMessage(formMessages.voteWeightExtra, { min: MIN, max: MAX }) }
           </span>
         );
         const weight = getFieldValue('weight') || 1;
 
         return (
-          <Form className="vote-popover__content" hideRequiredMark onSubmit={this.onSubmit}>
-            <div className="vote-popover__title">
-              {intl.formatMessage(title)}
-            </div>
-            <FormItem
-              className="vote-popover__form-item"
-              colon={false}
-              help={weightError ? weightError[0] : extra}
-              validateStatus={weightError ? 'error' : ''}
-            >
-              <div className="flex-center">
-                {getFieldDecorator('weight', {
-                    initialValue: MIN,
-                    rules: [{
-                        required: true,
-                        message: intl.formatMessage(formMessages.voteWeightRequired)
-                    }, {
-                        validator: this.validateWeight
-                    }]
-                })(
-                  <Slider
-                    className="vote-popover__slider"
-                    min={MIN}
-                    max={MAX}
-                    tipFormatter={null}
-                  />
-                )}
-                <div className="flex-center vote-popover__weight">
-                  {weight}
+            <Form className="vote-popover__content" hideRequiredMark onSubmit={ this.onSubmit }>
+                <div className="vote-popover__title">
+                    { intl.formatMessage(title) }
                 </div>
-              </div>
-            </FormItem>
-            <div className="vote-popover__actions">
-              <Button className="vote-popover__button" onClick={this.onCancel}>
+                <FormItem
+                    className="vote-popover__form-item"
+                    colon={ false }
+                    help={ weightError ? weightError[0] : extra }
+                    validateStatus={ weightError ? 'error' : '' }
+                >
+                    <div className="flex-center">
+                        { getFieldDecorator('weight', {
+                            initialValue: MIN,
+                            rules: [{
+                                required: true,
+                                message: intl.formatMessage(formMessages.voteWeightRequired)
+                            }, {
+                                validator: this.validateWeight
+                            }]
+                        })(
+                            <Slider
+                                className="vote-popover__slider"
+                                min={ MIN }
+                                max={ MAX }
+                                tipFormatter={ null }
+                            />
+                        ) }
+                        <div className="flex-center vote-popover__weight">
+                            { weight }
+                        </div>
+                    </div>
+                </FormItem>
+                <div className="vote-popover__actions">
+                    <Button className="vote-popover__button" onClick={ this.onCancel }>
                 <span className="vote-popover__button-label">
-                  {intl.formatMessage(generalMessages.cancel)}
+                  { intl.formatMessage(generalMessages.cancel) }
                 </span>
-              </Button>
-              <Button
-                className="vote-popover__button"
-                disabled={!!weightError || votePending}
-                htmlType="submit"
-                onClick={this.onSubmit}
-                type="primary"
-              >
+                    </Button>
+                    <Button
+                        className="vote-popover__button"
+                        disabled={ !!weightError || votePending }
+                        htmlType="submit"
+                        onClick={ this.onSubmit }
+                        type="primary"
+                    >
                 <span className="vote-popover__button-label">
-                  {intl.formatMessage(generalMessages.vote)}
+                  { intl.formatMessage(generalMessages.vote) }
                 </span>
-              </Button>
-            </div>
-          </Form>
+                    </Button>
+                </div>
+            </Form>
         );
     };
 
@@ -179,27 +182,27 @@ class VotePopover extends Component {
         });
 
         return (
-          <Popover
-            content={this.wasVisible ? this.renderContent() : null}
-            getPopupContainer={() => containerRef || document.body}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName="vote-popover"
-            placement="bottomLeft"
-            trigger="click"
-            visible={this.state.popoverVisible}
-          >
-            <Tooltip
-              arrowPointAtCenter
-              getPopupContainer={() => containerRef || document.body}
-              placement={this.isDownVote() ? 'top' : 'topRight'}
-              title={this.getTooltip()}
+            <Popover
+                content={ this.wasVisible ? this.renderContent() : null }
+                getPopupContainer={ () => containerRef || document.body }
+                onVisibleChange={ this.onVisibleChange }
+                overlayClassName="vote-popover"
+                placement="bottomLeft"
+                trigger="click"
+                visible={ this.state.popoverVisible }
             >
-              <Icon
-                className={iconClass}
-                type={this.isDownVote() ? 'arrowDown' : 'arrowUp'}
-              />
-            </Tooltip>
-          </Popover>
+                <Tooltip
+                    arrowPointAtCenter
+                    getPopupContainer={ () => containerRef || document.body }
+                    placement={ this.isDownVote() ? 'top' : 'topRight' }
+                    title={ this.getTooltip() }
+                >
+                    <Icon
+                        className={ iconClass }
+                        type={ this.isDownVote() ? 'arrowDown' : 'arrowUp' }
+                    />
+                </Tooltip>
+            </Popover>
         );
     }
 }

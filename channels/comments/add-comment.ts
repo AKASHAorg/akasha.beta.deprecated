@@ -13,7 +13,7 @@ const commentS = {
   required: ['ethAddress', 'entryId', 'token'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data: any, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, commentS, { throwError: true });
@@ -23,8 +23,8 @@ export default function init(sp, getService) {
     const decodedHash = (getService(COMMON_MODULE.ipfsHelpers)).decodeHash(ipfsHash);
     const replyTo = data.parent || '0';
     const txData = contracts.instance
-    .Comments.publish.request(
-      data.entryId, data.ethAddress, replyTo, ...decodedHash, { gas: 250000 });
+      .Comments.publish.request(
+        data.entryId, data.ethAddress, replyTo, ...decodedHash, { gas: 250000 });
 
     const receipt = yield contracts.send(txData, data.token, cb);
     let commentId = null;

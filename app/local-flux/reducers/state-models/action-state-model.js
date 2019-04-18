@@ -1,5 +1,5 @@
 // @flow strict
-import { List, Record, Map, fromJS } from 'immutable';
+import { fromJS, List, Map, Record } from 'immutable';
 import * as actionTypes from '../../../constants/action-types';
 
 export const ActionRecord = Record({
@@ -111,6 +111,7 @@ export default class ActionStateModel extends ActionState {
                 return pending;
         }
     }
+
     // eslint-disable-next-line complexity
     removePendingAction (pending, action) {
         const { commentId, entryId, ethAddress, tag } = action.payload;

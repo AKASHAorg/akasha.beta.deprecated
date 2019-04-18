@@ -1,5 +1,14 @@
 //@flow
-import { all, call, fork, put, select, takeEvery, takeLatest, getContext } from 'redux-saga/effects';
+import {
+    all,
+    call,
+    fork,
+    getContext,
+    put,
+    select,
+    takeEvery,
+    takeLatest
+} from 'redux-saga/effects';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';

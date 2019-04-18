@@ -1,4 +1,4 @@
-import { Record, OrderedSet } from 'immutable';
+import { OrderedSet, Record } from 'immutable';
 
 export const GethStatus = Record({
     api: false,
@@ -107,6 +107,7 @@ export default class ExternalProcessStateModel extends ExternalProcessState {
         }
         return newStatus;
     }
+
     computeIpfsStatus (record) {
         const newStatus = Object.assign({}, record);
         if (newStatus.started || newStatus.process) {

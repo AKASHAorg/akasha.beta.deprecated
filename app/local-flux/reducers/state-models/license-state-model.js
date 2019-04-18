@@ -18,5 +18,5 @@ const LicenseState = Record({
 });
 
 export default class LicenseStateModel extends LicenseState {
-    
+
 }

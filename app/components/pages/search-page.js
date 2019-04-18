@@ -1,14 +1,14 @@
 // @flow strict
 
-import * as React from "react";
-import Route from "react-router-dom/Route";
-import { Fill } from "react-slot-fill";
+import * as React from 'react';
+import { Route } from 'react-router-dom';
+
 /*:: type Props = {||}; */
 
 function SearchPage (props /* : Props */) {
     return (
         <>
-            <Route path="/search" render={() => <>Search Page</>} />
+            <Route path="/search" render={ () => <>Search Page</> }/>
         </>
     );
 }

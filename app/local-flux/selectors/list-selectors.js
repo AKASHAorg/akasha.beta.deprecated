@@ -44,7 +44,10 @@ export const getListNextEntries = createSelector(
         const entryIds = list.get('entryIds');
         return entryIds
             .slice(startIndex, startIndex + limit)
-            .map(entry => ({ entryId: entry.entryId, author: { ethAddress: entry.authorEthAddress } }));
+            .map(entry => ({
+                entryId: entry.entryId,
+                author: { ethAddress: entry.authorEthAddress }
+            }));
     }
 );
 

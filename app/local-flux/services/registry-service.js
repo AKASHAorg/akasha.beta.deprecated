@@ -66,7 +66,10 @@ export const deleteTempProfile = ethAddress => {
  */
 export const getTempProfile = ethAddress => {
     try {
-        const record = getProfileCollection().findOne({ ethAddress: ethAddress, opType: TMP_PROFILE_TYPE });
+        const record = getProfileCollection().findOne({
+            ethAddress: ethAddress,
+            opType: TMP_PROFILE_TYPE
+        });
         return Promise.resolve(record ? Object.assign({}, record) : null);
     } catch (error) {
         return Promise.reject(error);

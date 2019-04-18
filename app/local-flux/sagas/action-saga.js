@@ -100,6 +100,7 @@ function checkHasMana (actionType, remainingMana, costs) {
         return remainingMana >= costs.costByWeight;
     }
 }
+
 function hasEnoughBalance (actionType, balance, publishingCost, payload) {
     const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']), 5);
     const entryPublishingCost = balanceToNumber(publishingCost.getIn(['entry', 'cost']), 5);

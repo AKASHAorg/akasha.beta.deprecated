@@ -1,6 +1,7 @@
 import Pica from 'pica/dist/pica';
 import { is, isEmpty } from 'ramda';
 import StreamReader from './stream-reader';
+
 /**
  * Utility to extract best matching image key given a width
  * @param width <number> a given width
@@ -60,13 +61,13 @@ function getBestAvailableImage (files) {
 function imageCreator (arrayBuffer, baseUrl) {
     // if arrayBuffer is string it means that it comes from ipfs
     if (baseUrl && is(String, arrayBuffer)) {
-        if (arrayBuffer.includes(`${baseUrl}`) && arrayBuffer !== `${baseUrl}/`) {
-            return `${arrayBuffer}`;
+        if (arrayBuffer.includes(`${ baseUrl }`) && arrayBuffer !== `${ baseUrl }/`) {
+            return `${ arrayBuffer }`;
         }
-        if (arrayBuffer === `${baseUrl}/` || arrayBuffer.length === 0) {
+        if (arrayBuffer === `${ baseUrl }/` || arrayBuffer.length === 0) {
             return null;
         }
-        return `${baseUrl}/${arrayBuffer}`;
+        return `${ baseUrl }/${ arrayBuffer }`;
     }
     if (is(Uint8Array, arrayBuffer)) {
         const blobFile = new Blob([arrayBuffer]);
@@ -107,7 +108,7 @@ function extractImageFromContent (content) { // eslint-disable-line
             return false;
         });
     });
-    if(targetBlock && targetBlock.data.files) {
+    if (targetBlock && targetBlock.data.files) {
         return targetBlock.data.files;
     } else {
         for (let i = 0; i < blocks.length; i++) {
@@ -123,6 +124,7 @@ function extractImageFromContent (content) { // eslint-disable-line
         }
     }
 }
+
 /**
  * @TODO Move this to a config file
  */
@@ -298,10 +300,10 @@ const getImageSize = (imagePath, options) => {
             const imageWidth = image.width;
             const imageHeight = image.height;
             if (options && imageWidth < options.minWidth) {
-                return reject(`Please provide an image with minimum width of ${options.minWidth} pixels`);
+                return reject(`Please provide an image with minimum width of ${ options.minWidth } pixels`);
             }
             if (options && imageHeight < options.minHeight) {
-                return reject(`Please provide an image with minimum height of ${options.minHeight} pixels`);
+                return reject(`Please provide an image with minimum height of ${ options.minHeight } pixels`);
             }
             return resolve({ width: imageWidth, height: imageHeight, imageObj: image });
         };
@@ -376,7 +378,7 @@ const getResizedImages = (inputFiles, options) => {
                     return resizeImage(results.imageObj, options);
                 }));
         } else {
-            imagePromises.push(Promise.reject(`.${ext} extension is not supported!`));
+            imagePromises.push(Promise.reject(`.${ ext } extension is not supported!`));
         }
     });
     return imagePromises.concat(gifPromises);

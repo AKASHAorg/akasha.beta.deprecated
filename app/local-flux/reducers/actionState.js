@@ -20,7 +20,13 @@ const actionState = createReducer(initialState, {
         if (actionType === actionTypes.faucet) {
             const id = genTimeBasedID(null, actionType);
             const status = actionStatus.toPublish;
-            const action = state.createAction({ id, ethAddress, payload, status, type: actionType });
+            const action = state.createAction({
+                id,
+                ethAddress,
+                payload,
+                status,
+                type: actionType
+            });
             return state.merge({
                 byId: state.get('byId').set(id, action),
                 [status]: id
@@ -33,7 +39,13 @@ const actionState = createReducer(initialState, {
         const { ethAddress, actionType, needEth, needAeth, needMana } = payload;
         const id = genTimeBasedID(null, actionType);
         const status = actionType === actionTypes.faucet ? actionStatus.toPublish : actionStatus.needAuth;
-        const publishAction = state.createAction({ id, ethAddress, payload, status, type: actionType });
+        const publishAction = state.createAction({
+            id,
+            ethAddress,
+            payload,
+            status,
+            type: actionType
+        });
         return state.merge({
             byId: state.get('byId').set(id, publishAction),
             [status]: id,
@@ -163,7 +175,7 @@ const actionState = createReducer(initialState, {
             let batchActions = new List();
             action.getIn(['payload', 'actions']).forEach((actionData, index) => {
                 const { ethAddress, actionType, payload } = actionData.toJS();
-                const actionId = `${new Date().getTime()}-${actionType}-${index}`;
+                const actionId = `${ new Date().getTime() }-${ actionType }-${ index }`;
                 const status = actionStatus.publishing;
                 const newAction = state.createAction({
                     id: actionId,

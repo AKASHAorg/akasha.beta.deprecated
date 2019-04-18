@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { AUTH_MODULE, COMMON_MODULE, CORE_MODULE, NOTIFICATIONS_MODULE } from './constants';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* () {
     yield (getService(CORE_MODULE.CONTRACTS)).stopAllWatchers();
     yield (getService(NOTIFICATIONS_MODULE.subscribe)).execute(

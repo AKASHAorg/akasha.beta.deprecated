@@ -31,8 +31,8 @@ class FollowButton extends Component {
         if (followPending) {
             label = (
                 <div className="flex-center">
-                    <Spin className="follow-button__button-icon" size="small" />
-                    {intl.formatMessage(generalMessages.pending)}
+                    <Spin className="follow-button__button-icon" size="small"/>
+                    { intl.formatMessage(generalMessages.pending) }
                 </div>
             );
         } else if (isFollower) {
@@ -41,15 +41,16 @@ class FollowButton extends Component {
                 : intl.formatMessage(profileMessages.following);
             label = (
                 <div className="flex-center">
-                    <Icon className="follow-button__button-icon" type={hovered ? 'close' : 'check'} />
-                    {message}
+                    <Icon className="follow-button__button-icon"
+                          type={ hovered ? 'close' : 'check' }/>
+                    { message }
                 </div>
             );
         } else {
             label = (
                 <div className="flex-center">
-                    <Icon className="follow-button__button-icon" type="plus" />
-                    {intl.formatMessage(profileMessages.follow)}
+                    <Icon className="follow-button__button-icon" type="plus"/>
+                    { intl.formatMessage(profileMessages.follow) }
                 </div>
             );
         }
@@ -61,14 +62,14 @@ class FollowButton extends Component {
 
         return (
             <Button
-                className={className}
-                disabled={followPending}
-                onClick={onFollow}
-                onMouseEnter={this.onMouseEnter}
-                onMouseLeave={this.onMouseLeave}
-                type={canFollow ? 'primary' : 'default'}
+                className={ className }
+                disabled={ followPending }
+                onClick={ onFollow }
+                onMouseEnter={ this.onMouseEnter }
+                onMouseLeave={ this.onMouseLeave }
+                type={ canFollow ? 'primary' : 'default' }
             >
-                {label}
+                { label }
             </Button>
         );
     }

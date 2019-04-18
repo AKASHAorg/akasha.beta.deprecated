@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, GENERAL_SETTINGS, PROFILE_MODULE } from '@akashaproject/common/constants';
+import { COMMON_MODULE, CORE_MODULE, GENERAL_SETTINGS, PROFILE_MODULE, } from '@akashaproject/common/constants';
 import { unpad } from 'ethereumjs-util';
 export const getProfileDataSchema = {
     id: '/getProfileData',

@@ -97,6 +97,7 @@ export default class SettingsStateModel extends SettingsRecord {
             passwordPreference: preference
         });
     }
+
     mergeUserSettings (state, record) {
         const data = Object.assign({}, record);
         const changes = {};

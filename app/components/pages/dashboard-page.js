@@ -1,15 +1,15 @@
 // @flow strict
 
 import * as React from 'react';
-import Route from 'react-router-dom/Route';
+import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Fill } from 'react-slot-fill';
-import ColumnList from '../columns/column-list';
 import { APPBAR_SLOTS, DASHBOARD_SLOTS } from '../layouts/slot-names';
-import { DashboardTopBar, CustomDragLayer } from '../';
+import { CustomDragLayer, DashboardTopBar } from '../';
 import withRequest from '../high-order-components/with-request';
 import { dashboardSelectors, profileSelectors } from '../../local-flux/selectors';
 import { dashboardActions } from '../../local-flux/actions';
+
 /*::
     type Props = {||};
 */
@@ -25,23 +25,23 @@ function DashboardPage (props /* : Props */) {
             <Route
                 path="/"
                 exact
-                render={() => (
+                render={ () => (
                     <>
-                        <Fill name={APPBAR_SLOTS.LEFT}>
+                        <Fill name={ APPBAR_SLOTS.LEFT }>
                             <>
-                                <DashboardTopBar />
+                                <DashboardTopBar/>
                             </>
                         </Fill>
-                        <Fill name={DASHBOARD_SLOTS.COLUMN}>
+                        <Fill name={ DASHBOARD_SLOTS.COLUMN }>
                             <>Column 1</>
                             <>Column 2</>
                         </Fill>
-                        <Fill name={DASHBOARD_SLOTS.NEW_COLUMN}>
+                        <Fill name={ DASHBOARD_SLOTS.NEW_COLUMN }>
                             <>New Column</>
                         </Fill>
-                        <CustomDragLayer />
+                        <CustomDragLayer/>
                     </>
-                )}
+                ) }
             />
         </>
     );

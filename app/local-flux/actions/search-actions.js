@@ -9,9 +9,9 @@ export const searchMoreQuerySuccess = data => action(types.SEARCH_MORE_QUERY_SUC
 export const searchMoreQueryError = error => action(types.SEARCH_MORE_QUERY_ERROR, { error });
 
 export const searchProfiles = (query, autocomplete) =>
-    action(`${SEARCH_MODULE.findProfiles}`, { query, autocomplete });
+    action(`${ SEARCH_MODULE.findProfiles }`, { query, autocomplete });
 
-export const searchQuery = text => action(`${SEARCH_MODULE.query}`, { text });
+export const searchQuery = text => action(`${ SEARCH_MODULE.query }`, { text });
 
 export const searchResetResults = () => action(types.SEARCH_RESET_RESULTS);
 
@@ -30,4 +30,4 @@ export const searchSyncTagsError = error => {
 export const searchSyncTagsSuccess = data => action(types.SEARCH_SYNC_TAGS_SUCCESS, { data });
 
 export const searchTags = (query, autocomplete) =>
-    action(`${SEARCH_MODULE.findTags}`, { query, autocomplete });
+    action(`${ SEARCH_MODULE.findTags }`, { query, autocomplete });

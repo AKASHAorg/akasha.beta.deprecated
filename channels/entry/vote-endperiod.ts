@@ -8,7 +8,7 @@ const voteEndPeriod = {
   minItems: 1,
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data: string[]) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, voteEndPeriod, { throwError: true });

@@ -1,5 +1,5 @@
 // @flow
-import { call, takeLatest, getContext } from 'redux-saga/effects';
+import { call, getContext, takeLatest } from 'redux-saga/effects';
 import { LICENCE_MODULE } from '@akashaproject/common/constants';
 
 /*::

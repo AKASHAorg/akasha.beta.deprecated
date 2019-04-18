@@ -5,13 +5,13 @@ import { LogsList } from '../';
 const LogsDetails = (props) => {
     const { gethLogs, gethStartLogger, gethStopLogger } = props;
     return (
-      <div style={{ width: '100%' }}>
-        <LogsList
-          logs={gethLogs}
-          startLogger={gethStartLogger}
-          stopLogger={gethStopLogger}
-        />
-      </div>
+        <div style={ { width: '100%' } }>
+            <LogsList
+                logs={ gethLogs }
+                startLogger={ gethStartLogger }
+                stopLogger={ gethStopLogger }
+            />
+        </div>
     );
 };
 

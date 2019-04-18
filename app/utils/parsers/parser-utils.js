@@ -1,5 +1,4 @@
 // @flow
-import { supportedProtocols } from './parser-config';
 import { getResizedImages } from '../imageUtils';
 import { uploadImage } from '../../local-flux/services/utils-service';
 
@@ -11,7 +10,7 @@ const ParserUtils = {
         mode: 'no-cors'
     },
     makeParserRequest: (url: string) => {
-        const parserUrl = `${PARSER_URL}?url=${url.toString()}`;
+        const parserUrl = `${ PARSER_URL }?url=${ url.toString() }`;
         try {
             return fetch(parserUrl).then(resp => resp.json());
         } catch (ex) {
@@ -21,7 +20,7 @@ const ParserUtils = {
 
     getUrlQueryParams: (search: string) => new URLSearchParams(search),
 
-    getAbsoluteUrl: (url: string, parsedUrl: Object) : string => {
+    getAbsoluteUrl: (url: string, parsedUrl: Object): string => {
         if (url) {
             return new URL(url, parsedUrl.href).href;
         }
@@ -30,7 +29,7 @@ const ParserUtils = {
 
     formatUrl: (url: string): string => {
         if (!url.startsWith('http')) {
-            return `http://${url}`;
+            return `http://${ url }`;
         }
         return url;
     },
@@ -49,7 +48,7 @@ const ParserUtils = {
         };
     },
 
-    resizeImage: (image:string, { ipfsFile }: Object): Promise<Object> => {
+    resizeImage: (image: string, { ipfsFile }: Object): Promise<Object> => {
         let filePromises = [];
 
         if (image.length) {

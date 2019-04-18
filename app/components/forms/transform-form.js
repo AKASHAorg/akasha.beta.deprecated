@@ -157,7 +157,10 @@ class TransformForm extends Component {
                     return intl.formatMessage(formMessages.transformEssenceMin);
                 }
                 value = amount / 1000;
-                return intl.formatMessage(formMessages.transformEssenceDisclaimer, { amount, value });
+                return intl.formatMessage(formMessages.transformEssenceDisclaimer, {
+                    amount,
+                    value
+                });
             case options.manafied:
                 return intl.formatMessage(formMessages.transformManafiedDisclaimer, { amount });
             case options.transferable:
@@ -175,87 +178,88 @@ class TransformForm extends Component {
         const amountNotEnough = !amount || (from === options.essence && amount < 1000);
 
         return (
-          <Form className="transform-form" hideRequiredMark>
-            <div className="transform-form__select-wrapper">
-              <FormItem
-                className="transform-form__select-item"
-                colon={false}
-                label={intl.formatMessage(formMessages.from)}
-              >
-                <Select onChange={this.onChangeFrom} value={from}>
-                  <Option value={options.essence}>
-                    {intl.formatMessage(generalMessages[options.essence])}
-                  </Option>
-                  <Option value={options.manafied}>
-                    {intl.formatMessage(generalMessages[options.manafied])}
-                  </Option>
-                  <Option value={options.transferable}>
-                    {intl.formatMessage(generalMessages[options.transferable])}
-                  </Option>
-                </Select>
-              </FormItem>
-              <FormItem
-                className="transform-form__select-item"
-                colon={false}
-                label={intl.formatMessage(formMessages.to)}
-              >
-                <Select onChange={this.onChangeTo} value={to}>
-                  <Option value={options.cycling}>
-                    {intl.formatMessage(generalMessages[options.cycling])}
-                  </Option>
-                  <Option value={options.manafied}>
-                    {intl.formatMessage(generalMessages[options.manafied])}
-                  </Option>
-                  <Option value={options.transferable}>
-                    {intl.formatMessage(generalMessages[options.transferable])}
-                  </Option>
-                </Select>
-              </FormItem>
-            </div>
-            <FormItem colon={false} help={this.getSliderHelp(max)}>
-              <div className="flex-center">
-                <Slider
-                  className="transform-form__slider"
-                  min={0}
-                  // if both min and max are 0, the slider will not work properly
-                  max={max || 1}
-                  onChange={max ? this.onAmountChange : () => {}}
-                  tipFormatter={null}
-                  value={amount}
-                />
-                <InputNumber
-                  className="transform-form__slider-amount"
-                  disabled={!max}
-                  min={0}
-                  max={max}
-                  maxLength={12}
-                  onChange={this.onAmountChange}
-                  precision={0}
-                  size="small"
-                  step={1}
-                  value={amount}
-                />
-              </div>
-            </FormItem>
-            <div className="transform-form__disclaimer">
-              {this.renderDisclaimer()}
-            </div>
-            <div className="transform-form__actions">
-              <Button className="transfer-form__button" onClick={onCancel}>
-                {intl.formatMessage(generalMessages.cancel)}
-              </Button>
-              <Button
-                className="transfer-form__button"
-                disabled={isPending || amountNotEnough}
-                htmlType="submit"
-                loading={isPending}
-                onClick={this.onSubmit}
-                type="primary"
-              >
-                {intl.formatMessage(generalMessages.transform)}
-              </Button>
-            </div>
-          </Form>
+            <Form className="transform-form" hideRequiredMark>
+                <div className="transform-form__select-wrapper">
+                    <FormItem
+                        className="transform-form__select-item"
+                        colon={ false }
+                        label={ intl.formatMessage(formMessages.from) }
+                    >
+                        <Select onChange={ this.onChangeFrom } value={ from }>
+                            <Option value={ options.essence }>
+                                { intl.formatMessage(generalMessages[options.essence]) }
+                            </Option>
+                            <Option value={ options.manafied }>
+                                { intl.formatMessage(generalMessages[options.manafied]) }
+                            </Option>
+                            <Option value={ options.transferable }>
+                                { intl.formatMessage(generalMessages[options.transferable]) }
+                            </Option>
+                        </Select>
+                    </FormItem>
+                    <FormItem
+                        className="transform-form__select-item"
+                        colon={ false }
+                        label={ intl.formatMessage(formMessages.to) }
+                    >
+                        <Select onChange={ this.onChangeTo } value={ to }>
+                            <Option value={ options.cycling }>
+                                { intl.formatMessage(generalMessages[options.cycling]) }
+                            </Option>
+                            <Option value={ options.manafied }>
+                                { intl.formatMessage(generalMessages[options.manafied]) }
+                            </Option>
+                            <Option value={ options.transferable }>
+                                { intl.formatMessage(generalMessages[options.transferable]) }
+                            </Option>
+                        </Select>
+                    </FormItem>
+                </div>
+                <FormItem colon={ false } help={ this.getSliderHelp(max) }>
+                    <div className="flex-center">
+                        <Slider
+                            className="transform-form__slider"
+                            min={ 0 }
+                            // if both min and max are 0, the slider will not work properly
+                            max={ max || 1 }
+                            onChange={ max ? this.onAmountChange : () => {
+                            } }
+                            tipFormatter={ null }
+                            value={ amount }
+                        />
+                        <InputNumber
+                            className="transform-form__slider-amount"
+                            disabled={ !max }
+                            min={ 0 }
+                            max={ max }
+                            maxLength={ 12 }
+                            onChange={ this.onAmountChange }
+                            precision={ 0 }
+                            size="small"
+                            step={ 1 }
+                            value={ amount }
+                        />
+                    </div>
+                </FormItem>
+                <div className="transform-form__disclaimer">
+                    { this.renderDisclaimer() }
+                </div>
+                <div className="transform-form__actions">
+                    <Button className="transfer-form__button" onClick={ onCancel }>
+                        { intl.formatMessage(generalMessages.cancel) }
+                    </Button>
+                    <Button
+                        className="transfer-form__button"
+                        disabled={ isPending || amountNotEnough }
+                        htmlType="submit"
+                        loading={ isPending }
+                        onClick={ this.onSubmit }
+                        type="primary"
+                    >
+                        { intl.formatMessage(generalMessages.transform) }
+                    </Button>
+                </div>
+            </Form>
         );
     }
 }

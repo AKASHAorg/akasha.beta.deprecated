@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Map, List } from 'immutable';
+import { List, Map } from 'immutable';
 import { equals } from 'ramda';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { DropTarget } from 'react-dnd';
@@ -13,6 +13,8 @@ import * as dragItemTypes from '../constants/drag-item-types';
 import { largeColumnWidth, smallColumnWidth } from '../constants/columns';
 
 class Dashboard extends Component {
+    columnMarginLeft = 12;
+
     constructor (props) {
         super(props);
         this.state = {
@@ -31,7 +33,6 @@ class Dashboard extends Component {
         this._throttledScroll = throttle(this._handleDashboardScroll, 150, { trailing: true });
     }
 
-    columnMarginLeft = 12;
     /**
      * set initial column order in state
      */
@@ -58,6 +59,7 @@ class Dashboard extends Component {
             this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
     }
+
     /* eslint-disable complexity */
     componentWillReceiveProps (nextProps) {
         const { match, dashboards, columns } = nextProps;
@@ -273,6 +275,7 @@ class Dashboard extends Component {
         }
         this.forceUpdate();
     };
+
     render () {
         const {
             columns,
@@ -298,77 +301,78 @@ class Dashboard extends Component {
             <div
                 className="dashboard"
                 id="dashboard-container"
-                ref={this._getDashboardRef}
-                onScroll={this._throttledScroll}
+                ref={ this._getDashboardRef }
+                onScroll={ this._throttledScroll }
             >
-                {activeDashboard &&
-                    colData &&
-                    columnOrderMap &&
-                    colData
-                        .map((col, colId) => {
-                            const colIndex = columnOrderMap.indexOf(colId);
-                            const column = columns.get(colId);
-                            if (!column || !col) {
-                                return null;
-                            }
-                            const width = column.get('large') ? largeColumnWidth : smallColumnWidth;
-                            const isDragging = draggingColumn.id && colId === draggingColumn.id;
-                            const { left, inViewport } = col;
-                            return (
-                                <div
-                                    className={`dashboard__column
-                        dashboard__column${isDragging ? '_dragging' : ''}`}
-                                    id={colId}
-                                    key={colId}
-                                    style={{
-                                        width,
-                                        // This property is used in dashboard-top-bar for
-                                        // scrolling the column into view
-                                        left: left + 20
-                                    }}
-                                >
-                                    <Column
-                                        columnId={column.id}
-                                        type={column.get('type')}
-                                        onBeginDrag={this._handleBeginDrag}
-                                        onEndDrag={this._handleEndDrag}
-                                        onNeighbourHover={this._handleNeighbourHover}
-                                        inDragMode={isDragging}
-                                        columnIndex={colIndex}
-                                        intl={intl}
-                                        large={column.get('large')}
-                                        isVisible={inViewport}
-                                        draggable
-                                        onSizeChange={this._handleColumnSizeChange}
-                                    />
-                                </div>
-                            );
-                        })
-                        .toIndexedSeq()}
-                {activeDashboard && (
+                { activeDashboard &&
+                colData &&
+                columnOrderMap &&
+                colData
+                    .map((col, colId) => {
+                        const colIndex = columnOrderMap.indexOf(colId);
+                        const column = columns.get(colId);
+                        if (!column || !col) {
+                            return null;
+                        }
+                        const width = column.get('large') ? largeColumnWidth : smallColumnWidth;
+                        const isDragging = draggingColumn.id && colId === draggingColumn.id;
+                        const { left, inViewport } = col;
+                        return (
+                            <div
+                                className={ `dashboard__column
+                        dashboard__column${ isDragging ? '_dragging' : '' }` }
+                                id={ colId }
+                                key={ colId }
+                                style={ {
+                                    width,
+                                    // This property is used in dashboard-top-bar for
+                                    // scrolling the column into view
+                                    left: left + 20
+                                } }
+                            >
+                                <Column
+                                    columnId={ column.id }
+                                    type={ column.get('type') }
+                                    onBeginDrag={ this._handleBeginDrag }
+                                    onEndDrag={ this._handleEndDrag }
+                                    onNeighbourHover={ this._handleNeighbourHover }
+                                    inDragMode={ isDragging }
+                                    columnIndex={ colIndex }
+                                    intl={ intl }
+                                    large={ column.get('large') }
+                                    isVisible={ inViewport }
+                                    draggable
+                                    onSizeChange={ this._handleColumnSizeChange }
+                                />
+                            </div>
+                        );
+                    })
+                    .toIndexedSeq() }
+                { activeDashboard && (
                     <div
                         className="dashboard-column"
-                        style={{
-                            transform: `translate(${newColumnPositionLeft}px, 0px)`,
+                        style={ {
+                            transform: `translate(${ newColumnPositionLeft }px, 0px)`,
                             position: 'absolute',
                             top: 20,
                             bottom: 0
-                        }}
+                        } }
                     >
-                        <NewColumn dashboardId={dashboardId} />
+                        <NewColumn dashboardId={ dashboardId }/>
                     </div>
-                )}
-                {!activeDashboard && (
+                ) }
+                { !activeDashboard && (
                     <div className="flex-center dashboard__empty-placeholder">
-                        <div className={imgClass} />
+                        <div className={ imgClass }/>
                         <span className="dashboard__placeholder-text">
-                            {intl.formatMessage(dashboardMessages.noDashboards)}
+                            { intl.formatMessage(dashboardMessages.noDashboards) }
                         </span>
-                        <span className="content-link dashboard__create-button" onClick={dashboardCreateNew}>
-                            {intl.formatMessage(dashboardMessages.createOneNow)}
+                        <span className="content-link dashboard__create-button"
+                              onClick={ dashboardCreateNew }>
+                            { intl.formatMessage(dashboardMessages.createOneNow) }
                         </span>
                     </div>
-                )}
+                ) }
             </div>
         );
     }

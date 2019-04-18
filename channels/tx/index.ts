@@ -3,7 +3,7 @@ import emitMinedInit from './emit-mined';
 import getTransactionInit from './get-transaction';
 import { TX_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
 
   const addToQueue = addToQueueInit(sp, getService);
   const emitMined = emitMinedInit(sp, getService);

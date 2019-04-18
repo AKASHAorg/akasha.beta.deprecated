@@ -34,84 +34,89 @@ class ListEntries extends Component {
         };
         const content = intl.formatMessage(listMessages.deleteList);
         return (
-          <Modal
-            visible={this.state.deleteModalVisible}
-            className={'delete-modal'}
-            width={320}
-            okText={intl.formatMessage(generalMessages.delete)}
-            okType={'danger'}
-            cancelText={intl.formatMessage(generalMessages.cancel)}
-            onOk={onOk}
-            onCancel={() => { this.setState({ deleteModalVisible: false }); }}
-            closable={false}
-          >
-            {content}
-          </Modal>
+            <Modal
+                visible={ this.state.deleteModalVisible }
+                className={ 'delete-modal' }
+                width={ 320 }
+                okText={ intl.formatMessage(generalMessages.delete) }
+                okType={ 'danger' }
+                cancelText={ intl.formatMessage(generalMessages.cancel) }
+                onOk={ onOk }
+                onCancel={ () => {
+                    this.setState({ deleteModalVisible: false });
+                } }
+                closable={ false }
+            >
+                { content }
+            </Modal>
         );
     }
 
     fetchMoreEntries = () => {
         const { list } = this.props;
-        this.props.dispatchAction(entryListIterator({ columnId: list.get('name'), value: list.get('id') }));
+        this.props.dispatchAction(entryListIterator({
+            columnId: list.get('name'),
+            value: list.get('id')
+        }));
     };
 
     render () {
         const { entries, intl, list } = this.props;
 
         const date = (
-          <div>
+            <div>
             <span>
-              {intl.formatMessage(generalMessages.created)}
+              { intl.formatMessage(generalMessages.created) }
             </span>
-            <FormattedDate
-              day="2-digit"
-              month="long"
-              value={new Date(list.get('timestamp'))}
-              year="numeric"
-            />
-          </div>
+                <FormattedDate
+                    day="2-digit"
+                    month="long"
+                    value={ new Date(list.get('timestamp')) }
+                    year="numeric"
+                />
+            </div>
         );
 
         const description = list.get('description') || date;
 
         return (
-          <div className="list-entries">
-            {this.showDeleteModal()}
-            <div className="list-entries__pad">
-              <div className="list-entries__wrap">
-                <div className="list-entries__header">
-                  <div className="list-entries__subheader">
-                    <div className="list-entries__name">
-                      {list.get('name')}
+            <div className="list-entries">
+                { this.showDeleteModal() }
+                <div className="list-entries__pad">
+                    <div className="list-entries__wrap">
+                        <div className="list-entries__header">
+                            <div className="list-entries__subheader">
+                                <div className="list-entries__name">
+                                    { list.get('name') }
+                                </div>
+                                <div className="list-entries__actions">
+                                    <EditListBtn
+                                        list={ list }
+                                    />
+                                    <Icon
+                                        className="content-link list-card__icon list-card__icon_delete"
+                                        onClick={ this.deleteList }
+                                        type="trash"
+                                    />
+                                </div>
+                            </div>
+                            <div className="list-entries__date">
+                                { description }
+                            </div>
+                        </div>
+                        <div className="list-entries__content">
+                            <EntryList
+                                contextId={ list.get('name') }
+                                entries={ entries }
+                                fetchMoreEntries={ this.fetchMoreEntries }
+                                masonry
+                                moreEntries={ list.get('moreEntries') }
+                                style={ { padding: '0px 50px' } }
+                            />
+                        </div>
                     </div>
-                    <div className="list-entries__actions">
-                      <EditListBtn
-                        list={list}
-                      />
-                      <Icon
-                        className="content-link list-card__icon list-card__icon_delete"
-                        onClick={this.deleteList}
-                        type="trash"
-                      />
-                    </div>
-                  </div>
-                  <div className="list-entries__date">
-                    {description}
-                  </div>
                 </div>
-                <div className="list-entries__content">
-                  <EntryList
-                    contextId={list.get('name')}
-                    entries={entries}
-                    fetchMoreEntries={this.fetchMoreEntries}
-                    masonry
-                    moreEntries={list.get('moreEntries')}
-                    style={{ padding: '0px 50px' }}
-                  />
-                </div>
-              </div>
             </div>
-          </div>
         );
     }
 }

@@ -12,7 +12,7 @@ const dataStream = {
   required: ['module', 'method', 'payload'],
 };
 
-export default function startDataStream(modules, windowId, getService, logger) {
+export default function startDataStream (modules, windowId, getService, logger) {
   // create listener on main Channel
   const ipcChannelMain = new DuplexChannel(
     CORE_MODULE.DATA,

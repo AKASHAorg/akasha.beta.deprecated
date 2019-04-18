@@ -4,7 +4,7 @@ import { Button, Progress } from 'antd';
 import { fromJS } from 'immutable';
 import { equals } from 'ramda';
 import { generalMessages } from '../../locale-data/messages';
-import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
+import imageCreator, { findClosestMatch, getResizedImages } from '../../utils/imageUtils';
 import { uploadImage } from '../../local-flux/services/utils-service';
 import { Icon } from '../';
 
@@ -34,6 +34,7 @@ class ImageUploader extends Component {
             !equals(nextState.error, this.state.error) ||
             !equals(nextState.highlightDropZone, this.state.highlightDropZone);
     }
+
     _highlightDropZone = (ev) => {
         ev.preventDefault();
         if (ev.target.className === 'image-uploader__upload-button') {
@@ -140,94 +141,105 @@ class ImageUploader extends Component {
             highlightDropZone: false,
         });
     }
+
     render () {
         const { multiFiles, intl, initialImage } = this.props;
-        const { imageLoaded, imageUploaderClose, processingFinished,
-            progress, error, highlightDropZone } = this.state;
+        const {
+            imageLoaded, imageUploaderClose, processingFinished,
+            progress, error, highlightDropZone
+        } = this.state;
 
         return (
-          <div
-            ref={(container) => { this.container = container; }}
-            className="image-uploader"
-            onDragEnter={this._highlightDropZone}
-            onDragLeave={this._diminishDropZone}
-            onMouseEnter={() => { this.setState({ imageUploaderClose: true }); }}
-            onMouseLeave={() => { this.setState({ imageUploaderClose: false }); }}
-          >
-            {imageLoaded && processingFinished && imageUploaderClose &&
-              <div className="image-uploader__clear-image-button">
-                <Button
-                  type="standard"
-                  icon="close-circle"
-                  onClick={this._handleClearImage}
-                />
-              </div>
-              }
-            <div>
-              {processingFinished && initialImage && initialImage.size !== 0 &&
-                <img
-                  src={this._getImageSrc(initialImage)}
-                  className={`image-uploader__img image-uploader__img${imageLoaded && '_loaded'}`}
-                  onLoad={this._handleImageLoad}
-                  alt=""
-                />
-              }
-              {processingFinished && initialImage && initialImage.size !== 0 && !imageLoaded &&
-                <div
-                  className="image-uploader__generating-preview"
-                >
-                  {intl.formatMessage(generalMessages.generatingPreview)}...
-                </div>
-              }
-              {!processingFinished &&
-                <div
-                  className="image-uploader__empty-container image-uploader__processing-loader"
-                >
-                  <div
-                    className="image-uploader__processing-loader-text"
-                  >
-                    {intl.formatMessage(generalMessages.processingImage)}...
-                  </div>
-                  <div className="image-uploader__loading-bar">
-                    <Progress
-                      className="image-uploader__progress-bar"
-                      strokeWidth={5}
-                      percent={progress}
-                      status="active"
+            <div
+                ref={ (container) => {
+                    this.container = container;
+                } }
+                className="image-uploader"
+                onDragEnter={ this._highlightDropZone }
+                onDragLeave={ this._diminishDropZone }
+                onMouseEnter={ () => {
+                    this.setState({ imageUploaderClose: true });
+                } }
+                onMouseLeave={ () => {
+                    this.setState({ imageUploaderClose: false });
+                } }
+            >
+                { imageLoaded && processingFinished && imageUploaderClose &&
+                <div className="image-uploader__clear-image-button">
+                    <Button
+                        type="standard"
+                        icon="close-circle"
+                        onClick={ this._handleClearImage }
                     />
-                  </div>
                 </div>
-              }
-            </div>
-            {(initialImage && initialImage.size === 0) && processingFinished &&
-              <div
-                className={
-                    `image-uploader__empty-container
-                    image-uploader__empty-container${highlightDropZone ? '_dragEnter' : ''}`
                 }
-              >
-                <Icon className="image-uploader__add-image-icon" type="photoImage" />
-                <div className="image-uploader__helper-text">
-                  {!highlightDropZone && intl.formatMessage(generalMessages.addImage)}
-                  {highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
+                <div>
+                    { processingFinished && initialImage && initialImage.size !== 0 &&
+                    <img
+                        src={ this._getImageSrc(initialImage) }
+                        className={ `image-uploader__img image-uploader__img${ imageLoaded && '_loaded' }` }
+                        onLoad={ this._handleImageLoad }
+                        alt=""
+                    />
+                    }
+                    { processingFinished && initialImage && initialImage.size !== 0 && !imageLoaded &&
+                    <div
+                        className="image-uploader__generating-preview"
+                    >
+                        { intl.formatMessage(generalMessages.generatingPreview) }...
+                    </div>
+                    }
+                    { !processingFinished &&
+                    <div
+                        className="image-uploader__empty-container image-uploader__processing-loader"
+                    >
+                        <div
+                            className="image-uploader__processing-loader-text"
+                        >
+                            { intl.formatMessage(generalMessages.processingImage) }...
+                        </div>
+                        <div className="image-uploader__loading-bar">
+                            <Progress
+                                className="image-uploader__progress-bar"
+                                strokeWidth={ 5 }
+                                percent={ progress }
+                                status="active"
+                            />
+                        </div>
+                    </div>
+                    }
                 </div>
-              </div>
-            }
-            <input
-              ref={(fileInput) => { this.fileInput = fileInput; }}
-              type="file"
-              className="image-uploader__upload-button"
-              onChange={this._handleDialogOpen}
-              multiple={multiFiles}
-              accept="image/*"
-              title={(!initialImage || (initialImage.size === 0)) ?
-                intl.formatMessage(generalMessages.chooseImage) :
-                intl.formatMessage(generalMessages.chooseAnotherImage)}
-            />
-            {this.state.error &&
-              <div className="image-uploader__error">{error}</div>
-            }
-          </div>
+                { (initialImage && initialImage.size === 0) && processingFinished &&
+                <div
+                    className={
+                        `image-uploader__empty-container
+                    image-uploader__empty-container${ highlightDropZone ? '_dragEnter' : '' }`
+                    }
+                >
+                    <Icon className="image-uploader__add-image-icon" type="photoImage"/>
+                    <div className="image-uploader__helper-text">
+                        { !highlightDropZone && intl.formatMessage(generalMessages.addImage) }
+                        { highlightDropZone && intl.formatMessage(generalMessages.addImageDragged) }
+                    </div>
+                </div>
+                }
+                <input
+                    ref={ (fileInput) => {
+                        this.fileInput = fileInput;
+                    } }
+                    type="file"
+                    className="image-uploader__upload-button"
+                    onChange={ this._handleDialogOpen }
+                    multiple={ multiFiles }
+                    accept="image/*"
+                    title={ (!initialImage || (initialImage.size === 0)) ?
+                        intl.formatMessage(generalMessages.chooseImage) :
+                        intl.formatMessage(generalMessages.chooseAnotherImage) }
+                />
+                { this.state.error &&
+                <div className="image-uploader__error">{ error }</div>
+                }
+            </div>
         );
     }
 }

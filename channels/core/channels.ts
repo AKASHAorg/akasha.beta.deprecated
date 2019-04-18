@@ -5,7 +5,7 @@ const hashPath = (...path: string[]) => {
 const channels: any = { client: {}, server: {} };
 
 export function
-registerChannel(
+registerChannel (
   implListener: any,
   implRequest: any,
   module: string,
@@ -19,6 +19,6 @@ registerChannel(
   channels.server[module][method] = new implRequest(hashPath('server', module, method), method);
 }
 
-export default function getChannels() {
+export default function getChannels () {
   return { client: channels.client, server: channels.server };
 }

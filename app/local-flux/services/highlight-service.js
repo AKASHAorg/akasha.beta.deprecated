@@ -33,7 +33,7 @@ export const saveHighlight = highlight => {
     try {
         const timestamp = new Date().getTime();
         highlight['timestamp'] = timestamp;
-        highlight['id'] = `${timestamp}-${highlight.ethAddress}`;
+        highlight['id'] = `${ timestamp }-${ highlight.ethAddress }`;
         getHighlightCollection().insert(highlight);
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, highlight));
     } catch (error) {

@@ -5,52 +5,54 @@ import { Button, Modal, Switch } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
 
 const Footer = (props) => {
-    const { intl, onCancel, onSave, onToggle, saveDisabled, toggleDisabled, toggleLabel,
-        toggleOn } = props;
+    const {
+        intl, onCancel, onSave, onToggle, saveDisabled, toggleDisabled, toggleLabel,
+        toggleOn
+    } = props;
     return (
-      <div className="service-details-modal__footer">
-        <div className="service-details-modal__footer-left">
-          <Switch
-            checked={toggleOn}
-            disabled={toggleDisabled}
-            onChange={onToggle}
-            style={{ marginRight: '10px' }}
-          />
-          <div className="service-details-modal__toggle-label">
-            {toggleLabel}
-          </div>
-        </div>
-        <div className="service-details-modal__footer-right">
-          <Button onClick={onCancel}>
-            <div className="service-details-modal__button-label">
-              {intl.formatMessage(generalMessages.cancel)}
+        <div className="service-details-modal__footer">
+            <div className="service-details-modal__footer-left">
+                <Switch
+                    checked={ toggleOn }
+                    disabled={ toggleDisabled }
+                    onChange={ onToggle }
+                    style={ { marginRight: '10px' } }
+                />
+                <div className="service-details-modal__toggle-label">
+                    { toggleLabel }
+                </div>
             </div>
-          </Button>
-          <Button
-            disabled={saveDisabled}
-            onClick={onSave}
-            type="primary"
-          >
-            <div className="service-details-modal__button-label">
-              {intl.formatMessage(generalMessages.save)}
+            <div className="service-details-modal__footer-right">
+                <Button onClick={ onCancel }>
+                    <div className="service-details-modal__button-label">
+                        { intl.formatMessage(generalMessages.cancel) }
+                    </div>
+                </Button>
+                <Button
+                    disabled={ saveDisabled }
+                    onClick={ onSave }
+                    type="primary"
+                >
+                    <div className="service-details-modal__button-label">
+                        { intl.formatMessage(generalMessages.save) }
+                    </div>
+                </Button>
             </div>
-          </Button>
         </div>
-      </div>
     );
 };
 
 const ServiceDetailsModal = props => (
-  <Modal
-    closable={false}
-    footer={<Footer {...props} />}
-    onCancel={props.onCancel}
-    visible
-    width="600px"
-    wrapClassName="service-details-modal"
-  >
-    {props.children}
-  </Modal>
+    <Modal
+        closable={ false }
+        footer={ <Footer { ...props } /> }
+        onCancel={ props.onCancel }
+        visible
+        width="600px"
+        wrapClassName="service-details-modal"
+    >
+        { props.children }
+    </Modal>
 );
 
 Footer.propTypes = {

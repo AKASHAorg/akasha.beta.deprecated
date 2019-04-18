@@ -1,11 +1,11 @@
 import * as Promise from 'bluebird';
 import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const entryEth = yield getService(ENTRY_MODULE.getEntryIpfsHash).execute(data);
     const entryIpfs = yield getService(CORE_MODULE.IPFS_CONNECTOR)
-    .getInstance().api.get(entryEth.ipfsHash);
+      .getInstance().api.get(entryEth.ipfsHash);
 
     const version = entryIpfs.version || null;
     return { version };

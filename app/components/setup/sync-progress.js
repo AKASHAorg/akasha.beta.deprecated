@@ -4,15 +4,15 @@ import { Progress } from 'antd';
 
 function SyncProgress ({ value }) {
     return (
-      <div className="sync-progress">
-        <Progress
-          type="circle"
-          percent={value}
-          showInfo={false}
-          strokeWidth={4}
-          width={140}
-        />
-      </div>
+        <div className="sync-progress">
+            <Progress
+                type="circle"
+                percent={ value }
+                showInfo={ false }
+                strokeWidth={ 4 }
+                width={ 140 }
+            />
+        </div>
     );
 }
 

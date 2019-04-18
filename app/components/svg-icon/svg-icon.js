@@ -11,13 +11,13 @@ class SvgIcon extends PureComponent {
         }, style);
 
         return (
-          <svg
-            style={mergedStyles}
-            className={`svg-icon-root ${className}`}
-            viewBox={viewBox}
-          >
-            {children}
-          </svg>
+            <svg
+                style={ mergedStyles }
+                className={ `svg-icon-root ${ className }` }
+                viewBox={ viewBox }
+            >
+                { children }
+            </svg>
         );
     }
 }

@@ -1,9 +1,10 @@
-import React from "react";
+import React from 'react';
 
 const GethOrange = React.forwardRef((props, ref) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" {...props} ref={ref}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" { ...props }
+         ref={ ref }>
         <g fill="none" fillRule="evenodd">
-            <circle cx="12" cy="12" r="11.5" stroke="#FFC02F" />
+            <circle cx="12" cy="12" r="11.5" stroke="#FFC02F"/>
             <g transform="translate(7 4)">
                 <path
                     stroke="#B4BCC8"
@@ -18,5 +19,5 @@ const GethOrange = React.forwardRef((props, ref) => (
         </g>
     </svg>
 ));
-GethOrange.displayName = "GethOrange";
+GethOrange.displayName = 'GethOrange';
 export default GethOrange;

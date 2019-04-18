@@ -7,9 +7,9 @@ class SyncStatus extends Component {
     renderMessage (message) {
         const { intl } = this.props;
         return (
-          <div className="sync-status__title">
-            {intl.formatMessage(message)}
-          </div>
+            <div className="sync-status__title">
+                { intl.formatMessage(message) }
+            </div>
         );
     }
 
@@ -18,25 +18,27 @@ class SyncStatus extends Component {
             return null;
         }
         return (
-          <div className="sync-status__counter">
-            {message &&
-              <span className="sync-status__counter-message">
-                {message}
+            <div className="sync-status__counter">
+                { message &&
+                <span className="sync-status__counter-message">
+                { message }
               </span>
-            }
-            {current} / {total}
-          </div>
+                }
+                { current } / { total }
+            </div>
         );
     };
 
     renderProgressBody = () => { // eslint-disable-line complexity
-        const { gethStarting, gethStatus, gethSyncStatus, intl, ipfsStatus,
-            syncActionId } = this.props;
+        const {
+            gethStarting, gethStatus, gethSyncStatus, intl, ipfsStatus,
+            syncActionId
+        } = this.props;
         const synchronizingMessage = intl.formatMessage(setupMessages.synchronizing);
         const processingMessage = intl.formatMessage(setupMessages.processing);
 
         if (syncActionId === 1 && gethSyncStatus && gethSyncStatus.get('peerCount') > 0 &&
-                gethSyncStatus.get('highestBlock') > 0) {
+            gethSyncStatus.get('highestBlock') > 0) {
             const peerInfo = intl.formatMessage(
                 setupMessages.peerCount,
                 {
@@ -44,15 +46,15 @@ class SyncStatus extends Component {
                 }
             );
             return (
-              <div>
-                <div className="sync-status__title">
-                  {peerInfo}
+                <div>
+                    <div className="sync-status__title">
+                        { peerInfo }
+                    </div>
+                    { this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
+                        synchronizingMessage) }
+                    { this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
+                        processingMessage) }
                 </div>
-                {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
-                  synchronizingMessage)}
-                {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
-                  processingMessage)}
-              </div>
             );
         } else if (syncActionId === 4) {
             return this.renderMessage(setupMessages.syncCompleted);
@@ -72,13 +74,13 @@ class SyncStatus extends Component {
                 setupMessages.syncStopped;
 
             return (
-              <div>
-                {this.renderMessage(title)}
-                {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
-                      synchronizingMessage)}
-                {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
-                      processingMessage)}
-              </div>
+                <div>
+                    { this.renderMessage(title) }
+                    { this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
+                        synchronizingMessage) }
+                    { this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
+                        processingMessage) }
+                </div>
             );
         } else if (gethStatus.get('api')) {
             return this.renderMessage(setupMessages.findingPeers);
@@ -93,7 +95,7 @@ class SyncStatus extends Component {
         let progress;
 
         if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 &&
-                gethSyncStatus.get('highestBlock') > 0) {
+            gethSyncStatus.get('highestBlock') > 0) {
             const { currentBlock, startingBlock, highestBlock } = gethSyncStatus.toJS();
             progress = ((currentBlock - startingBlock) / (highestBlock - startingBlock)) * 100;
         } else if (syncActionId === 4) {
@@ -101,14 +103,14 @@ class SyncStatus extends Component {
         }
 
         return (
-          <div className="sync-status">
-            <div className="sync-status__progress-container">
-              <SyncProgressLoader value={progress} />
+            <div className="sync-status">
+                <div className="sync-status__progress-container">
+                    <SyncProgressLoader value={ progress }/>
+                </div>
+                <div className="sync-status__details">
+                    { this.renderProgressBody() }
+                </div>
             </div>
-            <div className="sync-status__details">
-              {this.renderProgressBody()}
-            </div>
-          </div>
         );
     }
 }

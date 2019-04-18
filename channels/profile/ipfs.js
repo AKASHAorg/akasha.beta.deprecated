@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { CORE_MODULE, GENERAL_SETTINGS, PROFILE_CONSTANTS, PROFILE_MODULE } from '@akashaproject/common/constants';
+import { CORE_MODULE, GENERAL_SETTINGS, PROFILE_CONSTANTS, PROFILE_MODULE, } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
     const getShortProfile = Promise
         .coroutine(function* (hash, resolveAvatar) {

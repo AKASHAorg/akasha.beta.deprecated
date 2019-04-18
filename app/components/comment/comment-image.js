@@ -45,7 +45,7 @@ class CommentImage extends Component {
         const bestImage = getBestAvailableImage(files);
         const images = new List();
         const fullSizeImgs = images.push({
-            src: `${baseUrl}/${bestImage.src}`,
+            src: `${ baseUrl }/${ bestImage.src }`,
             height: bestImage.height,
             width: bestImage.width,
             imgId: data.imgId,
@@ -58,6 +58,7 @@ class CommentImage extends Component {
             });
         }
     }
+
     render () {
         const { baseUrl, block, contentState, readOnly } = this.props;
         const { gifPlaying } = this.state;
@@ -71,7 +72,7 @@ class CommentImage extends Component {
             console.error('hash is not string');
             return null;
         }
-        const url = `${baseUrl}/${hash}`;
+        const url = `${ baseUrl }/${ hash }`;
         const imageDimensions = {
             width: bestKey === 'xs' ? data.files[bestKey].width : '100%',
             height: bestKey === 'xs' ? data.files[bestKey].height : ''
@@ -81,36 +82,36 @@ class CommentImage extends Component {
         });
 
         return (
-          <div className="flex-center-x comment-image" onMouseDown={this.onMouseDown}>
-            <div
-              className="comment-image__image-wrapper"
-              onMouseEnter={data.files.gif && this.onMouseEnter}
-              onMouseLeave={data.files.gif && this.onMouseLeave}
-              style={imageDimensions}
-              onClick={this._handleFullSizeSwitch}
-            >
-              <img
-                alt=""
-                className={`comment-image__img comment-image__img${readOnly ? '_readonly' : ''}`}
-                src={url}
-                style={imageDimensions}
-              />
-              {!readOnly &&
-                <Button
-                  className="comment-image__close-button"
-                  icon="close"
-                  onClick={this.onDelete}
-                  size="small"
-                  type="standard"
-                />
-              }
-              {data.files.gif &&
-                <div className={gifIconClass}>
-                  <Icon type="caret-right" />
+            <div className="flex-center-x comment-image" onMouseDown={ this.onMouseDown }>
+                <div
+                    className="comment-image__image-wrapper"
+                    onMouseEnter={ data.files.gif && this.onMouseEnter }
+                    onMouseLeave={ data.files.gif && this.onMouseLeave }
+                    style={ imageDimensions }
+                    onClick={ this._handleFullSizeSwitch }
+                >
+                    <img
+                        alt=""
+                        className={ `comment-image__img comment-image__img${ readOnly ? '_readonly' : '' }` }
+                        src={ url }
+                        style={ imageDimensions }
+                    />
+                    { !readOnly &&
+                    <Button
+                        className="comment-image__close-button"
+                        icon="close"
+                        onClick={ this.onDelete }
+                        size="small"
+                        type="standard"
+                    />
+                    }
+                    { data.files.gif &&
+                    <div className={ gifIconClass }>
+                        <Icon type="caret-right"/>
+                    </div>
+                    }
                 </div>
-              }
             </div>
-          </div>
         );
     }
 }

@@ -33,7 +33,10 @@ class OptimisticComment extends Component {
         const wrappedComponent = decorateComponentWithProps(CommentImage, {
             readOnly: true
         });
-        this.emojiPlugin = createEmojiPlugin({ imagePath: 'https://ipfs.io/ipfs/QmdEkyy4pmcmDhAe5XjsAokhXMFMvNTVzoELnxfpUGhmQv/emoji-svg/', allowImageCache: true });
+        this.emojiPlugin = createEmojiPlugin({
+            imagePath: 'https://ipfs.io/ipfs/QmdEkyy4pmcmDhAe5XjsAokhXMFMvNTVzoELnxfpUGhmQv/emoji-svg/',
+            allowImageCache: true
+        });
         this.highlightPlugin = createHighlightPlugin();
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
         this.linkPlugin = createLinkPlugin();
@@ -60,7 +63,9 @@ class OptimisticComment extends Component {
         });
     };
 
-    onChange = (editorState) => { this.setState({ editorState }); };
+    onChange = (editorState) => {
+        this.setState({ editorState });
+    };
 
     renderExpandButton = () => {
         const { intl } = this.props;
@@ -72,12 +77,13 @@ class OptimisticComment extends Component {
             'comment__expand-button_active': !isExpanded
         });
         return (
-          <div className={className}>
-            <div className="flex-center-y content-link" onClick={this.toggleExpanded}>
-              <Icon className="comment__expand-button-icon" type={isExpanded ? 'arrowUp' : 'arrowDown'} />
-              {label}
+            <div className={ className }>
+                <div className="flex-center-y content-link" onClick={ this.toggleExpanded }>
+                    <Icon className="comment__expand-button-icon"
+                          type={ isExpanded ? 'arrowUp' : 'arrowDown' }/>
+                    { label }
+                </div>
             </div>
-          </div>
         );
     };
 
@@ -96,49 +102,53 @@ class OptimisticComment extends Component {
         const voteProps = { iconClassName, isOwnEntity: true, votePending: false, vote: '0' };
 
         return (
-          <div id={`comment-${comment.get('commentId')}`} className="comment">
-            <div className="comment__inner">
-              <div className="comment__votes">
-                <VotePopover
-                  onSubmit={() => {}}
-                  type={actionTypes.commentUpvote}
-                  {...voteProps}
-                />
-                <span className="comment__score">0</span>
-                <VotePopover
-                  onSubmit={() => {}}
-                  type={actionTypes.commentDownvote}
-                  {...voteProps}
-                />
-              </div>
-              <div className="comment__main">
-                <div className="flex-center-y comment__header">
-                  <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
-                    <div className={authorClass}>
-                      {getDisplayName({ akashaId, ethAddress })}
+            <div id={ `comment-${ comment.get('commentId') }` } className="comment">
+                <div className="comment__inner">
+                    <div className="comment__votes">
+                        <VotePopover
+                            onSubmit={ () => {
+                            } }
+                            type={ actionTypes.commentUpvote }
+                            { ...voteProps }
+                        />
+                        <span className="comment__score">0</span>
+                        <VotePopover
+                            onSubmit={ () => {
+                            } }
+                            type={ actionTypes.commentDownvote }
+                            { ...voteProps }
+                        />
                     </div>
-                  </ProfilePopover>
-                  <span className="comment__publish-date">
-                    {date && intl.formatRelative(new Date(date))}
+                    <div className="comment__main">
+                        <div className="flex-center-y comment__header">
+                            <ProfilePopover ethAddress={ ethAddress } containerRef={ containerRef }>
+                                <div className={ authorClass }>
+                                    { getDisplayName({ akashaId, ethAddress }) }
+                                </div>
+                            </ProfilePopover>
+                            <span className="comment__publish-date">
+                    { date && intl.formatRelative(new Date(date)) }
                   </span>
-                  <Spin className="flex-center" delay={200} />
+                            <Spin className="flex-center" delay={ 200 }/>
+                        </div>
+                        <div className={ bodyClass } ref={ (el) => {
+                            this.editorWrapperRef = el;
+                        } }>
+                            <Editor
+                                editorState={ editorState }
+                                // This is needed because draft-js-plugin-editor applies decorators on onChange event
+                                // https://github.com/draft-js-plugins/draft-js-plugins/issues/530
+                                onChange={ this.onChange }
+                                plugins={ [this.emojiPlugin, this.highlightPlugin, this.imagePlugin, this.linkPlugin] }
+                                readOnly
+                            />
+                        </div>
+                        <div className="comment__expand-button-wrapper">
+                            { isExpanded !== null && this.renderExpandButton() }
+                        </div>
+                    </div>
                 </div>
-                <div className={bodyClass} ref={(el) => { this.editorWrapperRef = el; }}>
-                  <Editor
-                    editorState={editorState}
-                    // This is needed because draft-js-plugin-editor applies decorators on onChange event
-                    // https://github.com/draft-js-plugins/draft-js-plugins/issues/530
-                    onChange={this.onChange}
-                    plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin, this.linkPlugin]}
-                    readOnly
-                  />
-                </div>
-                <div className="comment__expand-button-wrapper">
-                  {isExpanded !== null && this.renderExpandButton()}
-                </div>
-              </div>
             </div>
-          </div>
         );
     }
 }

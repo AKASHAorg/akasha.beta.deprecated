@@ -7,14 +7,22 @@ import { searchTags } from '../../local-flux/actions/search-actions';
 import { profileToggleInterest } from '../../local-flux/actions/profile-actions';
 import { dashboardAddFirst } from '../../local-flux/actions/dashboard-actions';
 import { navBackCounterReset } from '../../local-flux/actions/app-actions';
-import { dashboardMessages, generalMessages, searchMessages,
-    setupMessages } from '../../locale-data/messages';
+import {
+    dashboardMessages,
+    generalMessages,
+    searchMessages,
+    setupMessages
+} from '../../locale-data/messages';
 import { Icon, TagListInterests } from '../';
 import { SEARCH } from '../../constants/context-types';
 import * as columnTypes from '../../constants/columns';
-import { dashboardSelectors, profileSelectors, tagSelectors,
-  searchSelectors } from '../../local-flux/selectors';
-  import withRequest from '../high-order-components/with-request';
+import {
+    dashboardSelectors,
+    profileSelectors,
+    searchSelectors,
+    tagSelectors
+} from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 class NewIdentityInterests extends Component {
     constructor (props) {
@@ -28,7 +36,7 @@ class NewIdentityInterests extends Component {
     componentWillReceiveProps (nextProps) {
         if (nextProps.firstDashboardReady === true) {
             const { history, firstDashboardId } = this.props;
-            history.push(`/dashboard/${firstDashboardId}`);
+            history.push(`/dashboard/${ firstDashboardId }`);
         }
     }
 
@@ -37,7 +45,9 @@ class NewIdentityInterests extends Component {
         this.props.navBackCounterReset();
     }
 
-    getInputRef = (el) => { this.input = el; };
+    getInputRef = (el) => {
+        this.input = el;
+    };
 
     onChange = (ev) => {
         this.setState({ query: ev.target.value });
@@ -60,63 +70,63 @@ class NewIdentityInterests extends Component {
         const disabledSubmit = profileInterests.get(columnTypes.tag).size === 0 || this.state.disableSubmit;
 
         return (
-          <div className="setup-content setup-content__column_full">
-            <div className="setup-content__column-content new-identity-interests">
-              <div className="new-identity-interests__left">
-                <div>
-                  <div className="new-identity-interests__left-bold-text">
-                    {intl.formatMessage(setupMessages.interestedIn)}
-                  </div>
-                  <span>{intl.formatMessage(setupMessages.interestSuggestion)}</span>
+            <div className="setup-content setup-content__column_full">
+                <div className="setup-content__column-content new-identity-interests">
+                    <div className="new-identity-interests__left">
+                        <div>
+                            <div className="new-identity-interests__left-bold-text">
+                                { intl.formatMessage(setupMessages.interestedIn) }
+                            </div>
+                            <span>{ intl.formatMessage(setupMessages.interestSuggestion) }</span>
+                        </div>
+                        <div className="new-identity-interests__left-interests">
+                            { profileInterests.get(columnTypes.tag).map(interest => (
+                                <Tag
+                                    className="new-identity-interests__tag"
+                                    closable
+                                    key={ interest }
+                                    onClose={ () => this.props.profileToggleInterest(interest, columnTypes.tag) }
+                                >
+                                    { interest }
+                                </Tag>
+                            )) }
+                        </div>
+                    </div>
+                    <div className="new-identity-interests__right">
+                        <Input
+                            onChange={ this.onChange }
+                            placeholder={ intl.formatMessage(searchMessages.searchSomething) }
+                            prefix={ <Icon type="search"/> }
+                            ref={ this.getInputRef }
+                            size="large"
+                            value={ this.state.query }
+                        />
+                        <TagListInterests
+                            contextId={ SEARCH }
+                            entriesCount={ entriesCount }
+                            fetchingTags={ fetchingTags }
+                            profileInterests={ profileInterests }
+                            query={ this.state.query }
+                            tags={ tags }
+                            toggleInterest={ this.props.profileToggleInterest }
+                        />
+                    </div>
                 </div>
-                <div className="new-identity-interests__left-interests">
-                  {profileInterests.get(columnTypes.tag).map(interest => (
-                    <Tag
-                      className="new-identity-interests__tag"
-                      closable
-                      key={interest}
-                      onClose={() => this.props.profileToggleInterest(interest, columnTypes.tag)}
+                <div className="setup-content__column-footer new-identity-interests__footer">
+                    <div className="content-link flex-center-y" onClick={ this.handleSkipStep }>
+                        { intl.formatMessage(generalMessages.skipStep) }
+                        <Icon className="new-identity-interests__skip-icon" type="arrowRight"/>
+                    </div>
+                    <Button
+                        className="new-identity__button"
+                        disabled={ disabledSubmit }
+                        onClick={ this.handleSubmit }
+                        type="primary"
                     >
-                      {interest}
-                    </Tag>
-                  ))}
+                        { intl.formatMessage(generalMessages.submit) }
+                    </Button>
                 </div>
-              </div>
-              <div className="new-identity-interests__right">
-                <Input
-                  onChange={this.onChange}
-                  placeholder={intl.formatMessage(searchMessages.searchSomething)}
-                  prefix={<Icon type="search" />}
-                  ref={this.getInputRef}
-                  size="large"
-                  value={this.state.query}
-                />
-                <TagListInterests
-                  contextId={SEARCH}
-                  entriesCount={entriesCount}
-                  fetchingTags={fetchingTags}
-                  profileInterests={profileInterests}
-                  query={this.state.query}
-                  tags={tags}
-                  toggleInterest={this.props.profileToggleInterest}
-                />
-              </div>
             </div>
-            <div className="setup-content__column-footer new-identity-interests__footer">
-              <div className="content-link flex-center-y" onClick={this.handleSkipStep}>
-                {intl.formatMessage(generalMessages.skipStep)}
-                <Icon className="new-identity-interests__skip-icon" type="arrowRight" />
-              </div>
-              <Button
-                className="new-identity__button"
-                disabled={disabledSubmit}
-                onClick={this.handleSubmit}
-                type="primary"
-              >
-                {intl.formatMessage(generalMessages.submit)}
-              </Button>
-            </div>
-          </div>
         );
     }
 }
@@ -137,7 +147,7 @@ NewIdentityInterests.propTypes = {
 };
 
 function mapStateToProps (state) {
-    const firstDashboard = selectDashboardsById(state).first(); 
+    const firstDashboard = selectDashboardsById(state).first();
     return {
         entriesCount: searchSelectors.selectTagEntriesCount(state),
         fetchingTags: tagSelectors.getTagSearchPending(state),

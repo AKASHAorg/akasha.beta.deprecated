@@ -1,7 +1,8 @@
-import React from "react";
+import React from 'react';
 
 const MediaEntry = React.forwardRef((props, ref) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" {...props} ref={ref}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" { ...props }
+         ref={ ref }>
         <g
             fill="none"
             fillRule="evenodd"
@@ -9,10 +10,11 @@ const MediaEntry = React.forwardRef((props, ref) => (
             strokeLinecap="round"
             strokeLinejoin="round"
         >
-            <polygon points="6.5 2 6.5 0 2.5 0 2.5 2 .5 2 .5 11 14.5 11 14.5 2" />
-            <path d="M10,6.5 C10,7.87833333 8.87833333,9 7.5,9 C6.12166667,9 5,7.87833333 5,6.5 C5,5.12166667 6.12166667,4 7.5,4 C8.87833333,4 10,5.12166667 10,6.5 Z" />
+            <polygon points="6.5 2 6.5 0 2.5 0 2.5 2 .5 2 .5 11 14.5 11 14.5 2"/>
+            <path
+                d="M10,6.5 C10,7.87833333 8.87833333,9 7.5,9 C6.12166667,9 5,7.87833333 5,6.5 C5,5.12166667 6.12166667,4 7.5,4 C8.87833333,4 10,5.12166667 10,6.5 Z"/>
         </g>
     </svg>
 ));
-MediaEntry.displayName = "MediaEntry";
+MediaEntry.displayName = 'MediaEntry';
 export default MediaEntry;

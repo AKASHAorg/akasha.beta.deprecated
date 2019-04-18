@@ -11,31 +11,31 @@ const tagIteratorSchema = {
   required: ['toBlock'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise
-  .coroutine(function* (data: { toBlock: number, limit?: number }) {
-    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-    v.validate(data, tagIteratorSchema, { throwError: true });
+    .coroutine(function* (data: { toBlock: number, limit?: number }) {
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+      v.validate(data, tagIteratorSchema, { throwError: true });
 
-    const collection = [];
-    const maxResults = data.limit || 5;
-    const contracts = getService(CORE_MODULE.CONTRACTS);
-    const web3Api = getService(CORE_MODULE.WEB3_API);
-    const fetched = yield contracts.fromEvent(
-      contracts.instance.Tags.TagCreate,
-      {},
-      data.toBlock,
-      maxResults,
-      {});
+      const collection = [];
+      const maxResults = data.limit || 5;
+      const contracts = getService(CORE_MODULE.CONTRACTS);
+      const web3Api = getService(CORE_MODULE.WEB3_API);
+      const fetched = yield contracts.fromEvent(
+        contracts.instance.Tags.TagCreate,
+        {},
+        data.toBlock,
+        maxResults,
+        {});
 
-    for (const event of fetched.results) {
-      collection.push({ tag: web3Api.instance.utils.toUtf8(event.args.tag) });
-      if (collection.length === maxResults) {
-        break;
+      for (const event of fetched.results) {
+        collection.push({ tag: web3Api.instance.utils.toUtf8(event.args.tag) });
+        if (collection.length === maxResults) {
+          break;
+        }
       }
-    }
-    return { collection, lastBlock: fetched.fromBlock };
-  });
+      return { collection, lastBlock: fetched.fromBlock };
+    });
 
   const tagIterator = { execute, name: 'tagIterator' };
   const service = function () {

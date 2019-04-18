@@ -7,7 +7,7 @@ import web3HelperInit from './web3-helper';
 
 import sp, { getService } from './sp';
 
-const init = function init() {
+const init = function init () {
 
   const settings = new Map();
   const getSettings = function () {

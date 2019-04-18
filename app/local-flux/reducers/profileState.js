@@ -1,10 +1,9 @@
-import { List, Map, Collection, fromJS } from 'immutable';
+import { Collection, fromJS, List, Map } from 'immutable';
 import * as types from '../constants';
 import * as actionTypes from '../../constants/action-types';
 import { createReducer } from './utils';
 import ProfileStateModel, {
     AethBalance,
-    Balance,
     EssenceBalance,
     EssenceEvent,
     EssenceIterator,
@@ -22,20 +21,20 @@ const initialState = new ProfileStateModel();
 const profileState = createReducer(initialState, {
     /* ======= cleaned ========== */
 
-    [`${PROFILE_MODULE.getCurrentProfile}_SUCCESS`]: (state, { payload }) => {
+    [`${ PROFILE_MODULE.getCurrentProfile }_SUCCESS`]: (state, { payload }) => {
         const { akashaId, ethAddress, raw } = payload;
         const loggedProfile = new LoggedProfile({ akashaId, ethAddress, raw });
         return state.set(['loggedProfile'], loggedProfile);
     },
 
-    [`${PROFILE_MODULE.profileData}`]: (state, { akashaId, ethAddress }) =>
+    [`${ PROFILE_MODULE.profileData }`]: (state, { akashaId, ethAddress }) =>
         state.merge({
             byEthAddress: state
                 .get('byEthAddress')
                 .set(ethAddress, new ProfileRecord({ akashaId, ethAddress }))
         }),
 
-    [`${PROFILE_MODULE.profileData}_SUCCESS`]: (state, { payload }) => {
+    [`${ PROFILE_MODULE.profileData }_SUCCESS`]: (state, { payload }) => {
         const { ethAddress } = payload;
         // console.log(payload, 'state payload!');
         // return state;
@@ -44,7 +43,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [`${PROFILE_MODULE.getBalance}_SUCCESS`]: (state, { payload }) => {
+    [`${ PROFILE_MODULE.getBalance }_SUCCESS`]: (state, { payload }) => {
         const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
         // balance => main token balance
         // unit => the name of the main token (in this case ether)
@@ -101,19 +100,19 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state => state.set('loggedProfile', new LoggedProfile()),
 
-    [`${PROFILE_MODULE.essenceIterator}`]: state => {
+    [`${ PROFILE_MODULE.essenceIterator }`]: state => {
         const flag = state.getIn(['essenceIterator', 'lastBlock'])
             ? 'fetchingMoreEssenceIterator'
             : 'fetchingEssenceIterator';
         return state.setIn(['flags', flag], true);
     },
 
-    [`${PROFILE_MODULE.essenceIterator}_ERROR`]: (state, { request }) => {
+    [`${ PROFILE_MODULE.essenceIterator }_ERROR`]: (state, { request }) => {
         const flag = request.lastIndex ? 'fetchingMoreEssenceIterator' : 'fetchingEssenceIterator';
         return state.setIn(['flags', flag], false);
     },
 
-    [`${PROFILE_MODULE.essenceIterator}_SUCCESS`]: (state, { data, request }) => {
+    [`${ PROFILE_MODULE.essenceIterator }_SUCCESS`]: (state, { data, request }) => {
         let latestIterable = new List();
         const essenceEvents = state.get('essenceEvents');
         data.collection.forEach(event => {
@@ -136,11 +135,14 @@ const profileState = createReducer(initialState, {
         return state.merge({
             essenceEvents: latestIterable,
             flags: state.get('flags').set(flag, false),
-            essenceIterator: new EssenceIterator({ lastBlock: data.lastBlock, lastIndex: data.lastIndex })
+            essenceIterator: new EssenceIterator({
+                lastBlock: data.lastBlock,
+                lastIndex: data.lastIndex
+            })
         });
     },
 
-    [`${REGISTRY_MODULE.profileExists}_SUCCESS`]: (state, { data }) =>
+    [`${ REGISTRY_MODULE.profileExists }_SUCCESS`]: (state, { data }) =>
         state.merge({
             exists: state.get('exists').set(data.akashaId, new ProfileExistsRecord(data))
         }),
@@ -150,7 +152,7 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_FAUCET_SUCCESS]: state => state.set('faucet', 'success'),
     [types.PROFILE_RESET_FAUCET]: state => state.set('faucet', null),
-    [`${PROFILE_MODULE.followProfile}_SUCCESS`]: (state, { data }) => {
+    [`${ PROFILE_MODULE.followProfile }_SUCCESS`]: (state, { data }) => {
         const { ethAddress } = data;
         const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
         const loggedProfile = state.getIn(['byEthAddress', loggedEthAddress]);
@@ -184,13 +186,13 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [`${PROFILE_MODULE.followersIterator}`]: (state, { ethAddress }) =>
+    [`${ PROFILE_MODULE.followersIterator }`]: (state, { ethAddress }) =>
         state.setIn(['flags', 'fetchingFollowers', ethAddress], true),
 
-    [`${PROFILE_MODULE.followersIterator}_ERROR`]: (state, { request }) =>
+    [`${ PROFILE_MODULE.followersIterator }_ERROR`]: (state, { request }) =>
         state.setIn(['flags', 'fetchingFollowers', request.ethAddress], false),
 
-    [`${PROFILE_MODULE.followersIterator}_SUCCESS`]: (state, { data, request }) => {
+    [`${ PROFILE_MODULE.followersIterator }_SUCCESS`]: (state, { data, request }) => {
         const moreFollowers = data.lastBlock > 0;
         let followersList = new List();
         const last = {
@@ -209,13 +211,13 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [`${PROFILE_MODULE.followingIterator}`]: (state, { ethAddress }) =>
+    [`${ PROFILE_MODULE.followingIterator }`]: (state, { ethAddress }) =>
         state.setIn(['flags', 'fetchingFollowings', ethAddress], true),
 
-    [`${PROFILE_MODULE.followingIterator}_ERROR`]: (state, { request }) =>
+    [`${ PROFILE_MODULE.followingIterator }_ERROR`]: (state, { request }) =>
         state.setIn(['flags', 'fetchingFollowings', request.ethAddress], false),
 
-    [`${PROFILE_MODULE.followingIterator}_SUCCESS`]: (state, { data, request }) => {
+    [`${ PROFILE_MODULE.followingIterator }_SUCCESS`]: (state, { data, request }) => {
         const moreFollowings = data.lastBlock > 0;
         let followingsList = new List();
         const last = {
@@ -256,7 +258,7 @@ const profileState = createReducer(initialState, {
     //     return state.setIn(['flags', 'pendingProfiles', context, ethAddress], false);
     // },
 
-    [`${PROFILE_MODULE.getProfileList}`]: (state, { ethAddresses }) => {
+    [`${ PROFILE_MODULE.getProfileList }`]: (state, { ethAddresses }) => {
         let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);
         ethAddresses.forEach(item => {
             pendingListProfiles = pendingListProfiles.set(item.ethAddress, true);
@@ -264,7 +266,7 @@ const profileState = createReducer(initialState, {
         return state.setIn(['flags', 'pendingListProfiles'], pendingListProfiles);
     },
 
-    [`${PROFILE_MODULE.getProfileList}_SUCCESS`]: (state, { data }) => {
+    [`${ PROFILE_MODULE.getProfileList }_SUCCESS`]: (state, { data }) => {
         if (data.done) {
             return state;
         }
@@ -350,7 +352,7 @@ const profileState = createReducer(initialState, {
     //     return state.set('isFollower', isFollower);
     // },
 
-    [`${PROFILE_MODULE.karmaRanking}`]: state =>
+    [`${ PROFILE_MODULE.karmaRanking }`]: state =>
         state.merge({
             flags: state.get('flags').set('karmaRankingPending', true),
             karmaRanking: new Map()
@@ -383,7 +385,7 @@ const profileState = createReducer(initialState, {
         return state;
     },
 
-    [`${PROFILE_MODULE.karmaRanking}_SUCCESS`]: (state, { data }) => {
+    [`${ PROFILE_MODULE.karmaRanking }_SUCCESS`]: (state, { data }) => {
         const defaultState = state.getKarmaPopoverDefaultState(data.collection, data.myRanking);
         const first = defaultState[0].rank - 3 > -1 ? defaultState[0].rank - 3 : 0;
         const above = data.collection.slice(first, defaultState[0].rank);
@@ -391,8 +393,8 @@ const profileState = createReducer(initialState, {
             defaultState[defaultState.length - 1].rank === data.collection.length - 1
                 ? []
                 : data.collection.slice(
-                    defaultState[defaultState.length - 1].rank + 1,
-                    defaultState[defaultState.length - 1].rank + 4
+                defaultState[defaultState.length - 1].rank + 1,
+                defaultState[defaultState.length - 1].rank + 4
                 );
         return state.merge({
             flags: state.get('flags').set('karmaRankingPending', false),

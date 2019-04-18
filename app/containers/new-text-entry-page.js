@@ -4,20 +4,40 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
-import { Row, Col } from 'antd';
-import { EditorFooter, NoDraftsPlaceholder, PublishOptionsPanel, TextEntryEditor, TagEditor,
-    DataLoader } from '../components';
+import { Col, Row } from 'antd';
+import {
+    DataLoader,
+    EditorFooter,
+    NoDraftsPlaceholder,
+    PublishOptionsPanel,
+    TagEditor,
+    TextEntryEditor
+} from '../components';
 import { genId } from '../utils/dataModule';
-import { draftAddTag, draftRemoveTag, draftCreate, draftsGet, draftUpdate, draftsGetCount,
-    draftRevertToVersion } from '../local-flux/actions/draft-actions';
+import {
+    draftAddTag,
+    draftCreate,
+    draftRemoveTag,
+    draftRevertToVersion,
+    draftsGet,
+    draftsGetCount,
+    draftUpdate
+} from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { tagExists } from '../local-flux/actions/tag-actions';
 import { entryMessages } from '../locale-data/messages';
-import { actionSelectors, appSelectors,draftSelectors, externalProcessSelectors,
-        licenseSelectors, profileSelectors, searchSelectors,
-        settingsSelectors } from '../local-flux/selectors';
+import {
+    actionSelectors,
+    appSelectors,
+    draftSelectors,
+    externalProcessSelectors,
+    licenseSelectors,
+    profileSelectors,
+    searchSelectors,
+    settingsSelectors
+} from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { EditorState } = DraftJS;
@@ -41,7 +61,7 @@ class NewEntryPage extends Component {
                 const draftId = drafts.first().get('id');
                 const draftType = drafts.first().getIn(['content', 'entryType']);
                 if (draftId) {
-                    history.push(`/draft/${draftType}/${draftId}`);
+                    history.push(`/draft/${ draftType }/${ draftId }`);
                 }
             } else {
                 history.push('/draft/article/noDraft');
@@ -54,7 +74,7 @@ class NewEntryPage extends Component {
             this.props.draftUpdate(draftObj);
         }
         if (draftObj && match.params.draftId &&
-                match.params.draftId !== this.props.match.params.draftId && this.editor) {
+            match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {
                 this.setState({
                     shouldResetCaret: true
@@ -71,6 +91,7 @@ class NewEntryPage extends Component {
             });
         }
     }
+
     _createNewDraft = (ev) => {
         const { history, loggedProfile, userDefaultLicence } = this.props;
         const draftId = genId();
@@ -84,7 +105,7 @@ class NewEntryPage extends Component {
             },
             tags: {},
         });
-        history.push(`/draft/article/${draftId}`);
+        history.push(`/draft/article/${ draftId }`);
         ev.preventDefault();
     };
     _showPublishOptionsPanel = () => {
@@ -233,7 +254,9 @@ class NewEntryPage extends Component {
         });
 
     _createRef = nodeName =>
-        (node) => { this[nodeName] = node; };
+        (node) => {
+            this[nodeName] = node;
+        };
 
     _handlePublish = (ev) => {
         ev.preventDefault();
@@ -288,43 +311,46 @@ class NewEntryPage extends Component {
 
     render () { // eslint-disable-line complexity
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
-        const { loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj,
+        const {
+            loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj,
             draftsFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
-            selectionState, canCreateTags } = this.props;
+            selectionState, canCreateTags
+        } = this.props;
         const draftId = match.params.draftId;
         const unpublishedDrafts = drafts.filter(drft => !drft.get('onChain'));
 
         if (!draftObj && unpublishedDrafts.size === 0 && !draftId.startsWith('0x') && draftsFetched) {
-            return <NoDraftsPlaceholder darkTheme={darkTheme} onNewDraft={this._createNewDraft} />;
+            return <NoDraftsPlaceholder darkTheme={ darkTheme }
+                                        onNewDraft={ this._createNewDraft }/>;
         }
         if ((!draftObj || !draftObj.get('content'))) {
             return (
-              <DataLoader
-                flag
-                message={intl.formatMessage(entryMessages.loadingDrafts)}
-                size="large"
-                className="edit-entry-page__data-loader"
-              />
+                <DataLoader
+                    flag
+                    message={ intl.formatMessage(entryMessages.loadingDrafts) }
+                    size="large"
+                    className="edit-entry-page__data-loader"
+                />
             );
         }
         const unresolved = draftObj && resolvingEntries.includes(draftObj.get('id'));
         if (unresolved) {
             return (
-              <DataLoader
-                flag
-                message={
-                  <div>
-                    <div>
-                      {intl.formatMessage(entryMessages.resolvingIpfsHash)}
-                    </div>
-                    <div>
-                      {intl.formatMessage(entryMessages.makeSureToOpenDApp)}
-                    </div>
-                  </div>
-                }
-                size="large"
-                className="edit-entry-page__data-loader"
-              />
+                <DataLoader
+                    flag
+                    message={
+                        <div>
+                            <div>
+                                { intl.formatMessage(entryMessages.resolvingIpfsHash) }
+                            </div>
+                            <div>
+                                { intl.formatMessage(entryMessages.makeSureToOpenDApp) }
+                            </div>
+                        </div>
+                    }
+                    size="large"
+                    className="edit-entry-page__data-loader"
+                />
             );
         }
         const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
@@ -338,98 +364,100 @@ class NewEntryPage extends Component {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
         return (
-          <div className="edit-entry-page article-page">
-            <Row type="flex" className="edit-entry-page__content">
-              <Col
-                span={showPublishPanel ? 17 : 24}
-                className="edit-entry-page__editor-wrapper"
-              >
-                <div
-                  id="editor"
-                  className={
-                    `edit-entry-page__editor
-                    edit-entry-page__editor${showSecondarySidebar ? '' : '_full'}`
-                  }
-                >
-                  <div className="edit-entry-page__editor-inner">
-                    <input
-                      className={
-                        `edit-entry-page__title-input-field
-                        edit-entry-page__title-input-field${showSecondarySidebar ? '' : '_full'}`
-                      }
-                      placeholder={intl.formatMessage(entryMessages.title)}
-                      onChange={this._handleTitleChange}
-                      onKeyDown={this._handleTitleKeyPress}
-                      value={title}
+            <div className="edit-entry-page article-page">
+                <Row type="flex" className="edit-entry-page__content">
+                    <Col
+                        span={ showPublishPanel ? 17 : 24 }
+                        className="edit-entry-page__editor-wrapper"
+                    >
+                        <div
+                            id="editor"
+                            className={
+                                `edit-entry-page__editor
+                    edit-entry-page__editor${ showSecondarySidebar ? '' : '_full' }`
+                            }
+                        >
+                            <div className="edit-entry-page__editor-inner">
+                                <input
+                                    className={
+                                        `edit-entry-page__title-input-field
+                        edit-entry-page__title-input-field${ showSecondarySidebar ? '' : '_full' }`
+                                    }
+                                    placeholder={ intl.formatMessage(entryMessages.title) }
+                                    onChange={ this._handleTitleChange }
+                                    onKeyDown={ this._handleTitleKeyPress }
+                                    value={ title }
+                                />
+                                { errors.title &&
+                                <small
+                                    className="edit-entry-page__error-text">{ errors.title }</small>
+                                }
+                                <TextEntryEditor
+                                    ref={ this._createRef('editor') }
+                                    className={
+                                        `text-entry-editor${ showSecondarySidebar ? '' : '_full' }`
+                                    }
+                                    onChange={ this._handleEditorChange }
+                                    editorState={ draftWithSelection }
+                                    selectionState={ currentSelection }
+                                    baseUrl={ baseUrl }
+                                    intl={ intl }
+                                    sidebarReposition={ showPublishPanel }
+                                />
+                                { errors.draft &&
+                                <small
+                                    className="edit-entry-page__error-text">{ errors.draft }</small>
+                                }
+                            </div>
+                            <TagEditor
+                                canCreateTags={ canCreateTags }
+                                className="edit-entry-page__tag-editor"
+                                intl={ intl }
+                                isUpdate={ onChain }
+                                onChange={ this._handleTagInputChange }
+                                onTagAdd={ this._handleTagAdd }
+                                onTagRemove={ this._handleTagRemove }
+                                searchResetResults={ this.props.searchResetResults }
+                                searchTags={ this.props.searchTags }
+                                tagErrors={ errors.tags }
+                                tags={ tags }
+                                tagSuggestions={ tagSuggestions }
+                                tagSuggestionsCount={ tagSuggestionsCount }
+                            />
+                        </div>
+                    </Col>
+                    <Col
+                        span={ 6 }
+                        className={
+                            `edit-entry-page__publish-options-panel-wrapper
+                    edit-entry-page__publish-options-panel-wrapper${ showPublishPanel ? '_open' : '' }`
+                        }
+                    >
+                        <PublishOptionsPanel
+                            baseUrl={ baseUrl }
+                            errors={ errors }
+                            intl={ intl }
+                            onClose={ this._handlePublishPanelClose }
+                            onLicenceChange={ this._handleDraftLicenceChange }
+                            onExcerptChange={ this._handleExcerptChange }
+                            onFeaturedImageChange={ this._handleFeaturedImageChange }
+                            excerpt={ excerpt }
+                            featuredImage={ featuredImage }
+                            selectedLicence={ licence }
+                            licences={ licences }
+                        />
+                    </Col>
+                    <EditorFooter
+                        disabled={ this._checkIfDisabled() }
+                        draftObj={ draftObj }
+                        draftRevertToVersion={ this.props.draftRevertToVersion }
+                        latestVersion={ latestVersion }
+                        onPublish={ this._handlePublish }
+                        onPublishOptions={ this._showPublishOptionsPanel }
+                        showSecondarySidebar={ showSecondarySidebar }
                     />
-                    {errors.title &&
-                      <small className="edit-entry-page__error-text">{errors.title}</small>
-                    }
-                    <TextEntryEditor
-                      ref={this._createRef('editor')}
-                      className={
-                        `text-entry-editor${showSecondarySidebar ? '' : '_full'}`
-                      }
-                      onChange={this._handleEditorChange}
-                      editorState={draftWithSelection}
-                      selectionState={currentSelection}
-                      baseUrl={baseUrl}
-                      intl={intl}
-                      sidebarReposition={showPublishPanel}
-                    />
-                    {errors.draft &&
-                      <small className="edit-entry-page__error-text">{errors.draft}</small>
-                    }
-                  </div>
-                  <TagEditor
-                    canCreateTags={canCreateTags}
-                    className="edit-entry-page__tag-editor"
-                    intl={intl}
-                    isUpdate={onChain}
-                    onChange={this._handleTagInputChange}
-                    onTagAdd={this._handleTagAdd}
-                    onTagRemove={this._handleTagRemove}
-                    searchResetResults={this.props.searchResetResults}
-                    searchTags={this.props.searchTags}
-                    tagErrors={errors.tags}
-                    tags={tags}
-                    tagSuggestions={tagSuggestions}
-                    tagSuggestionsCount={tagSuggestionsCount}
-                  />
-                </div>
-              </Col>
-              <Col
-                span={6}
-                className={
-                    `edit-entry-page__publish-options-panel-wrapper
-                    edit-entry-page__publish-options-panel-wrapper${showPublishPanel ? '_open' : ''}`
-                }
-              >
-                <PublishOptionsPanel
-                  baseUrl={baseUrl}
-                  errors={errors}
-                  intl={intl}
-                  onClose={this._handlePublishPanelClose}
-                  onLicenceChange={this._handleDraftLicenceChange}
-                  onExcerptChange={this._handleExcerptChange}
-                  onFeaturedImageChange={this._handleFeaturedImageChange}
-                  excerpt={excerpt}
-                  featuredImage={featuredImage}
-                  selectedLicence={licence}
-                  licences={licences}
-                />
-              </Col>
-              <EditorFooter
-                disabled={this._checkIfDisabled()}
-                draftObj={draftObj}
-                draftRevertToVersion={this.props.draftRevertToVersion}
-                latestVersion={latestVersion}
-                onPublish={this._handlePublish}
-                onPublishOptions={this._showPublishOptionsPanel}
-                showSecondarySidebar={showSecondarySidebar}
-              />
-            </Row>
-          </div>
+                </Row>
+            </div>
         );
     }
 }

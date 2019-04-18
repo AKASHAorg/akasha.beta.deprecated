@@ -1,9 +1,10 @@
 // @flow strict
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { eProcActions, settingsActions } from '../local-flux/actions';
+import { eProcActions } from '../local-flux/actions';
 import { externalProcessSelectors, settingsSelectors } from '../local-flux/selectors';
 import withRequest from '../components/high-order-components/with-request';
+
 /* ::
     type StateProps = {|
         gethStatus: Object,
@@ -23,7 +24,7 @@ import withRequest from '../components/high-order-components/with-request';
     |}
 */
 
-function Synchronization /* :: <AbstractComponent> */(props /* : Props */) {
+function Synchronization /* :: <AbstractComponent> */ (props /* : Props */) {
     const { active, gethStatus, gethSyncStatus, getActionStatus, dispatchAction, web3, onSyncEnd } = props;
     const {
         servicesSetTimestamp,

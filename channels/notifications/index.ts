@@ -10,7 +10,7 @@ import subscribeInit from './subscribe';
 import votesInit from './votes';
 import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
 
   const comment = commentInit(sp, getService);
   const donations = donationsInit(sp, getService);

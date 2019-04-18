@@ -4,12 +4,16 @@ import { Map } from 'immutable';
 import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Row, Card, Col, Icon as AntIcon, Input, Button, Form, Switch, Tooltip } from 'antd';
+import { Button, Card, Col, Form, Icon as AntIcon, Input, Row, Switch, Tooltip } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { aboutMeMaxChars } from '../../constants/iterator-limits';
 import { AvatarEditor, Icon, ImageUploader } from '../';
-import { profileMessages, formMessages,
-    generalMessages, validationMessages } from '../../locale-data/messages';
+import {
+    formMessages,
+    generalMessages,
+    profileMessages,
+    validationMessages
+} from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
 import { uploadImage } from '../../local-flux/services/utils-service';
 import withRequest from '../high-order-components/with-request';
@@ -178,7 +182,7 @@ class ProfileCompleteForm extends Component {
         const { getValidationMessages } = this.props;
         if (this.showErrorOnFields.includes(field) && !this.isSubmitting) {
             if (field === 'links') {
-                const joiPath = `${field},${index},${sub}`;
+                const joiPath = `${ field },${ index },${ sub }`;
                 const errors = getValidationMessages(joiPath);
                 if (errors) {
                     return errors[0];
@@ -322,265 +326,272 @@ class ProfileCompleteForm extends Component {
         const { formatMessage } = intl;
 
         return (
-          <div className="profile-complete-form__wrap">
-            <div className="profile-complete-form__form-wrapper" ref={this.getContainerRef}>
-              <Row type="flex" className="">
-                <Form onSubmit={this._handleSubmit}>
-                  <Col type="flex" md={24} className="profile-complete-form__image-wrap">
-                    <Col md={8}>
-                      <div className="row">
-                        <div className="profile-complete-form__avatar-title">
-                          {intl.formatMessage(profileMessages.avatarTitle)}
-                        </div>
-                        <div className="col-xs-12 center-xs">
-                          <AvatarEditor
-                            size={124}
-                            editable
-                            ref={(avtr) => { this.avatar = avtr; }}
-                            image={avatar}
-                            onImageAdd={this._handleAvatarAdd}
-                            onImageClear={this._handleAvatarClear}
-                          />
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md={16}>
-                      <div className="profile-complete-form__bg-image-float">
-                        <div className="profile-complete-form__bg-image-title" >
-                          {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                          <Tooltip
-                            title={intl.formatMessage(profileMessages.backgroundImageTooltip)}
-                            placement="topLeft"
-                            arrowPointAtCenter
-                          >
-                            <Icon
-                              type="questionCircle"
-                              className="question-circle-icon profile-settings__info-icon"
-                            />
-                          </Tooltip>
-                        </div>
-                        <div className="col-xs-12 profile-complete-form__bg-image-wrap">
-                          <ImageUploader
-                            ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                            minWidth={320}
-                            intl={intl}
-                            initialImage={backgroundImage}
-                            baseUrl={baseUrl}
-                            onImageClear={this._handleBackgroundClear}
-                            onChange={this._handleBackgroundChange}
-                          />
-                        </div>
-                      </div>
-                    </Col>
-                  </Col>
-                  <Col md={12}>
-                    <FormItem
-                      label={formatMessage(formMessages.akashaId)}
-                      colon={false}
-                      validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
-                      help={this._getAkashaIdErrors('akashaId')}
-                      style={{ marginRight: 8 }}
-                      required
-                    >
-                      <Input
-                        disabled={isUpdate}
-                        onChange={this._handleFieldChange('akashaId')}
-                        onBlur={this._validateField('akashaId')}
-                        placeholder={intl.formatMessage(formMessages.akashaIdPlaceholder)}
-                        value={akashaId}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col md={12}>
-                    <div className="profile-complete-form__tips-switch">
-                      <FormItem
-                        label={formatMessage(formMessages.tips)}
-                        colon={false}
-                        style={{ marginRight: 8, marginLeft: 8 }}
-                      >
-                        <Switch
-                          checked={tempProfile.get('donationsEnabled')}
-                          onChange={this._handleSwitchChange}
-                          size="large"
-                          disabled={!akashaId}
-                        />
-                      </FormItem>
-                    </div>
-                    <div className="profile-complete-form__tips-description">
-                      {formatMessage(formMessages.acceptTips)}
-                    </div>
-                  </Col>
-                  <Col md={24}>
-                    <Col md={12}>
-                      <FormItem
-                        label={formatMessage(formMessages.firstName)}
-                        colon={false}
-                        validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
-                        help={this._getErrorMessages('firstName')}
-                        style={{ marginRight: 8 }}
-                      >
-                        <Input
-                          onChange={this._handleFieldChange('firstName')}
-                          onBlur={this._validateField('firstName')}
-                          placeholder={intl.formatMessage(formMessages.firstNamePlaceholder)}
-                          value={firstName}
-                        />
-                      </FormItem>
-                    </Col>
-                    <Col md={12}>
-                      <FormItem
-                        label={formatMessage(formMessages.lastName)}
-                        colon={false}
-                        validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
-                        help={this._getErrorMessages('lastName')}
-                        style={{ marginLeft: 8 }}
-                      >
-                        <Input
-                          onChange={this._handleFieldChange('lastName')}
-                          onBlur={this._validateField('lastName')}
-                          placeholder={intl.formatMessage(formMessages.lastNamePlaceholder)}
-                          value={lastName}
-                        />
-                      </FormItem>
-                    </Col>
-                  </Col>
-                  <Col md={24}>
-                    <FormItem
-                      label={formatMessage(profileMessages.aboutMeTitle)}
-                      colon={false}
-                      validateStatus={this._getErrorMessages('about') ? 'error' : 'success'}
-                      help={this._getErrorMessages('about')}
-                    >
-                      <Input.TextArea
-                        className="profile-complete-form__textarea"
-                        rows={3}
-                        placeholder={formatMessage(profileMessages.shortDescriptionLabel)}
-                        value={about}
-                        onChange={this._handleFieldChange('about')}
-                        onBlur={this._validateField('about')}
-                      />
-                    </FormItem>
-                    <div className="profile-complete-form__char-count-wrap">
-                      {intl.formatMessage(profileMessages.aboutMeCharCount)}
-                      <div className="profile-complete-form__char-count">
-                        {this.state.aboutMeCharCount}
-                      </div>
-                    </div>
-                  </Col>
-                  <Col md={24}>
-                    <div className="profile-complete-form__link">
-                      {intl.formatMessage(profileMessages.linksTitle)}
-                    </div>
-                    {links.map((link, index) => (
-                      <div key={`${index + 1}`} className="profile-complete-form__link">
-                        <FormItem
-                          validateStatus={this._getErrorMessages('links', index, 'url') ? 'error' : 'success'}
-                          help={this._getErrorMessages('links', index, 'url')}
-                        >
-                          <Input
-                            suffix={<AntIcon
-                              className="content-link"
-                              type="close-circle"
-                              onClick={this._handleRemoveLink(link.get('id'), 'links')}
-                            />}
-                            value={link.get('url')}
-                            style={{ width: '100%' }}
-                            onChange={this._handleLinkChange('links', 'url', link.get('id'))}
-                            onBlur={this._validateField('links')}
-                            onKeyDown={this._handleLinkKeyDown}
-                            autoFocus
-                          />
-                        </FormItem>
-                      </div>
-                        ))}
-                    <div className="profile-complete-form__add-links-btn">
-                      <Button
-                        icon="plus-circle"
-                        type="primary borderless"
-                        onClick={this._handleAddLink('links')}
-                        ghost
-                        style={{ border: 'none' }}
-                      >{intl.formatMessage(profileMessages.addLinkButtonTitle)}</Button>
-                    </div>
-                  </Col>
-                  {this.state.insufficientEth &&
-                    <Col md={24}>
-                      <div
-                        className="profile-complete-form__insufficient-funds"
-                      >
-                        <Card
-                          bordered={false}
-                        >
-                          <h3>{formatMessage(formMessages.insufficientEth)}</h3>
-                          <p>{formatMessage(formMessages.depositEth)}</p>
-                          <div className="profile-complete-form__address-info">
-                            <div>
-                              <FormItem
-                                className="profile-complete-form__form-item"
-                                colon={false}
-                                label={intl.formatMessage(profileMessages.yourEthAddress)}
-                              >
-                                <Input
-                                  className="profile-complete-form__input profile-complete-form__my-address"
-                                  readOnly
-                                  value={loggedEthAddress}
-                                />
-                                <div
-                                  className="content-link profile-complete-form__copy-button"
-                                  onClick={this.onCopy}
+            <div className="profile-complete-form__wrap">
+                <div className="profile-complete-form__form-wrapper" ref={ this.getContainerRef }>
+                    <Row type="flex" className="">
+                        <Form onSubmit={ this._handleSubmit }>
+                            <Col type="flex" md={ 24 }
+                                 className="profile-complete-form__image-wrap">
+                                <Col md={ 8 }>
+                                    <div className="row">
+                                        <div className="profile-complete-form__avatar-title">
+                                            { intl.formatMessage(profileMessages.avatarTitle) }
+                                        </div>
+                                        <div className="col-xs-12 center-xs">
+                                            <AvatarEditor
+                                                size={ 124 }
+                                                editable
+                                                ref={ (avtr) => {
+                                                    this.avatar = avtr;
+                                                } }
+                                                image={ avatar }
+                                                onImageAdd={ this._handleAvatarAdd }
+                                                onImageClear={ this._handleAvatarClear }
+                                            />
+                                        </div>
+                                    </div>
+                                </Col>
+                                <Col md={ 16 }>
+                                    <div className="profile-complete-form__bg-image-float">
+                                        <div className="profile-complete-form__bg-image-title">
+                                            { intl.formatMessage(profileMessages.backgroundImageTitle) }
+                                            <Tooltip
+                                                title={ intl.formatMessage(profileMessages.backgroundImageTooltip) }
+                                                placement="topLeft"
+                                                arrowPointAtCenter
+                                            >
+                                                <Icon
+                                                    type="questionCircle"
+                                                    className="question-circle-icon profile-settings__info-icon"
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                        <div
+                                            className="col-xs-12 profile-complete-form__bg-image-wrap">
+                                            <ImageUploader
+                                                ref={ (imageUploader) => {
+                                                    this.imageUploader = imageUploader;
+                                                } }
+                                                minWidth={ 320 }
+                                                intl={ intl }
+                                                initialImage={ backgroundImage }
+                                                baseUrl={ baseUrl }
+                                                onImageClear={ this._handleBackgroundClear }
+                                                onChange={ this._handleBackgroundChange }
+                                            />
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Col>
+                            <Col md={ 12 }>
+                                <FormItem
+                                    label={ formatMessage(formMessages.akashaId) }
+                                    colon={ false }
+                                    validateStatus={ this._getAkashaIdErrors('akashaId') ? 'error' : 'success' }
+                                    help={ this._getAkashaIdErrors('akashaId') }
+                                    style={ { marginRight: 8 } }
+                                    required
                                 >
-                                  {intl.formatMessage(generalMessages.copy)}
+                                    <Input
+                                        disabled={ isUpdate }
+                                        onChange={ this._handleFieldChange('akashaId') }
+                                        onBlur={ this._validateField('akashaId') }
+                                        placeholder={ intl.formatMessage(formMessages.akashaIdPlaceholder) }
+                                        value={ akashaId }
+                                    />
+                                </FormItem>
+                            </Col>
+                            <Col md={ 12 }>
+                                <div className="profile-complete-form__tips-switch">
+                                    <FormItem
+                                        label={ formatMessage(formMessages.tips) }
+                                        colon={ false }
+                                        style={ { marginRight: 8, marginLeft: 8 } }
+                                    >
+                                        <Switch
+                                            checked={ tempProfile.get('donationsEnabled') }
+                                            onChange={ this._handleSwitchChange }
+                                            size="large"
+                                            disabled={ !akashaId }
+                                        />
+                                    </FormItem>
                                 </div>
-                              </FormItem>
-                            </div>
-                          </div>
-                        </Card>
-                      </div>
-                    </Col>
-                }
-                  <Col md={24} className="profile-complete-form__filler" />
-                </Form>
-              </Row>
-            </div>
-            <div className="setup-content__column-footer profile-complete-form__footer">
-              <div className="content-link flex-center-y" onClick={this._handleSkipStep}>
-                {intl.formatMessage(generalMessages.skipStep)}
-                <Icon className="profile-complete-form__skip-icon" type="arrowRight" />
-              </div>
-              <div className="profile-complete-form__buttons-wrapper">
-                <div className="profile-complete-form__save-btn">
-                  <Button onClick={this._handleSave}>
-                    {intl.formatMessage(profileMessages.saveForLater)}
-                  </Button>
+                                <div className="profile-complete-form__tips-description">
+                                    { formatMessage(formMessages.acceptTips) }
+                                </div>
+                            </Col>
+                            <Col md={ 24 }>
+                                <Col md={ 12 }>
+                                    <FormItem
+                                        label={ formatMessage(formMessages.firstName) }
+                                        colon={ false }
+                                        validateStatus={ this._getErrorMessages('firstName') ? 'error' : 'success' }
+                                        help={ this._getErrorMessages('firstName') }
+                                        style={ { marginRight: 8 } }
+                                    >
+                                        <Input
+                                            onChange={ this._handleFieldChange('firstName') }
+                                            onBlur={ this._validateField('firstName') }
+                                            placeholder={ intl.formatMessage(formMessages.firstNamePlaceholder) }
+                                            value={ firstName }
+                                        />
+                                    </FormItem>
+                                </Col>
+                                <Col md={ 12 }>
+                                    <FormItem
+                                        label={ formatMessage(formMessages.lastName) }
+                                        colon={ false }
+                                        validateStatus={ this._getErrorMessages('lastName') ? 'error' : 'success' }
+                                        help={ this._getErrorMessages('lastName') }
+                                        style={ { marginLeft: 8 } }
+                                    >
+                                        <Input
+                                            onChange={ this._handleFieldChange('lastName') }
+                                            onBlur={ this._validateField('lastName') }
+                                            placeholder={ intl.formatMessage(formMessages.lastNamePlaceholder) }
+                                            value={ lastName }
+                                        />
+                                    </FormItem>
+                                </Col>
+                            </Col>
+                            <Col md={ 24 }>
+                                <FormItem
+                                    label={ formatMessage(profileMessages.aboutMeTitle) }
+                                    colon={ false }
+                                    validateStatus={ this._getErrorMessages('about') ? 'error' : 'success' }
+                                    help={ this._getErrorMessages('about') }
+                                >
+                                    <Input.TextArea
+                                        className="profile-complete-form__textarea"
+                                        rows={ 3 }
+                                        placeholder={ formatMessage(profileMessages.shortDescriptionLabel) }
+                                        value={ about }
+                                        onChange={ this._handleFieldChange('about') }
+                                        onBlur={ this._validateField('about') }
+                                    />
+                                </FormItem>
+                                <div className="profile-complete-form__char-count-wrap">
+                                    { intl.formatMessage(profileMessages.aboutMeCharCount) }
+                                    <div className="profile-complete-form__char-count">
+                                        { this.state.aboutMeCharCount }
+                                    </div>
+                                </div>
+                            </Col>
+                            <Col md={ 24 }>
+                                <div className="profile-complete-form__link">
+                                    { intl.formatMessage(profileMessages.linksTitle) }
+                                </div>
+                                { links.map((link, index) => (
+                                    <div key={ `${ index + 1 }` }
+                                         className="profile-complete-form__link">
+                                        <FormItem
+                                            validateStatus={ this._getErrorMessages('links', index, 'url') ? 'error' : 'success' }
+                                            help={ this._getErrorMessages('links', index, 'url') }
+                                        >
+                                            <Input
+                                                suffix={ <AntIcon
+                                                    className="content-link"
+                                                    type="close-circle"
+                                                    onClick={ this._handleRemoveLink(link.get('id'), 'links') }
+                                                /> }
+                                                value={ link.get('url') }
+                                                style={ { width: '100%' } }
+                                                onChange={ this._handleLinkChange('links', 'url', link.get('id')) }
+                                                onBlur={ this._validateField('links') }
+                                                onKeyDown={ this._handleLinkKeyDown }
+                                                autoFocus
+                                            />
+                                        </FormItem>
+                                    </div>
+                                )) }
+                                <div className="profile-complete-form__add-links-btn">
+                                    <Button
+                                        icon="plus-circle"
+                                        type="primary borderless"
+                                        onClick={ this._handleAddLink('links') }
+                                        ghost
+                                        style={ { border: 'none' } }
+                                    >{ intl.formatMessage(profileMessages.addLinkButtonTitle) }</Button>
+                                </div>
+                            </Col>
+                            { this.state.insufficientEth &&
+                            <Col md={ 24 }>
+                                <div
+                                    className="profile-complete-form__insufficient-funds"
+                                >
+                                    <Card
+                                        bordered={ false }
+                                    >
+                                        <h3>{ formatMessage(formMessages.insufficientEth) }</h3>
+                                        <p>{ formatMessage(formMessages.depositEth) }</p>
+                                        <div className="profile-complete-form__address-info">
+                                            <div>
+                                                <FormItem
+                                                    className="profile-complete-form__form-item"
+                                                    colon={ false }
+                                                    label={ intl.formatMessage(profileMessages.yourEthAddress) }
+                                                >
+                                                    <Input
+                                                        className="profile-complete-form__input profile-complete-form__my-address"
+                                                        readOnly
+                                                        value={ loggedEthAddress }
+                                                    />
+                                                    <div
+                                                        className="content-link profile-complete-form__copy-button"
+                                                        onClick={ this.onCopy }
+                                                    >
+                                                        { intl.formatMessage(generalMessages.copy) }
+                                                    </div>
+                                                </FormItem>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </div>
+                            </Col>
+                            }
+                            <Col md={ 24 } className="profile-complete-form__filler"/>
+                        </Form>
+                    </Row>
                 </div>
-                {!akashaId ?
-                  <Tooltip
-                    placement="topRight"
-                    title={intl.formatMessage(generalMessages.usernameFirst)}
-                  >
-                    <Button
-                      htmlType="submit"
-                      className="new-identity__button"
-                      disabled={!akashaId}
-                      onClick={this._handleSubmit}
-                      type="primary"
-                    >
-                      {intl.formatMessage(generalMessages.next)}
-                    </Button>
-                  </Tooltip> :
-                  <Button
-                    htmlType="submit"
-                    className="new-identity__button"
-                    disabled={!akashaId}
-                    onClick={this._handleSubmit}
-                    type="primary"
-                  >
-                    {intl.formatMessage(generalMessages.next)}
-                  </Button>
-                }
-              </div>
+                <div className="setup-content__column-footer profile-complete-form__footer">
+                    <div className="content-link flex-center-y" onClick={ this._handleSkipStep }>
+                        { intl.formatMessage(generalMessages.skipStep) }
+                        <Icon className="profile-complete-form__skip-icon" type="arrowRight"/>
+                    </div>
+                    <div className="profile-complete-form__buttons-wrapper">
+                        <div className="profile-complete-form__save-btn">
+                            <Button onClick={ this._handleSave }>
+                                { intl.formatMessage(profileMessages.saveForLater) }
+                            </Button>
+                        </div>
+                        { !akashaId ?
+                            <Tooltip
+                                placement="topRight"
+                                title={ intl.formatMessage(generalMessages.usernameFirst) }
+                            >
+                                <Button
+                                    htmlType="submit"
+                                    className="new-identity__button"
+                                    disabled={ !akashaId }
+                                    onClick={ this._handleSubmit }
+                                    type="primary"
+                                >
+                                    { intl.formatMessage(generalMessages.next) }
+                                </Button>
+                            </Tooltip> :
+                            <Button
+                                htmlType="submit"
+                                className="new-identity__button"
+                                disabled={ !akashaId }
+                                onClick={ this._handleSubmit }
+                                type="primary"
+                            >
+                                { intl.formatMessage(generalMessages.next) }
+                            </Button>
+                        }
+                    </div>
+                </div>
             </div>
-          </div>
         );
     }
 }

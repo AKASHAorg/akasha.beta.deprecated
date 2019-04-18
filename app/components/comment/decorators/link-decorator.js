@@ -9,7 +9,7 @@ const LinkDecorator = ({ children, className, entityKey, getEditorState, onOutsi
     const onNavigation = (ev) => {
         ev.preventDefault();
         if (isInternalLink(href)) {
-            const internalUrl = `/${href.replace('/#', '')}`
+            const internalUrl = `/${ href.replace('/#', '') }`
             history.push(internalUrl);
         } else {
             onOutsideNavigation(href);
@@ -17,16 +17,16 @@ const LinkDecorator = ({ children, className, entityKey, getEditorState, onOutsi
     };
 
     return (
-      <a
-        className={className}
-        title={href}
-        href={href}
-        onClick={onNavigation}
-        target={target}
-        rel="noopener noreferrer"
-      >
-        {children}
-      </a>
+        <a
+            className={ className }
+            title={ href }
+            href={ href }
+            onClick={ onNavigation }
+            target={ target }
+            rel="noopener noreferrer"
+        >
+            { children }
+        </a>
     );
 };
 

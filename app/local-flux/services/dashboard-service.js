@@ -17,7 +17,7 @@ export const addColumn = ({ dashboardId, type, value }) => {
             })
             .data();
         if (!updated) {
-            return Promise.reject(new Error(`There is no active dashboard ${dashboardId}.`));
+            return Promise.reject(new Error(`There is no active dashboard ${ dashboardId }.`));
         }
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => ({
             dashboardId,
@@ -32,7 +32,7 @@ export const addColumn = ({ dashboardId, type, value }) => {
 export const addDashboard = payload => {
     const timestamp = new Date().getTime();
     payload.timestamp = timestamp;
-    payload.id = `${timestamp}-${payload.ethAddress}`;
+    payload.id = `${ timestamp }-${ payload.ethAddress }`;
     const { ethAddress } = payload;
     let { name } = payload;
     if (payload.columns && payload.columns.length) {
@@ -52,9 +52,12 @@ export const addDashboard = payload => {
         let calculatedName = name;
         let occurrence = 1;
         while (taken) {
-            taken = getDashboardCollection().findOne({ ethAddress: ethAddress, name: calculatedName });
+            taken = getDashboardCollection().findOne({
+                ethAddress: ethAddress,
+                name: calculatedName
+            });
             if (taken) {
-                calculatedName += `(${occurrence++})`;
+                calculatedName += `(${ occurrence++ })`;
             }
         }
         Object.assign(payload, { isActive: true, name: calculatedName, orderIndex: orderIndex });
@@ -170,14 +173,20 @@ export const renameDashboard = ({ dashboardId, ethAddress, newName }) => {
         let calculatedName = newName;
         let occurrence = 1;
         while (taken) {
-            taken = getDashboardCollection().findOne({ ethAddress: ethAddress, name: calculatedName });
+            taken = getDashboardCollection().findOne({
+                ethAddress: ethAddress,
+                name: calculatedName
+            });
             if (taken) {
-                calculatedName += `(${occurrence++})`;
+                calculatedName += `(${ occurrence++ })`;
             }
         }
 
         getDashboardCollection().findAndUpdate({ id: dashboardId }, rec => (rec.name = calculatedName));
-        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => ({ dashboardId, newName }));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => ({
+            dashboardId,
+            newName
+        }));
     } catch (error) {
         return Promise.reject(error);
     }

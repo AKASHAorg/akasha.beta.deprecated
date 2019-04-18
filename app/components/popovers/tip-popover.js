@@ -24,19 +24,19 @@ class TipPopover extends Component {
         const { children, containerRef, profile } = this.props;
 
         return (
-          <Popover
-            content={this.wasVisible ?
-              <SendTipForm profile={profile} /> :
-              null
-            }
-            getPopupContainer={() => containerRef || document.body}
-            onVisibleChange={this.onVisibleChange}
-            placement="bottomLeft"
-            trigger="click"
-            visible={this.state.visible}
-          >
-            {children}
-          </Popover>
+            <Popover
+                content={ this.wasVisible ?
+                    <SendTipForm profile={ profile }/> :
+                    null
+                }
+                getPopupContainer={ () => containerRef || document.body }
+                onVisibleChange={ this.onVisibleChange }
+                placement="bottomLeft"
+                trigger="click"
+                visible={ this.state.visible }
+            >
+                { children }
+            </Popover>
         );
     }
 }

@@ -63,7 +63,10 @@ function* highlightSearch ({ search }) /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         search = search.toLowerCase();
-        const data = yield call([highlightService, highlightService.searchHighlight], { ethAddress, search });
+        const data = yield call([highlightService, highlightService.searchHighlight], {
+            ethAddress,
+            search
+        });
         yield put(actions.highlightSearchSuccess(data));
     } catch (error) {
         yield put(actions.highlightSearchError(error));

@@ -1,12 +1,27 @@
 // @flow
-import { apply, call, put, fork, all, select, takeEvery, takeLatest, getContext } from 'redux-saga/effects';
-import { COMMON_MODULE, PROFILE_MODULE, AUTH_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
+import {
+    all,
+    apply,
+    call,
+    fork,
+    getContext,
+    put,
+    select,
+    takeEvery,
+    takeLatest
+} from 'redux-saga/effects';
+import {
+    AUTH_MODULE,
+    COMMON_MODULE,
+    PROFILE_MODULE,
+    REGISTRY_MODULE
+} from '@akashaproject/common/constants';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import { isEthAddress } from '../../utils/dataModule';
-import { profileSelectors, externalProcessSelectors, appSelectors } from '../selectors';
+import { appSelectors, externalProcessSelectors, profileSelectors } from '../selectors';
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -159,11 +174,11 @@ function* profileFollowersIterator ({ column, batching }) /* : Saga<void> */ {
 }
 
 function* profileFollowingsIterator ({
-    column,
-    limit = FOLLOWINGS_ITERATOR_LIMIT,
-    allFollowings,
-    batching
-}) /* : Saga<void> */ {
+                                         column,
+                                         limit = FOLLOWINGS_ITERATOR_LIMIT,
+                                         allFollowings,
+                                         batching
+                                     }) /* : Saga<void> */ {
     const service = yield getContext('reqService');
     const { id, value } = column;
     yield call([service, service.sendRequest], PROFILE_MODULE, PROFILE_MODULE.followingIterator, {
@@ -393,7 +408,10 @@ function* profileSaveLastBlockNr () /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const blockNr = yield select(externalProcessSelectors.getCurrentBlockNumber);
     try {
-        yield call([profileService, profileService.profileSaveLastBlockNr], { ethAddress, blockNr });
+        yield call([profileService, profileService.profileSaveLastBlockNr], {
+            ethAddress,
+            blockNr
+        });
     } catch (error) {
         yield put(actions.profileSaveLastBlockNrError(error));
     }
@@ -409,13 +427,13 @@ function* profileSaveLogged (loggedProfile) /* : Saga<void> */ {
 }
 
 function* profileSendTip ({
-    actionId,
-    akashaId,
-    ethAddress,
-    receiver,
-    value,
-    tokenAmount
-}) /* : Saga<void> */ {
+                              actionId,
+                              akashaId,
+                              ethAddress,
+                              receiver,
+                              value,
+                              tokenAmount
+                          }) /* : Saga<void> */ {
     const service = yield getContext('reqService');
     const token = yield select(profileSelectors.getToken);
     yield call([service, service.sendRequest], PROFILE_MODULE, PROFILE_MODULE.sendTip, {
@@ -504,14 +522,14 @@ function* profileUnfollow ({ actionId, ethAddress }) /* : Saga<void> */ {
 }
 
 function* profileUpdate ({
-    actionId,
-    about,
-    avatar,
-    backgroundImage,
-    firstName,
-    lastName,
-    links
-}) /* : Saga<void> */ {
+                             actionId,
+                             about,
+                             avatar,
+                             backgroundImage,
+                             firstName,
+                             lastName,
+                             links
+                         }) /* : Saga<void> */ {
     const service = yield getContext('reqService');
     const isProfileEdit = select(appSelectors.selectProfileEditToggle);
     if (isProfileEdit) {
@@ -547,18 +565,18 @@ function* profileUpdateSuccess (payload) /* : Saga<void> */ {
 }
 
 function* profileRegister ({
-    actionId,
-    akashaId,
-    address,
-    about,
-    avatar,
-    backgroundImage,
-    donationsEnabled,
-    firstName,
-    lastName,
-    links,
-    ethAddress
-}) /* : Saga<void> */ {
+                               actionId,
+                               akashaId,
+                               address,
+                               about,
+                               avatar,
+                               backgroundImage,
+                               donationsEnabled,
+                               firstName,
+                               lastName,
+                               links,
+                               ethAddress
+                           }) /* : Saga<void> */ {
     const service = yield getContext('reqService');
     const isProfileEdit = yield select(appSelectors.selectProfileEditToggle);
     if (isProfileEdit) {

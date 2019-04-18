@@ -10,7 +10,7 @@ const claimableState = createReducer(initialState, {
     [types.CLAIMABLE_DELETE_ENTRY]: (state, { entryId }) => {
         const entriesLoading = state.get('entriesLoading').filter(entryId => entryId !== entryId);
         const entriesLoadingMore = state.get('entriesLoadingMore')
-            .filter(entryId => entryId !== entryId);                
+            .filter(entryId => entryId !== entryId);
         const entryList = state.get('entryList').filter(entry => entry.entryId !== entryId);
         return state.merge({
             entriesLoading,
@@ -22,14 +22,14 @@ const claimableState = createReducer(initialState, {
     [types.CLAIMABLE_DELETE_LOADING]: (state, { entryId }) =>
         state.merge({
             entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
-            entriesLoadingMore: state.get('entriesLoadingMore').filter(id => id !== entryId),            
+            entriesLoadingMore: state.get('entriesLoadingMore').filter(id => id !== entryId),
         }),
 
     [types.CLAIMABLE_GET_ENTRIES]: (state, { more }) => {
         if (more) {
             return state.set('fetchingMoreEntries', true);
         }
-        return state.set('fetchingEntries', true);        
+        return state.set('fetchingEntries', true);
     },
 
     [types.CLAIMABLE_GET_ENTRIES_ERROR]: (state, { request }) => {
@@ -47,7 +47,7 @@ const claimableState = createReducer(initialState, {
             if (request.more) {
                 entriesLoadingMore = entriesLoadingMore.push(entry.entryId);
             } else {
-                entriesLoading = entriesLoading.push(entry.entryId);            
+                entriesLoading = entriesLoading.push(entry.entryId);
             }
             if (!entryList.find(claimable => claimable.entryId === entry.entryId)) {
                 entryList = entryList.push(new ClaimableEntry(entry));
@@ -66,7 +66,7 @@ const claimableState = createReducer(initialState, {
     // [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
     //     const { entryId } = request;
     //     const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
-        
+
     //     if (index !== -1) {
     //         return state.merge({
     //             entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
@@ -80,7 +80,7 @@ const claimableState = createReducer(initialState, {
     // [types.ENTRY_GET_SHORT_SUCCESS]: (state, { request }) => {
     //     const { entryId } = request;
     //     const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
-        
+
     //     if (index !== -1) {
     //         return state.merge({
     //             entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),

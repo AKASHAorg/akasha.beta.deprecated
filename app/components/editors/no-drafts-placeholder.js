@@ -6,24 +6,24 @@ import { entryMessages } from '../../locale-data/messages';
 const NoDraftsPlaceholder = (props) => {
     const { darkTheme, intl, onNewDraft } = props;
     return (
-      <div
-        className={
-            `edit-entry-page__no-drafts
-            edit-entry-page__no-drafts${darkTheme ? '_dark' : ''}`
-        }
+        <div
+            className={
+                `edit-entry-page__no-drafts
+            edit-entry-page__no-drafts${ darkTheme ? '_dark' : '' }`
+            }
         >
-        <div className="edit-entry-page__no-drafts_placeholder-image" />
-        <div className="edit-entry-page__no-drafts_placeholder-text">
-          <h3>
-            {intl.formatMessage(entryMessages.youHaveNoDrafts)}
-          </h3>
-          <p>
-            <a href="#" onClick={onNewDraft}>
-              {intl.formatMessage(entryMessages.startANewDraft)}
-            </a>
-          </p>
+            <div className="edit-entry-page__no-drafts_placeholder-image"/>
+            <div className="edit-entry-page__no-drafts_placeholder-text">
+                <h3>
+                    { intl.formatMessage(entryMessages.youHaveNoDrafts) }
+                </h3>
+                <p>
+                    <a href="#" onClick={ onNewDraft }>
+                        { intl.formatMessage(entryMessages.startANewDraft) }
+                    </a>
+                </p>
+            </div>
         </div>
-      </div>
     )
 };
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AtomicBlockUtils } from 'draft-js';
-import { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
+import { findClosestMatch, getResizedImages } from '../../utils/imageUtils';
 import { genId } from '../../utils/dataModule';
 import { Icon } from '../index';
 
@@ -103,16 +103,18 @@ class AddImage extends Component {
 
     render () {
         return (
-          <div className="content-link">
-            <input
-              ref={((input) => { this.fileInput = input; })}
-              style={{ display: 'none' }}
-              type="file"
-              accept="image/*"
-              onChange={this.handleImageAdd}
-            />
-            <Icon className="add-image__icon" onClick={this.openFileInput} type="photoImage" />
-          </div>
+            <div className="content-link">
+                <input
+                    ref={ ((input) => {
+                        this.fileInput = input;
+                    }) }
+                    style={ { display: 'none' } }
+                    type="file"
+                    accept="image/*"
+                    onChange={ this.handleImageAdd }
+                />
+                <Icon className="add-image__icon" onClick={ this.openFileInput } type="photoImage"/>
+            </div>
         );
     }
 }

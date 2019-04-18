@@ -1,14 +1,23 @@
 import { connect } from 'react-redux';
 import { EntryPage } from '../components';
 import { actionAdd } from '../local-flux/actions/action-actions';
-import { commentsCheckNew, commentsLoadNew,
-    commentsMoreIterator } from '../local-flux/actions/comments-actions';
-import { entryCleanFull, entryGetFull, entryGetLatestVersion,
-    entryResolveIpfsHash } from '../local-flux/actions/entry-actions';
+import { commentsCheckNew, commentsLoadNew } from '../local-flux/actions/comments-actions';
+import {
+    entryCleanFull,
+    entryGetFull,
+    entryGetLatestVersion,
+    entryResolveIpfsHash
+} from '../local-flux/actions/entry-actions';
 import { highlightSave } from '../local-flux/actions/highlight-actions';
-import { toggleOutsideNavigation, fullSizeImageAdd } from '../local-flux/actions/app-actions';
-import { actionSelectors, commentSelectors, entrySelectors, externalProcessSelectors,
-    profileSelectors, licenseSelectors } from '../local-flux/selectors';
+import { fullSizeImageAdd, toggleOutsideNavigation } from '../local-flux/actions/app-actions';
+import {
+    actionSelectors,
+    commentSelectors,
+    entrySelectors,
+    externalProcessSelectors,
+    licenseSelectors,
+    profileSelectors
+} from '../local-flux/selectors';
 
 function mapStateToProps (state) {
     const entry = state.entryState.get('fullEntry');

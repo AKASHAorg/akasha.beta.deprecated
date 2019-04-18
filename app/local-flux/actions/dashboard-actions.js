@@ -11,7 +11,10 @@ export const dashboardAddError = error => {
 
 export const dashboardAddSuccess = data => action(types.DASHBOARD_ADD_SUCCESS, { data });
 
-export const dashboardAddFirst = (name, interests) => action(types.DASHBOARD_ADD_FIRST, { name, interests });
+export const dashboardAddFirst = (name, interests) => action(types.DASHBOARD_ADD_FIRST, {
+    name,
+    interests
+});
 export const dashboardAddFirstSuccess = () => action(types.DASHBOARD_ADD_FIRST_SUCCESS);
 
 export const dashboardAddColumn = (columnType, value) =>
@@ -122,7 +125,10 @@ export const dashboardToggleTagColumnError = error => {
 export const dashboardToggleTagColumnSuccess = data =>
     action(types.DASHBOARD_TOGGLE_TAG_COLUMN_SUCCESS, { data });
 
-export const dashboardUpdateColumn = (id, changes) => action(types.DASHBOARD_UPDATE_COLUMN, { id, changes });
+export const dashboardUpdateColumn = (id, changes) => action(types.DASHBOARD_UPDATE_COLUMN, {
+    id,
+    changes
+});
 
 export const dashboardUpdateColumnError = error => {
     error.code = 'DUCE01';

@@ -1,37 +1,37 @@
 // @flow strict
 
 import * as React from 'react';
-import Link from 'react-router-dom/Link';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Popover } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
 import { profileSelectors } from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
-import { ManaPopover, EssencePopover, KarmaPopover, Avatar } from '../';
+import { Avatar } from '../';
 import { profileActions } from '../../local-flux/actions';
 /*:: type Props = {||}; */
 
 const getMenu = props => (
-    <div onClick={() => props.onPopoverClick()}>
-        <Link className="popover-menu__item" to={`/${props.loggedProfileEthAddress}`}>
-            {props.intl.formatMessage(generalMessages.viewProfile)}
+    <div onClick={ () => props.onPopoverClick() }>
+        <Link className="popover-menu__item" to={ `/${ props.loggedProfileEthAddress }` }>
+            { props.intl.formatMessage(generalMessages.viewProfile) }
         </Link>
-        <div onClick={() => props.onProfileEdit()} className="popover-menu__item">
-            {props.intl.formatMessage(generalMessages.editProfile)}
+        <div onClick={ () => props.onProfileEdit() } className="popover-menu__item">
+            { props.intl.formatMessage(generalMessages.editProfile) }
         </div>
         <div className="popover-menu__item">
             <Link className="unstyled-link" to="/profileoverview/settings">
-                {props.intl.formatMessage(generalMessages.userSettings)}
+                { props.intl.formatMessage(generalMessages.userSettings) }
             </Link>
         </div>
         <div className="popover-menu__item">
             <Link className="unstyled-link" to="/profileoverview/preferences">
-                {props.intl.formatMessage(generalMessages.appPreferences)}
+                { props.intl.formatMessage(generalMessages.appPreferences) }
             </Link>
         </div>
-        <div onClick={props.onLogout} className="popover-menu__item">
-            {props.intl.formatMessage(generalMessages.logout)}
+        <div onClick={ props.onLogout } className="popover-menu__item">
+            { props.intl.formatMessage(generalMessages.logout) }
         </div>
     </div>
 );
@@ -48,7 +48,8 @@ function SidebarBottomMenu (props /* : Props */) {
         balance
     } = props;
 
-    const onLogout = () => {};
+    const onLogout = () => {
+    };
     const handlePopoverClick = () => setPopoverMenuVisible(false);
 
     React.useEffect(() => {
@@ -71,33 +72,33 @@ function SidebarBottomMenu (props /* : Props */) {
     return (
         <div>
             <div className="flex-center-x content-link sidebar__progress-wrapper">
-                {/* <ManaPopover mana={balance.get('mana')} /> */}
+                {/* <ManaPopover mana={balance.get('mana')} /> */ }
             </div>
             <div className="flex-center-x content-link sidebar__progress-wrapper">
-                {/* <EssencePopover essence={balance.get('essence')} /> */}
+                {/* <EssencePopover essence={balance.get('essence')} /> */ }
             </div>
             <div className="flex-center-x content-link sidebar__progress-wrapper">
-                {/* <KarmaPopover /> */}
+                {/* <KarmaPopover /> */ }
             </div>
             <div className="flex-center-x sidebar__avatar">
                 <Popover
                     arrowPointAtCenter
                     placement="topRight"
-                    content={getMenu({
+                    content={ getMenu({
                         intl,
                         loggedProfileEthAddress,
                         onProfileEdit,
                         onPopoverClick: handlePopoverClick
-                    })}
+                    }) }
                     trigger="click"
                     overlayClassName="popover-menu"
-                    visible={popoverMenuVisible}
-                    onVisibleChange={visible => setPopoverMenuVisible(visible)}
+                    visible={ popoverMenuVisible }
+                    onVisibleChange={ visible => setPopoverMenuVisible(visible) }
                 >
                     <Avatar
-                        firstName={loggedProfileData && loggedProfileData.get('firstName')}
-                        image={loggedProfileData && loggedProfileData.get('avatar')}
-                        lastName={loggedProfileData && loggedProfileData.get('lastName')}
+                        firstName={ loggedProfileData && loggedProfileData.get('firstName') }
+                        image={ loggedProfileData && loggedProfileData.get('avatar') }
+                        lastName={ loggedProfileData && loggedProfileData.get('lastName') }
                         size="small"
                     />
                 </Popover>
@@ -105,6 +106,7 @@ function SidebarBottomMenu (props /* : Props */) {
         </div>
     );
 }
+
 const mapStateToProps = state => ({
     loggedProfile: profileSelectors.getLoggedProfileData(state),
     loggedProfileEthAddress: profileSelectors.selectLoggedEthAddress(state),

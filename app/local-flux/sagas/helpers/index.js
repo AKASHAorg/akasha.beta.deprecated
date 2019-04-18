@@ -36,7 +36,7 @@
 
 export function deprecatedTypeWarning (useAction) {
     /* eslint-disable no-console */
-    return function*(action) {
+    return function* (action) {
         yield console.error(action.type, 'is deprecated. Please use', useAction);
     };
     /* eslint-enable no-console */

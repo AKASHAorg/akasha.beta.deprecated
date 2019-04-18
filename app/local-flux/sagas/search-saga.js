@@ -1,5 +1,5 @@
 //@flow
-import { call, select, takeEvery, takeLatest, getContext } from 'redux-saga/effects';
+import { call, getContext, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as types from '../constants';
 import {
     entrySearchLimit,
@@ -7,8 +7,8 @@ import {
     profileSearchLimit,
     tagSearchLimit
 } from '../../constants/iterator-limits';
-import { searchSelectors, profileSelectors } from '../selectors';
-import { SEARCH_MODULE, TAGS_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+import { profileSelectors, searchSelectors } from '../selectors';
+import { ENTRY_MODULE, SEARCH_MODULE, TAGS_MODULE } from '@akashaproject/common/constants';
 import { deprecatedTypeWarning } from './helpers';
 
 /*::

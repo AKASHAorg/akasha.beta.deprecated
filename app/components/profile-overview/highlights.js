@@ -8,8 +8,13 @@ import * as R from 'ramda';
 import Masonry from 'react-masonry-component';
 import { HighlightCard, Icon } from '../';
 import { searchMessages } from '../../locale-data/messages';
-import { highlightDelete, highlightEditNotes, highlightSearch,
-    highlightToggleEditing, highlightToggleNoteEditable } from '../../local-flux/actions/highlight-actions';
+import {
+    highlightDelete,
+    highlightEditNotes,
+    highlightSearch,
+    highlightToggleEditing,
+    highlightToggleNoteEditable
+} from '../../local-flux/actions/highlight-actions';
 import { profileGetList } from '../../local-flux/actions/profile-actions';
 import { ProfileRecord } from '../../local-flux/reducers/state-models/profile-state-model';
 import { highlightsSelectors, profileSelectors } from '../../local-flux/selectors';
@@ -34,7 +39,9 @@ class Highlights extends Component {
         );
     }
 
-    getContainerRef = (el) => { this.container = el; };
+    getContainerRef = (el) => {
+        this.container = el;
+    };
 
     onSearchChange = (ev) => {
         this.props.highlightSearch(ev.target.value);
@@ -44,49 +51,49 @@ class Highlights extends Component {
         const { editing, intl, highlights, profiles, search } = this.props;
 
         return (
-          <div className="highlights__wrap">
-            <div className="highlights">
-              <div className="highlights__content" ref={this.getContainerRef}>
-                <div className={classNames('highlights__search',
-                    { highlights__search_editing: editing })}
-                >
-                  <Input
-                    onChange={this.onSearchChange}
-                    value={search}
-                    size="large"
-                    placeholder={intl.formatMessage(searchMessages.searchSomething)}
-                    prefix={<Icon type="search" />}
-                  />
+            <div className="highlights__wrap">
+                <div className="highlights">
+                    <div className="highlights__content" ref={ this.getContainerRef }>
+                        <div className={ classNames('highlights__search',
+                            { highlights__search_editing: editing }) }
+                        >
+                            <Input
+                                onChange={ this.onSearchChange }
+                                value={ search }
+                                size="large"
+                                placeholder={ intl.formatMessage(searchMessages.searchSomething) }
+                                prefix={ <Icon type="search"/> }
+                            />
+                        </div>
+                        <div className="highlights__cards-wrap">
+                            <Masonry
+                                options={ {
+                                    transitionDuration: 0,
+                                    fitWidth: true
+                                } }
+                                style={ { margin: '0 auto' } }
+                            >
+                                { highlights.map((highlight) => {
+                                    const publisher = profiles.get(highlight.get('publisher')) || new ProfileRecord();
+                                    return (
+                                        <HighlightCard
+                                            containerRef={ this.container }
+                                            deleteHighlight={ this.props.highlightDelete }
+                                            editNotes={ this.props.highlightEditNotes }
+                                            editing={ editing }
+                                            toggleEditing={ this.props.highlightToggleEditing }
+                                            toggleNoteEditable={ this.props.highlightToggleNoteEditable }
+                                            highlight={ highlight }
+                                            key={ highlight.get('id') }
+                                            publisher={ publisher }
+                                        />
+                                    );
+                                }) }
+                            </Masonry>
+                        </div>
+                    </div>
                 </div>
-                <div className="highlights__cards-wrap">
-                  <Masonry
-                    options={{
-                        transitionDuration: 0,
-                        fitWidth: true
-                    }}
-                    style={{ margin: '0 auto' }}
-                  >
-                    {highlights.map((highlight) => {
-                        const publisher = profiles.get(highlight.get('publisher')) || new ProfileRecord();
-                        return (
-                          <HighlightCard
-                            containerRef={this.container}
-                            deleteHighlight={this.props.highlightDelete}
-                            editNotes={this.props.highlightEditNotes}
-                            editing={editing}
-                            toggleEditing={this.props.highlightToggleEditing}
-                            toggleNoteEditable={this.props.highlightToggleNoteEditable}
-                            highlight={highlight}
-                            key={highlight.get('id')}
-                            publisher={publisher}
-                          />
-                        );
-                    })}
-                  </Masonry>
-                </div>
-              </div>
             </div>
-          </div>
         );
     }
 }

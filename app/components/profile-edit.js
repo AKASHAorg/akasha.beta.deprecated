@@ -5,12 +5,21 @@ import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
 import classNames from 'classnames';
 import { actionAdd } from '../local-flux/actions/action-actions';
-import { setTempProfile, tempProfileGet, tempProfileUpdate, tempProfileCreate,
-    tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
+import {
+    setTempProfile,
+    tempProfileCreate,
+    tempProfileDelete,
+    tempProfileGet,
+    tempProfileUpdate
+} from '../local-flux/actions/temp-profile-actions';
 import { profileEditToggle, showTerms } from '../local-flux/actions/app-actions';
 import { profileMessages } from '../locale-data/messages';
-import { actionSelectors, externalProcessSelectors, profileSelectors,
-    tempProfileSelectors } from '../local-flux/selectors';
+import {
+    actionSelectors,
+    externalProcessSelectors,
+    profileSelectors,
+    tempProfileSelectors
+} from '../local-flux/selectors';
 import { Icon, ProfileEditForm } from './';
 
 class ProfileEdit extends Component {
@@ -70,43 +79,45 @@ class ProfileEdit extends Component {
     throttledHandler = throttle(this.handleFormScroll, 300);
 
     render () {
-        const { intl, ipfsBaseUrl, tempProfile, loggedProfileData, pendingActions,
-            profileExistsData } = this.props;
+        const {
+            intl, ipfsBaseUrl, tempProfile, loggedProfileData, pendingActions,
+            profileExistsData
+        } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
 
         return (
-          <div className="profile-edit">
-            <div className="profile-edit__wrapper">
-              <div className={classNames('profile-edit__title',
-                { 'profile-edit__title_with-border': isScrolled })}
-              >
-                {intl.formatMessage(profileMessages.editProfileTitle)}
-                <Icon
-                  className="content-link profile-edit__close-icon"
-                  type="close"
-                  onClick={this.props.profileEditToggle}
-                />
-              </div>
-              <ProfileEditForm
-                actionAdd={this.props.actionAdd}
-                baseUrl={ipfsBaseUrl}
-                intl={intl}
-                isUpdate={isUpdate}
-                getFormContainerRef={this.getFormContainerRef}
-                loggedProfileData={loggedProfileData}
-                pendingActions={pendingActions}
-                // profileExists={this.props.profileExists}
-                profileExistsData={profileExistsData}
-                tempProfile={tempProfile}
-                tempProfileCreate={this.props.tempProfileCreate}
-                onProfileUpdate={this._updateTempProfile}
-                onTermsShow={this.props.showTerms}
-                profileEditToggle={this.props.profileEditToggle}
-              />
+            <div className="profile-edit">
+                <div className="profile-edit__wrapper">
+                    <div className={ classNames('profile-edit__title',
+                        { 'profile-edit__title_with-border': isScrolled }) }
+                    >
+                        { intl.formatMessage(profileMessages.editProfileTitle) }
+                        <Icon
+                            className="content-link profile-edit__close-icon"
+                            type="close"
+                            onClick={ this.props.profileEditToggle }
+                        />
+                    </div>
+                    <ProfileEditForm
+                        actionAdd={ this.props.actionAdd }
+                        baseUrl={ ipfsBaseUrl }
+                        intl={ intl }
+                        isUpdate={ isUpdate }
+                        getFormContainerRef={ this.getFormContainerRef }
+                        loggedProfileData={ loggedProfileData }
+                        pendingActions={ pendingActions }
+                        // profileExists={this.props.profileExists}
+                        profileExistsData={ profileExistsData }
+                        tempProfile={ tempProfile }
+                        tempProfileCreate={ this.props.tempProfileCreate }
+                        onProfileUpdate={ this._updateTempProfile }
+                        onTermsShow={ this.props.showTerms }
+                        profileEditToggle={ this.props.profileEditToggle }
+                    />
+                </div>
+                <div className="profile-edit__grey-background"/>
             </div>
-            <div className="profile-edit__grey-background" />
-          </div>
         );
     }
 }

@@ -13,7 +13,7 @@ export const addressOfSchema = {
   minItems: 1,
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.addSchema(checkIdFormatSchema, '/checkIdFormat');
@@ -22,9 +22,9 @@ export default function init(sp, getService) {
     const batch = data.map(
       (profile) => {
         return (getService(CORE_MODULE.CONTRACTS)).instance
-        .ProfileResolver.addr(profile.akashaId).then((address) => {
-          return { address: unpad(address), akashaId: profile.akashaId };
-        });
+          .ProfileResolver.addr(profile.akashaId).then((address) => {
+            return { address: unpad(address), akashaId: profile.akashaId };
+          });
       },
     );
     const collection = yield Promise.all(batch);

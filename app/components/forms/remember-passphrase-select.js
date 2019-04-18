@@ -13,21 +13,21 @@ const RememberPassphraseSelect = (props) => {
             intl.formatMessage(generalMessages.minCount, { minutes: value }) :
             intl.formatMessage(generalMessages.hoursCount, { hours: value / 60 });
         return (
-          <Option key={value} value={value}>
-            {message}
-          </Option>
+            <Option key={ value } value={ value }>
+                { message }
+            </Option>
         );
     };
 
     return (
-      <Select
-        getPopupContainer={getPopupContainer || null}
-        onChange={handleTimeChange}
-        size={size}
-        value={unlockTime}
-      >
-        {['5', '10', '15', '30', '60'].map(mins => renderOption(mins))}
-      </Select>
+        <Select
+            getPopupContainer={ getPopupContainer || null }
+            onChange={ handleTimeChange }
+            size={ size }
+            value={ unlockTime }
+        >
+            { ['5', '10', '15', '30', '60'].map(mins => renderOption(mins)) }
+        </Select>
     );
 };
 

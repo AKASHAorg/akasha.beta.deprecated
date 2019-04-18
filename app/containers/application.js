@@ -5,12 +5,17 @@ import { notification } from 'antd';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { hot } from 'react-hot-loader';
-import { Provider, Fill } from 'react-slot-fill';
+import { Fill, Provider } from 'react-slot-fill';
 import * as appActions from '../local-flux/actions/app-actions';
 import * as settingsActions from '../local-flux/actions/settings-actions';
 import { reloadPage } from '../local-flux/actions/utils-actions';
 import * as profileActions from '../local-flux/actions/profile-actions';
-import { DashboardPageLayout, MyProfilePageLayout } from '../components/layouts';
+import {
+    AppbarLayout,
+    DashboardPageLayout,
+    MyProfilePageLayout,
+    SidebarLayout
+} from '../components/layouts';
 
 import {
     DashboardPage,
@@ -20,23 +25,21 @@ import {
     ProfilePage,
     SearchPage
 } from '../components/pages';
-
-import { AppbarLayout, SidebarLayout } from '../components/layouts';
-import { SIDEBAR_SLOTS, APPBAR_SLOTS } from '../components/layouts/slot-names';
+import { APPBAR_SLOTS, SIDEBAR_SLOTS } from '../components/layouts/slot-names';
 import {
-    AppErrorBoundary,
     AppbarBalance,
+    AppErrorBoundary,
+    ProfileEditPanel,
     ServiceStatusBar,
-    UserNotification,
-    SidebarTopMenu,
     SidebarBottomMenu,
-    ProfileEditPanel
+    SidebarTopMenu,
+    UserNotification
 } from '../components';
 import {
-    dashboardSelectors,
     actionSelectors,
-    profileSelectors,
-    externalProcessSelectors
+    dashboardSelectors,
+    externalProcessSelectors,
+    profileSelectors
 } from '../local-flux/selectors';
 import withRequest from '../components/high-order-components/with-request';
 
@@ -79,42 +82,42 @@ const Application = (props /* :Props */) => {
     }, [gethIsSynced, !loggedEthAddress]);
     return (
         <>
-            <AppErrorBoundary reloadPage={onReload} showNotification={showNotification}>
+            <AppErrorBoundary reloadPage={ onReload } showNotification={ showNotification }>
                 <Provider>
-                    {/* load layouts here */}
-                    <AppbarLayout />
-                    <SidebarLayout profilePanelOpen={profileEditPanelVisible} />
-                    <DashboardPageLayout />
-                    <MyProfilePageLayout />
-                    {/* Populate layout (Pages) */}
-                    <DashboardPage />
-                    <EditorPage />
-                    <EntryPage />
-                    <MyProfilePage />
-                    <ProfilePage />
-                    <SearchPage />
-                    {/* Populate common sections/slots */}
+                    {/* load layouts here */ }
+                    <AppbarLayout/>
+                    <SidebarLayout profilePanelOpen={ profileEditPanelVisible }/>
+                    <DashboardPageLayout/>
+                    <MyProfilePageLayout/>
+                    {/* Populate layout (Pages) */ }
+                    <DashboardPage/>
+                    <EditorPage/>
+                    <EntryPage/>
+                    <MyProfilePage/>
+                    <ProfilePage/>
+                    <SearchPage/>
+                    {/* Populate common sections/slots */ }
                     <>
-                        <Fill name={SIDEBAR_SLOTS.TOP}>
-                            <SidebarTopMenu />
+                        <Fill name={ SIDEBAR_SLOTS.TOP }>
+                            <SidebarTopMenu/>
                         </Fill>
-                        <Fill name={SIDEBAR_SLOTS.BOTTOM}>
+                        <Fill name={ SIDEBAR_SLOTS.BOTTOM }>
                             <SidebarBottomMenu
-                                onProfileEdit={() => setProfileEditPanelVisible(!profileEditPanelVisible)}
+                                onProfileEdit={ () => setProfileEditPanelVisible(!profileEditPanelVisible) }
                             />
                         </Fill>
-                        <Fill name={SIDEBAR_SLOTS.PROFILE_EDIT_PANEL}>
-                            <ProfileEditPanel visible={profileEditPanelVisible} />
+                        <Fill name={ SIDEBAR_SLOTS.PROFILE_EDIT_PANEL }>
+                            <ProfileEditPanel visible={ profileEditPanelVisible }/>
                         </Fill>
-                        <Fill name={APPBAR_SLOTS.SERVICE_STATUS}>
-                            <ServiceStatusBar />
+                        <Fill name={ APPBAR_SLOTS.SERVICE_STATUS }>
+                            <ServiceStatusBar/>
                         </Fill>
-                        <Fill name={APPBAR_SLOTS.NOTIFICATION}>
-                            <UserNotification />
+                        <Fill name={ APPBAR_SLOTS.NOTIFICATION }>
+                            <UserNotification/>
                         </Fill>
-                        <Fill name={APPBAR_SLOTS.WALLET}>
+                        <Fill name={ APPBAR_SLOTS.WALLET }>
                             <>
-                                <AppbarBalance />
+                                <AppbarBalance/>
                             </>
                         </Fill>
                     </>

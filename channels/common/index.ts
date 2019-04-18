@@ -6,7 +6,7 @@ import logoutInit from './logout';
 import requestAethInit from './request-aeth';
 import { COMMON_MODULE } from './constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
   ipfsHelpersInit(sp);
   profileHelpersInit(sp, getService);
   const getLocalIdentities = getLocalIdentitiesInit(sp, getService);

@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
-import { Tooltip, Popover } from 'antd';
+import { Popover, Tooltip } from 'antd';
 import { Avatar, Icon, ProfilePopover, ShareLinkModal } from '../';
 import { entryTypes } from '../../constants/entry-types';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
-import { entryPageHide, entryGetFull } from '../../local-flux/actions/entry-actions';
-import { entrySelectors, draftSelectors, profileSelectors } from '../../local-flux/selectors';
+import { entryGetFull, entryPageHide } from '../../local-flux/actions/entry-actions';
+import { draftSelectors, entrySelectors, profileSelectors } from '../../local-flux/selectors';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
 import { addPrefix } from '../../utils/url-utils';
 import withRequest from '../high-order-components/with-request';
@@ -42,14 +42,14 @@ class EntryPageHeader extends Component {
 
     getVersion = (version) => {
         const { history, match } = this.props;
-        const query = version !== undefined ? `?version=${version}` : '';
-        history.replace(`${match.url}${query}`);
+        const query = version !== undefined ? `?version=${ version }` : '';
+        history.replace(`${ match.url }${ query }`);
     };
 
     handleEdit = () => {
         const { entry, history } = this.props;
         const entryType = entryTypes[entry.getIn(['content', 'entryType'])];
-        history.push(`/draft/${entryType}/${entry.get('entryId')}`);
+        history.push(`/draft/${ entryType }/${ entry.get('entryId') }`);
         // if (existingDraft) {
         //     history.push(`/draft/${existingDraft.get('id')}`);
         // } else {
@@ -72,22 +72,22 @@ class EntryPageHeader extends Component {
     renderAvatar = () => {
         const { author, containerRef } = this.props;
         if (!author.get('ethAddress')) {
-            return <Avatar className="entry-page-header__avatar" size="small" />;
+            return <Avatar className="entry-page-header__avatar" size="small"/>;
         }
 
         return (
-          <ProfilePopover
-            containerRef={containerRef}
-            ethAddress={author.get('ethAddress')}
-          >
-            <Avatar
-              className="entry-page-header__avatar"
-              firstName={author.get('firstName')}
-              image={author.get('avatar')}
-              lastName={author.get('lastName')}
-              size="small"
-            />
-          </ProfilePopover>
+            <ProfilePopover
+                containerRef={ containerRef }
+                ethAddress={ author.get('ethAddress') }
+            >
+                <Avatar
+                    className="entry-page-header__avatar"
+                    firstName={ author.get('firstName') }
+                    image={ author.get('avatar') }
+                    lastName={ author.get('lastName') }
+                    size="small"
+                />
+            </ProfilePopover>
         );
     };
 
@@ -96,15 +96,15 @@ class EntryPageHeader extends Component {
         const { versionsInfo } = entry;
         const versionsEnum = Array(latestVersion + 1).fill('');
         return versionsEnum.map((version, index) => (
-          <div
-            key={`${index}`}
-            className="popover-menu__item"
-            onClick={this._switchToVersion(index)}
-          >
-            {intl.formatMessage(entryMessages.versionNumber, {
-                index: index + 1
-            })}
-          </div>
+            <div
+                key={ `${ index }` }
+                className="popover-menu__item"
+                onClick={ this._switchToVersion(index) }
+            >
+                { intl.formatMessage(entryMessages.versionNumber, {
+                    index: index + 1
+                }) }
+            </div>
         ));
     }
 
@@ -117,55 +117,56 @@ class EntryPageHeader extends Component {
         const isOlderVersion = latestVersion && latestVersion !== this.getCurrentVersion();
         // const { versionsInfo } = entry;
         const publishedMessage = (
-          <span>
-            {!isOlderVersion &&
-              <span>
-                V{latestVersion ? latestVersion + 1 : 1} &#183; {intl.formatMessage(entryMessages.edited)}
+            <span>
+            { !isOlderVersion &&
+            <span>
+                V{ latestVersion ? latestVersion + 1 : 1 } &#183; { intl.formatMessage(entryMessages.edited) }
               </span>
             }
-            {(isOlderVersion) &&
-              <span>
-                  V{this.getCurrentVersion() + 1} &#183; {intl.formatMessage(entryMessages.published)}
+                { (isOlderVersion) &&
+                <span>
+                  V{ this.getCurrentVersion() + 1 } &#183; { intl.formatMessage(entryMessages.published) }
               </span>
-            }
+                }
           </span>
         );
         return (
-          <div>
-            {readingTime.hours &&
-              <span style={{ marginRight: 5 }}>
-                {intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })}
+            <div>
+                { readingTime.hours &&
+                <span style={ { marginRight: 5 } }>
+                { intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours }) }
               </span>
-            }
-            {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
-            <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
-            <span style={{ padding: '0 0 0 5px' }}>
-              ({intl.formatMessage(entryMessages.wordsCount, { words: wordCount })})
+                }
+                { intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes }) }
+                <span
+                    style={ { paddingLeft: '5px' } }>{ intl.formatMessage(entryMessages.readTime) }</span>
+                <span style={ { padding: '0 0 0 5px' } }>
+              ({ intl.formatMessage(entryMessages.wordsCount, { words: wordCount }) })
             </span>
-            <span style={{ padding: '0 7px' }}>|</span>
-            <Popover
-              content={this.wasVisible ? this._getVersionsPopoverContent() : null}
-              visible={showVersions}
-              trigger="click"
-              onVisibleChange={visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion)}
-              placement="bottomRight"
-              overlayClassName="popover-menu"
-            >
+                <span style={ { padding: '0 7px' } }>|</span>
+                <Popover
+                    content={ this.wasVisible ? this._getVersionsPopoverContent() : null }
+                    visible={ showVersions }
+                    trigger="click"
+                    onVisibleChange={ visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion) }
+                    placement="bottomRight"
+                    overlayClassName="popover-menu"
+                >
               <span className="entry-page-header__versions-button">
-                <span style={{ paddingRight: '5px' }}>
-                  {publishedMessage}
+                <span style={ { paddingRight: '5px' } }>
+                  { publishedMessage }
                 </span>
-                {!isOlderVersion &&
-                  <span style={{ display: 'inline-block' }}>
-                    {intl.formatRelative(publishDate)}
+                  { !isOlderVersion &&
+                  <span style={ { display: 'inline-block' } }>
+                    { intl.formatRelative(publishDate) }
                   </span>
-                }
-                {latestVersion &&
-                  <Icon type="arrowDropdownOpen" style={{ paddingLeft: 5 }} />
-                }
+                  }
+                  { latestVersion &&
+                  <Icon type="arrowDropdownOpen" style={ { paddingLeft: 5 } }/>
+                  }
               </span>
-            </Popover>
-          </div>
+                </Popover>
+            </div>
         );
     };
 
@@ -174,46 +175,46 @@ class EntryPageHeader extends Component {
         const ethAddress = entry.getIn(['author', 'ethAddress']);
         const akashaId = author.get('akashaId');
         const isOwnEntry = loggedEthAddress === ethAddress;
-        const url = addPrefix(`/${ethAddress}/${entry.entryId}`);
+        const url = addPrefix(`/${ ethAddress }/${ entry.entryId }`);
 
         return (
-          <div className="entry-page-header">
-            <div className="entry-page-header__inner">
-              {this.renderAvatar()}
-              <div className="entry-page-header__info">
-                <div className="entry-page-header__author">
-                  {author.get('ethAddress') &&
-                    <ProfilePopover
-                      ethAddress={ethAddress}
-                      containerRef={containerRef}
-                    >
+            <div className="entry-page-header">
+                <div className="entry-page-header__inner">
+                    { this.renderAvatar() }
+                    <div className="entry-page-header__info">
+                        <div className="entry-page-header__author">
+                            { author.get('ethAddress') &&
+                            <ProfilePopover
+                                ethAddress={ ethAddress }
+                                containerRef={ containerRef }
+                            >
                       <span className="content-link">
-                        {getDisplayName({ akashaId, ethAddress })}
+                        { getDisplayName({ akashaId, ethAddress }) }
                       </span>
-                    </ProfilePopover>
-                  }
+                            </ProfilePopover>
+                            }
+                        </div>
+                        <div className="entry-page-header__subtitle">
+                            { this.renderSubtitle() }
+                        </div>
+                    </div>
+                    <div className="flex-center entry-page-header__actions">
+                        { isOwnEntry &&
+                        <Tooltip
+                            getPopupContainer={ this.getPopupContainer }
+                            title={ intl.formatMessage(entryMessages.editEntry) }
+                        >
+                            <Icon
+                                className="content-link entry-page-header__button"
+                                onClick={ this.handleEdit }
+                                type="edit"
+                            />
+                        </Tooltip>
+                        }
+                        <ShareLinkModal url={ url } withLabel/>
+                    </div>
                 </div>
-                <div className="entry-page-header__subtitle">
-                  {this.renderSubtitle()}
-                </div>
-              </div>
-              <div className="flex-center entry-page-header__actions">
-                {isOwnEntry &&
-                  <Tooltip
-                    getPopupContainer={this.getPopupContainer}
-                    title={intl.formatMessage(entryMessages.editEntry)}
-                  >
-                    <Icon
-                      className="content-link entry-page-header__button"
-                      onClick={this.handleEdit}
-                      type="edit"
-                    />
-                  </Tooltip>
-                }
-                <ShareLinkModal url={url} withLabel />
-              </div>
             </div>
-          </div>
         );
     }
 }

@@ -1,7 +1,7 @@
 // @flow
 const prefix = 'beta.akasha.world';
 
-export const addPrefix = (str /* : string */ = '') /* : string */ => `${prefix}/#${str}`;
+export const addPrefix = (str /* : string */ = '') /* : string */ => `${ prefix }/#${ str }`;
 
 export const isAbsolute = (route /* : string */ = '') /* : boolean */ => !route.startsWith('/');
 
@@ -12,7 +12,7 @@ export const isValidLink = (url /* : string */ = '') /* : boolean */ => {
 };
 
 export const isInternalLink = (value /* : string */ = '') /* : boolean */ =>
-    value.startsWith(`${prefix}/`) || value.startsWith(`/${prefix}/`) || value.startsWith(`#/${prefix}/`);
+    value.startsWith(`${ prefix }/`) || value.startsWith(`/${ prefix }/`) || value.startsWith(`#/${ prefix }/`);
 
 export const isLinkToAkashaWeb = (value /* : string */ = '') /* : boolean */ => value.includes(prefix);
 
@@ -20,7 +20,7 @@ export const prependHttp = (url /* : string */ = '') /* : string */ => {
     if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
     }
-    return `http://${url}`;
+    return `http://${ url }`;
 };
 
 export const extractEntryUrl = (externalUrl /*:string*/) =>
@@ -30,5 +30,5 @@ export const removePrefix = (value /* : string */ = '') /* : string */ => {
     if (isAbsolute(value)) {
         return value.replace(prefix, '');
     }
-    return value.replace(`/${prefix}`, '');
+    return value.replace(`/${ prefix }`, '');
 };

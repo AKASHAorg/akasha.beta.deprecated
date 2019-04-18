@@ -8,24 +8,24 @@ export const regenWeb3 = (web3) => {
 };
 const registerWithExecution = function (nextExecution) {
   // window.addEventListener('load', async () => {
-    let web3Local;
-    if (window.hasOwnProperty('ethereum')) {
-      web3Local = regenWeb3(window['ethereum']);
-      try {
-        window['ethereum'].enable();
-        web3Local.eth.getAccounts((err, accList) => {
-          if (err) {
-            throw err;
-          }
-          nextExecution(web3Local, accList);
-        });
-      } catch (e) {
-        nextExecution(web3Local, false);
-      }
-
-    } else {
-      nextExecution(false, false);
+  let web3Local;
+  if (window.hasOwnProperty('ethereum')) {
+    web3Local = regenWeb3(window['ethereum']);
+    try {
+      window['ethereum'].enable();
+      web3Local.eth.getAccounts((err, accList) => {
+        if (err) {
+          throw err;
+        }
+        nextExecution(web3Local, accList);
+      });
+    } catch (e) {
+      nextExecution(web3Local, false);
     }
+
+  } else {
+    nextExecution(false, false);
+  }
   // });
 };
 

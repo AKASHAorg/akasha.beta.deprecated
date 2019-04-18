@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import ChannelReqService from '../../local-flux/services/channel-request-service';
-import { spy } from 'sinon';
 import IPCChannel from '../utils/ipc-channel';
 
 describe('[Service] channel-request-service', () => {

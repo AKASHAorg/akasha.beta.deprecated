@@ -70,7 +70,7 @@ class MentionComponent extends Component {
         const { profileAddress } = this.state;
         const { router } = this.context;
         if (profileAddress) {
-            router.push(`${router.params.akashaId}/profile/${profileAddress}`);
+            router.push(`${ router.params.akashaId }/profile/${ profileAddress }`);
         }
     };
 
@@ -132,30 +132,31 @@ class MentionComponent extends Component {
         const { children, nonEditable } = this.props;
         const { palette } = this.context.muiTheme;
         return (
-          <div
-            style={{ display: 'inline-block' }}
-            ref={this.setContainerRef}
-            onMouseEnter={nonEditable && this.handleMouseEnter}
-            onMouseLeave={nonEditable && this.handleMouseLeave}
-          >
-            <span
-              style={{
-                  color: this.state.exists ? palette.primary1Color : '',
-                  cursor: nonEditable && this.state.exists ? 'pointer' : 'auto'
-              }}
-              onClick={nonEditable && this.navigateToProfile}
+            <div
+                style={ { display: 'inline-block' } }
+                ref={ this.setContainerRef }
+                onMouseEnter={ nonEditable && this.handleMouseEnter }
+                onMouseLeave={ nonEditable && this.handleMouseLeave }
             >
-              {children}
+            <span
+                style={ {
+                    color: this.state.exists ? palette.primary1Color : '',
+                    cursor: nonEditable && this.state.exists ? 'pointer' : 'auto'
+                } }
+                onClick={ nonEditable && this.navigateToProfile }
+            >
+              { children }
             </span>
-            {nonEditable && this.state.exists &&
-{/*              <ProfileHoverCard
+                { nonEditable && this.state.exists &&
+                {/*              <ProfileHoverCard
                 anchorHovered={this.state.anchorHovered}
                 anchorNode={this.container}
                 loading={this.state.fetchingData}
                 profile={this.state.profileData || {}}
-              />*/}
-            }
-          </div>
+              />*/
+                }
+                }
+            </div>
         );
     }
 }
@@ -181,7 +182,7 @@ const findMentionEntities = (contentBlock, callback) => {
     }
 };
 
-const withHoverCard = Comp => props => <Comp nonEditable {...props} />;
+const withHoverCard = Comp => props => <Comp nonEditable { ...props } />;
 
 const decorators = {
     editableDecorator: {

@@ -40,5 +40,5 @@ export const AppRecord = Record({
 });
 
 export default class AppStateModel extends AppRecord {
-    
+
 }

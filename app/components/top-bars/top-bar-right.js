@@ -38,39 +38,41 @@ const TopBarRight = props => {
     return (
         <div className="top-bar-right">
             <div className="flex-center-y top-bar-right__services">
-                <ServiceStatusBar />
+                <ServiceStatusBar/>
             </div>
             <div className="flex-center-y top-bar-right__icon-wrapper">
-                <Tooltip title={intl.formatMessage(generalMessages.notifications)}>
+                <Tooltip title={ intl.formatMessage(generalMessages.notifications) }>
                     <Icon
-                        className={notificationsClass}
-                        onClick={showNotificationsPanel}
+                        className={ notificationsClass }
+                        onClick={ showNotificationsPanel }
                         type="notifications"
                     />
                 </Tooltip>
-                {notificationsLoaded && !!unreadNotifications && (
+                { notificationsLoaded && !!unreadNotifications && (
                     <div
                         className="flex-center top-bar-right__notifications-indicator"
-                        onClick={showNotificationsPanel}
+                        onClick={ showNotificationsPanel }
                     >
-                        {unreadNotifications}
+                        { unreadNotifications }
                     </div>
-                )}
+                ) }
             </div>
             <div className="flex-center-y top-bar-right__icon-wrapper">
-                <Tooltip title={intl.formatMessage(profileMessages.transactionsLog)}>
-                    <Icon className={activityClass} onClick={showTransactionsLog} type="activity" />
+                <Tooltip title={ intl.formatMessage(profileMessages.transactionsLog) }>
+                    <Icon className={ activityClass } onClick={ showTransactionsLog }
+                          type="activity"/>
                 </Tooltip>
-                {hasPendingActions && (
-                    <div className="top-bar-right__pending-indicator" onClick={showTransactionsLog} />
-                )}
+                { hasPendingActions && (
+                    <div className="top-bar-right__pending-indicator"
+                         onClick={ showTransactionsLog }/>
+                ) }
             </div>
-            <div className={ethClass} onClick={toggleEthWallet}>
-                <Balance balance={balance.get('eth')} short type="eth" />
+            <div className={ ethClass } onClick={ toggleEthWallet }>
+                <Balance balance={ balance.get('eth') } short type="eth"/>
             </div>
-            <div className={aethClass} onClick={toggleAethWallet}>
-                {hasCycledAeth && <div className="top-bar-right__cycled-indicator" />}
-                <Balance balance={balance.getIn(['aeth', 'free'])} short type="aeth" />
+            <div className={ aethClass } onClick={ toggleAethWallet }>
+                { hasCycledAeth && <div className="top-bar-right__cycled-indicator"/> }
+                <Balance balance={ balance.getIn(['aeth', 'free']) } short type="aeth"/>
             </div>
         </div>
     );

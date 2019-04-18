@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { Button, Form, Input } from 'antd';
 import { formMessages, generalMessages, setupMessages } from '../locale-data/messages';
 import { profileCreateEthAddress } from '../local-flux/actions/profile-actions';
@@ -73,8 +73,8 @@ class NewIdentity extends Component {
         const { getFieldDecorator } = this.props.form;
         return (
             <div className="new-identity__form-wrapper">
-                <FormItem colon={false} label={intl.formatMessage(formMessages.passphrase)}>
-                    {getFieldDecorator('passphrase', {
+                <FormItem colon={ false } label={ intl.formatMessage(formMessages.passphrase) }>
+                    { getFieldDecorator('passphrase', {
                         rules: [
                             {
                                 required: true,
@@ -88,14 +88,15 @@ class NewIdentity extends Component {
                     })(
                         <Input
                             autoFocus
-                            placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
+                            placeholder={ intl.formatMessage(formMessages.passphrasePlaceholder) }
                             size="large"
                             type="password"
                         />
-                    )}
+                    ) }
                 </FormItem>
-                <FormItem colon={false} label={intl.formatMessage(formMessages.confirmPassphrase)}>
-                    {getFieldDecorator('passphrase1', {
+                <FormItem colon={ false }
+                          label={ intl.formatMessage(formMessages.confirmPassphrase) }>
+                    { getFieldDecorator('passphrase1', {
                         rules: [
                             {
                                 required: true,
@@ -109,13 +110,13 @@ class NewIdentity extends Component {
                         validateTrigger: 'onBlur'
                     })(
                         <Input
-                            onBlur={this.onConfirmBlur}
-                            onChange={this.onConfirmChange}
-                            placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
+                            onBlur={ this.onConfirmBlur }
+                            onChange={ this.onConfirmChange }
+                            placeholder={ intl.formatMessage(formMessages.passphrasePlaceholder) }
                             size="large"
                             type="password"
                         />
-                    )}
+                    ) }
                 </FormItem>
             </div>
         );
@@ -126,8 +127,8 @@ class NewIdentity extends Component {
         const { getFieldsError } = this.props.form;
         const buttonsDisabled = loginPending || ethAddressPending;
         const termsLink = (
-            <a href="#" onClick={this.showTerms}>
-                {intl.formatMessage(generalMessages.termsOfService)}
+            <a href="#" onClick={ this.showTerms }>
+                { intl.formatMessage(generalMessages.termsOfService) }
             </a>
         );
         if (!active) {
@@ -135,37 +136,38 @@ class NewIdentity extends Component {
         }
         return (
             <div className="setup-content setup-content__column_full new-identity">
-                <Form hideRequiredMark onSubmit={this.handleSubmit}>
+                <Form hideRequiredMark onSubmit={ this.handleSubmit }>
                     <div className="setup-content__column-content new-identity__content">
                         <div className="heading new-identity__title">
-                            {intl.formatMessage(setupMessages.createIdentity)}
+                            { intl.formatMessage(setupMessages.createIdentity) }
                         </div>
                         <div className="new-identity__subtitle">
-                            {intl.formatMessage(setupMessages.newIdentitySubtitle)}
+                            { intl.formatMessage(setupMessages.newIdentitySubtitle) }
                         </div>
-                        {this.renderForm()}
+                        { this.renderForm() }
                         <div className="new-identity__terms">
                             <small>
-                                <FormattedMessage {...generalMessages.terms} values={{ termsLink }} />
+                                <FormattedMessage { ...generalMessages.terms }
+                                                  values={ { termsLink } }/>
                             </small>
                         </div>
                     </div>
                     <div className="setup-content__column-footer new-identity__footer">
                         <Button
                             className="new-identity__button"
-                            disabled={buttonsDisabled}
-                            onClick={history.goBack}
+                            disabled={ buttonsDisabled }
+                            onClick={ history.goBack }
                         >
-                            {intl.formatMessage(generalMessages.cancel)}
+                            { intl.formatMessage(generalMessages.cancel) }
                         </Button>
                         <Button
                             className="new-identity__button"
-                            disabled={hasErrors(getFieldsError()) || buttonsDisabled}
+                            disabled={ hasErrors(getFieldsError()) || buttonsDisabled }
                             htmlType="submit"
-                            onClick={this.handleSubmit}
+                            onClick={ this.handleSubmit }
                             type="primary"
                         >
-                            {intl.formatMessage(generalMessages.next)}
+                            { intl.formatMessage(generalMessages.next) }
                         </Button>
                     </div>
                 </Form>

@@ -32,7 +32,10 @@ export default function init(sp, getService) {
         const collection = [];
         const pageSize = data.pageSize || 20;
         const offset = data.offset || 0;
-        const defaultQuery = [{ AND: { title: [data.text] }, BOOST: 5 }, { AND: { excerpt: [data.text] } }];
+        const defaultQuery = [{
+                AND: { title: [data.text] },
+                BOOST: 5,
+            }, { AND: { excerpt: [data.text] } }];
         const query = (data.authors && data.authors.length) ?
             buildFilter(data.authors, data.text) : defaultQuery;
         dbs.entry.searchIndex.totalHits({ query }, function (err, count) {

@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import withRouter from 'react-router/withRouter';
-import Link from 'react-router-dom/Link';
+import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Button, Popover } from 'antd';
 import { equals } from 'ramda';
 import panels from '../constants/panels';
@@ -14,10 +14,10 @@ import { draftCreate, draftsGet } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
 import {
-    profileSelectors,
     appSelectors,
     dashboardSelectors,
     draftSelectors,
+    profileSelectors,
     settingsSelectors
 } from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages/entry-messages';
@@ -29,6 +29,7 @@ class Sidebar extends Component {
         visible: false
     };
     wasVisible = false;
+
     componentWillReceiveProps (nextProps) {
         const { loggedProfile, draftsFetched, fetchingDrafts } = nextProps;
         // if (loggedProfile.get('ethAddress') && !draftsFetched && !fetchingDrafts) {
@@ -37,6 +38,7 @@ class Sidebar extends Component {
         //     });
         // }
     }
+
     shouldComponentUpdate (nextProps, nextState) {
         const props = this.props;
         return (
@@ -51,6 +53,7 @@ class Sidebar extends Component {
             equals(nextProps.location, props.location)
         );
     }
+
     hide = () => {
         this.setState({
             visible: false
@@ -92,7 +95,7 @@ class Sidebar extends Component {
                             },
                             tags: []
                         });
-                        return history.push(`/draft/article/${draftId}`);
+                        return history.push(`/draft/article/${ draftId }`);
                     }
                     if (path === '/draft/link/new') {
                         this.props.draftCreate({
@@ -105,7 +108,7 @@ class Sidebar extends Component {
                             },
                             tags: []
                         });
-                        return history.push(`/draft/link/${draftId}`);
+                        return history.push(`/draft/link/${ draftId }`);
                     }
                     return history.push(path);
                 }
@@ -130,7 +133,7 @@ class Sidebar extends Component {
             const draft = drafts.first();
             const draftId = draft.get('id');
             const draftType = draft.getIn(['content', 'entryType']);
-            const navigate = this._navigateTo(`/draft/${draftType}/${draftId}`);
+            const navigate = this._navigateTo(`/draft/${ draftType }/${ draftId }`);
             return navigate();
         }
         const navigate = this._navigateTo('/draft/article/all');
@@ -138,7 +141,7 @@ class Sidebar extends Component {
     };
     navigateToProfile = () => {
         const { history, loggedProfileData } = this.props;
-        history.push(`/${loggedProfileData.ethAddress}`);
+        history.push(`/${ loggedProfileData.ethAddress }`);
     };
     _getEntryMenu = () => {
         const { intl } = this.props;
@@ -152,10 +155,10 @@ class Sidebar extends Component {
                             className="borderless"
                             icon="file"
                             ghost
-                            onClick={this._navigateTo('/draft/article/new')}
+                            onClick={ this._navigateTo('/draft/article/new') }
                         />
                         <div className="sidebar__entry-menu-buttons_text">
-                            {intl.formatMessage(generalMessages.sidebarEntryTypeArticle)}
+                            { intl.formatMessage(generalMessages.sidebarEntryTypeArticle) }
                         </div>
                     </li>
                     <li className="sidebar__entry-menu-buttons_wrapper">
@@ -165,10 +168,10 @@ class Sidebar extends Component {
                             className="borderless"
                             icon="link"
                             ghost
-                            onClick={this._navigateTo('/draft/link/new')}
+                            onClick={ this._navigateTo('/draft/link/new') }
                         />
                         <div className="sidebar__entry-menu-buttons_text">
-                            {intl.formatMessage(generalMessages.sidebarEntryTypeLink)}
+                            { intl.formatMessage(generalMessages.sidebarEntryTypeLink) }
                         </div>
                     </li>
                     <li className="sidebar__entry-menu-buttons_wrapper sidebar__entry-menu-buttons_wrapper-disabled">
@@ -179,80 +182,83 @@ class Sidebar extends Component {
                             icon="picture"
                             ghost
                             disabled
-                            onClick={() => {}}
+                            onClick={ () => {
+                            } }
                         />
                         <div className="sidebar__entry-menu-buttons_text">
-                            {intl.formatMessage(generalMessages.sidebarEntryTypeImage)}
+                            { intl.formatMessage(generalMessages.sidebarEntryTypeImage) }
                         </div>
                     </li>
                 </ul>
                 <div>
                     <div
                         className="sidebar__entry-menu-buttons_draft-button"
-                        onClick={this._handleMyDraftsClick}
+                        onClick={ this._handleMyDraftsClick }
                     >
-                        <Icon type="draft" className="sidebar__entry-menu-buttons_draft-button-icon" />
+                        <Icon type="draft"
+                              className="sidebar__entry-menu-buttons_draft-button-icon"/>
                         <span className="sidebar__entry-menu-buttons_draft-button-label">
-                            {intl.formatMessage(entryMessages.gotoMyDrafts)}
+                            { intl.formatMessage(entryMessages.gotoMyDrafts) }
                         </span>
                     </div>
                 </div>
             </div>
         );
     };
+
     render () {
         const { activeDashboard, intl, location, loggedProfileData } = this.props;
         const menu = (
-            <div onClick={this.hide}>
-                <div onClick={this.navigateToProfile} className="popover-menu__item">
-                    {intl.formatMessage(generalMessages.viewProfile)}
+            <div onClick={ this.hide }>
+                <div onClick={ this.navigateToProfile } className="popover-menu__item">
+                    { intl.formatMessage(generalMessages.viewProfile) }
                 </div>
-                <div onClick={this.props.profileEditToggle} className="popover-menu__item">
-                    {intl.formatMessage(generalMessages.editProfile)}
+                <div onClick={ this.props.profileEditToggle } className="popover-menu__item">
+                    { intl.formatMessage(generalMessages.editProfile) }
                 </div>
                 <div className="popover-menu__item">
                     <Link className="unstyled-link" to="/profileoverview/settings">
-                        {intl.formatMessage(generalMessages.userSettings)}
+                        { intl.formatMessage(generalMessages.userSettings) }
                     </Link>
                 </div>
                 <div className="popover-menu__item">
                     <Link className="unstyled-link" to="/profileoverview/preferences">
-                        {intl.formatMessage(generalMessages.appPreferences)}
+                        { intl.formatMessage(generalMessages.appPreferences) }
                     </Link>
                 </div>
-                <div onClick={this._handleLogout} className="popover-menu__item">
-                    {intl.formatMessage(generalMessages.logout)}
+                <div onClick={ this._handleLogout } className="popover-menu__item">
+                    { intl.formatMessage(generalMessages.logout) }
                 </div>
             </div>
         );
 
         return (
-            <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
+            <div className={ `sidebar ${ this._isSidebarVisible(location) && 'sidebar_shown' }` }>
                 <div className="sidebar__top-icons">
                     <div className="flex-center-x sidebar__new-entry">
                         <Popover
                             arrowPointAtCenter
                             placement="right"
-                            content={this._getEntryMenu()}
+                            content={ this._getEntryMenu() }
                             overlayClassName="entry-menu-popover"
                         >
                             <div className="content-link flex-center sidebar__new-entry-wrapper">
-                                <Icon className="sidebar__new-entry-icon" type="newEntry" />
+                                <Icon className="sidebar__new-entry-icon" type="newEntry"/>
                             </div>
                         </Popover>
                     </div>
                     <SidebarIcon
                         activePath="/dashboard"
-                        linkTo={`/dashboard/${activeDashboard || ''}`}
+                        linkTo={ `/dashboard/${ activeDashboard || '' }` }
                         iconType="dashboard"
-                        tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipDashboard)}
+                        tooltipTitle={ intl.formatMessage(generalMessages.sidebarTooltipDashboard) }
                     />
                     <SidebarIcon
                         activePath="/profileoverview"
                         className="sidebar__profile-icon"
                         linkTo="/profileoverview/myentries"
                         iconType="profileOverview"
-                        tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipProfile)}
+                        tooltipTitle={ intl.formatMessage(generalMessages.sidebarTooltipProfile) }
                     />
                     {/* <SidebarIcon
                 activePath="/community"
@@ -260,44 +266,44 @@ class Sidebar extends Component {
                 iconType="community"
                 tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipCommunity)}
                 disabled
-              /> */}
+              /> */ }
                     <SidebarIcon
                         activePath="/search"
                         linkTo="/search/entries"
                         iconType="search"
-                        tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipSearch)}
+                        tooltipTitle={ intl.formatMessage(generalMessages.sidebarTooltipSearch) }
                     />
                     <SidebarIcon
                         activePath="/chat"
                         linkTo="/chat"
                         iconType="chat"
-                        tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipChat)}
+                        tooltipTitle={ intl.formatMessage(generalMessages.sidebarTooltipChat) }
                         disabled
                     />
                 </div>
                 <div className="flex-center-x content-link sidebar__progress-wrapper">
-                    <ManaPopover />
+                    <ManaPopover/>
                 </div>
                 <div className="flex-center-x content-link sidebar__progress-wrapper">
-                    <EssencePopover />
+                    <EssencePopover/>
                 </div>
                 <div className="flex-center-x content-link sidebar__progress-wrapper">
-                    <KarmaPopover />
+                    <KarmaPopover/>
                 </div>
                 <div className="flex-center-x sidebar__avatar">
                     <Popover
                         arrowPointAtCenter
                         placement="topRight"
-                        content={this.wasVisible ? menu : null}
+                        content={ this.wasVisible ? menu : null }
                         trigger="click"
                         overlayClassName="popover-menu"
-                        visible={this.state.visible}
-                        onVisibleChange={this.handleVisibleChange}
+                        visible={ this.state.visible }
+                        onVisibleChange={ this.handleVisibleChange }
                     >
                         <Avatar
-                            firstName={loggedProfileData && loggedProfileData.get('firstName')}
-                            image={loggedProfileData && loggedProfileData.get('avatar')}
-                            lastName={loggedProfileData && loggedProfileData.get('lastName')}
+                            firstName={ loggedProfileData && loggedProfileData.get('firstName') }
+                            image={ loggedProfileData && loggedProfileData.get('avatar') }
+                            lastName={ loggedProfileData && loggedProfileData.get('lastName') }
                             size="small"
                         />
                     </Popover>

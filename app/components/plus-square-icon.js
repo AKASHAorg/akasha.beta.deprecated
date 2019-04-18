@@ -5,12 +5,12 @@ import { Icon } from './';
 
 const PlusSquareIcon = props => (
     <div
-        className={classNames('flex-center plus-square-icon', {
+        className={ classNames('flex-center plus-square-icon', {
             'content-link': !props.disabled,
             'plus-square-icon_large': props.large
-        })}
+        }) }
     >
-        <Icon type="plus" />
+        <Icon type="plus"/>
     </div>
 );
 

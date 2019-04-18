@@ -1,7 +1,10 @@
 // @flow
 import { List } from 'immutable';
 import { createReducer } from './utils';
-import DashboardStateModel, { ColumnRecord, NewColumnRecord } from './state-models/dashboard-state-model';
+import DashboardStateModel, {
+    ColumnRecord,
+    NewColumnRecord
+} from './state-models/dashboard-state-model';
 import * as columnTypes from '../../constants/columns';
 import * as types from '../constants';
 
@@ -305,7 +308,7 @@ const dashboardState = createReducer(initialState, {
     //     if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
     //         return state;
     //     }
-    
+
     //     const commentIds = data.collection.map(comm => comm.commentId);
     //     const moreItems = !!data.lastBlock;
     //     return state.mergeIn(['columnById', request.columnId], {
@@ -325,16 +328,16 @@ const dashboardState = createReducer(initialState, {
     // [types.PROFILE_FOLLOWERS_ITERATOR_ERROR]: itemIteratorError,
 
     // [types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS]: profileIteratorSuccess,
-    
+
     // [types.PROFILE_FOLLOWINGS_ITERATOR]: itemIterator,
-    
+
     // [types.PROFILE_FOLLOWINGS_ITERATOR_ERROR]: itemIteratorError,
 
     // [types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS]: profileIteratorSuccess,    
 
     [types.PROFILE_MORE_COMMENTS_ITERATOR]: (state) => state.itemMoreIterator(state),
 
-    [types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),    
+    [types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),
 
     [types.PROFILE_MORE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
         if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
@@ -348,7 +351,7 @@ const dashboardState = createReducer(initialState, {
         if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
             return state;
         }
-    
+
         const newIds = data.collection.map(comm => comm.commentId);
         const moreItems = !!data.lastBlock;
         return state.mergeIn(['columnById', request.columnId], {
@@ -369,10 +372,10 @@ const dashboardState = createReducer(initialState, {
     [types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS]: (state) => state.profileMoreIteratorSuccess(state),
 
     [types.PROFILE_MORE_FOLLOWINGS_ITERATOR]: (state) => state.itemMoreIterator(state),
-    
+
     [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),
 
-    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS]: (state) => state.profileMoreIteratorSuccess(state), 
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS]: (state) => state.profileMoreIteratorSuccess(state),
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 

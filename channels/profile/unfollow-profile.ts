@@ -2,17 +2,17 @@ import * as Promise from 'bluebird';
 import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
 import { followProfileSchema } from './follow-profile';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, followProfileSchema, { throwError: true });
     const contracts = getService(CORE_MODULE.CONTRACTS);
 
     const address = yield (getService(COMMON_MODULE.profileHelpers))
-    .profileAddress(data);
+      .profileAddress(data);
 
     const txData = contracts.instance.Feed
-    .unFollow.request(address, { gas: 400000 });
+      .unFollow.request(address, { gas: 400000 });
 
     const receipt = yield contracts.send(txData, data.token, cb);
     getService(CORE_MODULE.STASH).mixed.flush();

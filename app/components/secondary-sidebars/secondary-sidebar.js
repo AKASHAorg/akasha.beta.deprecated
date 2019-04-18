@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const SecondarySidebar = props => (
-  <div
-    className={`secondary-sidebar secondary-sidebar${props.shown ? '_open' : ''}`}
-  >
-    {props.children}
-  </div>
+    <div
+        className={ `secondary-sidebar secondary-sidebar${ props.shown ? '_open' : '' }` }
+    >
+        { props.children }
+    </div>
 );
 
 SecondarySidebar.contextTypes = {

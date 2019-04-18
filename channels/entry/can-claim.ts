@@ -17,7 +17,7 @@ const canClaimS = {
   required: ['entryId'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, canClaimS, { throwError: true });

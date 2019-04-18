@@ -34,7 +34,7 @@ class EditorLinkInput extends Component {
     onAddLink = (value) => {
         const isValid = isValidLink(value);
         if (isValid) {
-            const url = isInternalLink(value) ? `#/${value}` : prependHttp(value);
+            const url = isInternalLink(value) ? `#/${ value }` : prependHttp(value);
             this.props.setEntity({ url });
             this.reset();
         } else {
@@ -67,17 +67,19 @@ class EditorLinkInput extends Component {
         });
 
         return (
-          <div style={{ whiteSpace: 'nowrap' }}>
-            <input
-              ref={(el) => { this.textInput = el; }}
-              type="text"
-              className={className}
-              onChange={this.onLinkChange}
-              value={this.state.value}
-              onKeyDown={this.onLinkKeyDown}
-              placeholder={intl.formatMessage(entryMessages.linkPlaceholder)}
-            />
-          </div>
+            <div style={ { whiteSpace: 'nowrap' } }>
+                <input
+                    ref={ (el) => {
+                        this.textInput = el;
+                    } }
+                    type="text"
+                    className={ className }
+                    onChange={ this.onLinkChange }
+                    value={ this.state.value }
+                    onKeyDown={ this.onLinkKeyDown }
+                    placeholder={ intl.formatMessage(entryMessages.linkPlaceholder) }
+                />
+            </div>
         );
     }
 }

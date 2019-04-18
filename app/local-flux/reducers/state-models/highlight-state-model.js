@@ -21,5 +21,5 @@ const HighlightState = Record({
 });
 
 export default class HighlightStateModel extends HighlightState {
-    
+
 }

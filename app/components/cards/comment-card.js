@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import withRouter from 'react-router/withRouter';
-import Link from 'react-router-dom/Link';
+import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Card } from 'antd';
 import classNames from 'classnames';
 import { convertFromRaw, EditorState } from 'draft-js';
@@ -14,20 +14,30 @@ import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import { commentsGetComment } from '../../local-flux/actions/comments-actions';
 import { entryPageShow } from '../../local-flux/actions/entry-actions';
 import { ProfileRecord } from '../../local-flux/reducers/state-models/profile-state-model';
-import { actionSelectors, commentSelectors, entrySelectors, externalProcessSelectors,
-  profileSelectors, settingsSelectors } from '../../local-flux/selectors';
+import {
+    actionSelectors,
+    commentSelectors,
+    entrySelectors,
+    externalProcessSelectors,
+    profileSelectors,
+    settingsSelectors
+} from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { addPrefix } from '../../utils/url-utils';
 import withRequest from '../high-order-components/with-request';
 
 const ContentPlaceholder = () => (
-  <div>
-    <div className="content-placeholder comment-card__content-placeholder" style={{ marginTop: '8px' }} />
-    <div className="content-placeholder comment-card__content-placeholder" style={{ marginTop: '8px' }} />
-    <div className="content-placeholder comment-card__content-placeholder" style={{ marginTop: '8px' }} />
-    <div className="content-placeholder comment-card__content-placeholder" style={{ marginTop: '8px' }} />
-  </div>
+    <div>
+        <div className="content-placeholder comment-card__content-placeholder"
+             style={ { marginTop: '8px' } }/>
+        <div className="content-placeholder comment-card__content-placeholder"
+             style={ { marginTop: '8px' } }/>
+        <div className="content-placeholder comment-card__content-placeholder"
+             style={ { marginTop: '8px' } }/>
+        <div className="content-placeholder comment-card__content-placeholder"
+             style={ { marginTop: '8px' } }/>
+    </div>
 );
 
 class CommentCard extends Component {
@@ -44,7 +54,7 @@ class CommentCard extends Component {
     componentDidMount () {
         const { comment } = this.props;
         if (comment.content) {
-            const content = convertFromRaw(JSON.parse(comment.content));            
+            const content = convertFromRaw(JSON.parse(comment.content));
             const editorState = EditorState.createWithContent(content);
             const text = editorState.getCurrentContent().getPlainText();
             this.setState({
@@ -55,8 +65,10 @@ class CommentCard extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
-        const { author, blockNr, comment, entry,
-            isPending, large, style, votePending } = nextProps;
+        const {
+            author, blockNr, comment, entry,
+            isPending, large, style, votePending
+        } = nextProps;
         if (blockNr !== this.props.blockNr ||
             !comment.equals(this.props.comment) ||
             !entry.equals(this.props.entry) ||
@@ -65,19 +77,20 @@ class CommentCard extends Component {
             !author.equals(this.props.author) ||
             (style && style.width !== this.props.style.width) ||
             votePending !== this.props.votePending ||
-            nextState.content !== this.state.content ||            
+            nextState.content !== this.state.content ||
             nextState.expanded !== this.state.expanded ||
-            nextState.hidden !== this.state.hidden ||            
+            nextState.hidden !== this.state.hidden ||
             nextState.showVotes !== this.state.showVotes
         ) {
             return true;
         }
         return false;
     }
+
     componentWillReceiveProps (nextProps) {
         const { comment, isPending } = nextProps;
         if (comment.content && !isPending && this.props.isPending) {
-            const content = convertFromRaw(JSON.parse(comment.content));            
+            const content = convertFromRaw(JSON.parse(comment.content));
             const editorState = EditorState.createWithContent(content);
             const text = editorState.getCurrentContent().getPlainText();
             this.setState({
@@ -86,6 +99,7 @@ class CommentCard extends Component {
             });
         }
     }
+
     showHiddenContent = () => {
         this.setState({
             hidden: true
@@ -137,43 +151,44 @@ class CommentCard extends Component {
     };
 
     renderHiddenContent = () => (
-      <div key="hidden" style={{ position: 'relative' }}>
-        <ContentPlaceholder />
-        <div className="comment-card__hidden">
-          <div className="heading flex-center">
-            {this.props.intl.formatMessage(entryMessages.hiddenContent, {
-                score: this.props.hideCommentSettings.value
-            })}
-          </div>
-          <div className="heading comment-card__hidden-message">
-            {this.props.intl.formatMessage(entryMessages.hiddenContent2)}
-            <Link className="comment-card__settings-link" to="/profileoverview/settings">
-              {this.props.intl.formatMessage(entryMessages.hiddenContent3)}
-            </Link>
-          </div>
-          <div className="flex-center">
-            <span className="content-link comment-card__retry-button" onClick={this.showHiddenContent}>
-              {this.props.intl.formatMessage(entryMessages.showAnyway)}
+        <div key="hidden" style={ { position: 'relative' } }>
+            <ContentPlaceholder/>
+            <div className="comment-card__hidden">
+                <div className="heading flex-center">
+                    { this.props.intl.formatMessage(entryMessages.hiddenContent, {
+                        score: this.props.hideCommentSettings.value
+                    }) }
+                </div>
+                <div className="heading comment-card__hidden-message">
+                    { this.props.intl.formatMessage(entryMessages.hiddenContent2) }
+                    <Link className="comment-card__settings-link" to="/profileoverview/settings">
+                        { this.props.intl.formatMessage(entryMessages.hiddenContent3) }
+                    </Link>
+                </div>
+                <div className="flex-center">
+            <span className="content-link comment-card__retry-button"
+                  onClick={ this.showHiddenContent }>
+              { this.props.intl.formatMessage(entryMessages.showAnyway) }
             </span>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     );
 
     renderUnresolvedPlaceholder = () => (
-      <div style={{ position: 'relative' }}>
-        <ContentPlaceholder />
-        <div className="comment-card__unresolved">
-          <div className="heading flex-center">
-            {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
-          </div>
-          <div className="flex-center">
-            <span className="content-link comment-card__retry-button" onClick={this.onRetry}>
-              {this.props.intl.formatMessage(generalMessages.retry)}
+        <div style={ { position: 'relative' } }>
+            <ContentPlaceholder/>
+            <div className="comment-card__unresolved">
+                <div className="heading flex-center">
+                    { this.props.intl.formatMessage(generalMessages.noPeersAvailable) }
+                </div>
+                <div className="flex-center">
+            <span className="content-link comment-card__retry-button" onClick={ this.onRetry }>
+              { this.props.intl.formatMessage(generalMessages.retry) }
             </span>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     );
 
     renderExpandButton = () => {
@@ -186,12 +201,13 @@ class CommentCard extends Component {
             'comment__expand-button_active': !expanded
         });
         return (
-          <div className={className} key="expand-button">
-            <div className="flex-center-y content-link" onClick={this.toggleExpanded}>
-              <Icon className="comment__expand-button-icon" type={expanded ? 'arrowUp' : 'arrowDown'} />
-              {label}
+            <div className={ className } key="expand-button">
+                <div className="flex-center-y content-link" onClick={ this.toggleExpanded }>
+                    <Icon className="comment__expand-button-icon"
+                          type={ expanded ? 'arrowUp' : 'arrowDown' }/>
+                    { label }
+                </div>
             </div>
-          </div>
         );
     };
 
@@ -199,56 +215,56 @@ class CommentCard extends Component {
         const { author, comment, entry, intl, isPending } = this.props;
         if (isPending) {
             return (
-              <div className="comment-card__header">
-                <div className="comment-card__title-placeholder" />
-                <div className="comment-card__subtitle-placeholder" />
-              </div>
+                <div className="comment-card__header">
+                    <div className="comment-card__title-placeholder"/>
+                    <div className="comment-card__subtitle-placeholder"/>
+                </div>
             );
         }
         const entryTitle = entry.getIn(['content', 'title']) || intl.formatMessage(generalMessages.anEntry);
         const publishDate = new Date(comment.get('publishDate') * 1000);
         return (
-          <div className="comment-card__header">
-            <div>
-              <ProfilePopover ethAddress={author.ethAddress}>
+            <div className="comment-card__header">
+                <div>
+                    <ProfilePopover ethAddress={ author.ethAddress }>
                 <span className="content-link">
-                  {getDisplayName(author.toJS())}
+                  { getDisplayName(author.toJS()) }
                 </span>
-              </ProfilePopover>
-              <span className="comment-card__commentedOn">
-                {comment.parent === '0' ?
+                    </ProfilePopover>
+                    <span className="comment-card__commentedOn">
+                { comment.parent === '0' ?
                     intl.formatMessage(entryMessages.commentedOn) :
-                    intl.formatMessage(entryMessages.repliedOn)                  
+                    intl.formatMessage(entryMessages.repliedOn)
                 }
               </span>
-              <Link
-                className="unstyled-link"
-                to={{
-                    pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.entryId}`,
-                    state: { overlay: true }
-                }}
-              >
+                    <Link
+                        className="unstyled-link"
+                        to={ {
+                            pathname: `/${ entry.getIn(['author', 'ethAddress']) || '0x0' }/${ entry.entryId }`,
+                            state: { overlay: true }
+                        } }
+                    >
                 <span className="content-link">
-                  {entryTitle}
+                  { entryTitle }
                 </span>
-              </Link>
-            </div>
-            <div className="comment-card__subtitle">
-              {comment.get('publishDate') &&
-                <span>
-                  {intl.formatRelative(publishDate)}
+                    </Link>
+                </div>
+                <div className="comment-card__subtitle">
+                    { comment.get('publishDate') &&
+                    <span>
+                  { intl.formatRelative(publishDate) }
                 </span>
-              }
+                    }
+                </div>
             </div>
-          </div>
         );
     }
 
     renderShareIcon = () => {
         const { entry } = this.props;
-        const url = addPrefix(`/${entry.author.ethAddress || '0x0'}/${entry.entryId}`);
+        const url = addPrefix(`/${ entry.author.ethAddress || '0x0' }/${ entry.entryId }`);
 
-        return <ShareLinkModal url={url} />;
+        return <ShareLinkModal url={ url }/>;
     };
 
     renderActions () { // eslint-disable-line complexity
@@ -259,53 +275,56 @@ class CommentCard extends Component {
             containerRef, iconClassName, isOwnEntity: this.isOwnComment(), votePending, vote
         };
         const commentTitle = (content.length > 25) ?
-            `${content.slice(0, 25)}...` :
+            `${ content.slice(0, 25) }...` :
             content;
         return (
-          <div className="entry-actions" key="actions">
-            <div className="flex-center-y">
-              <div>
+            <div className="entry-actions" key="actions">
                 <div className="flex-center-y">
-                  <div className="flex-center entry-actions__vote-wrapper">
-                    <VotePopover
-                      onSubmit={this.handleVote}
-                      type={actionTypes.commentUpvote}
-                      {...voteProps}
-                    />
-                  </div>
-                  <div className="flex-center entry-actions__score">
-                    <span className="content-link" onClick={this.openVotesPanel}>
-                      {comment.score}
+                    <div>
+                        <div className="flex-center-y">
+                            <div className="flex-center entry-actions__vote-wrapper">
+                                <VotePopover
+                                    onSubmit={ this.handleVote }
+                                    type={ actionTypes.commentUpvote }
+                                    { ...voteProps }
+                                />
+                            </div>
+                            <div className="flex-center entry-actions__score">
+                    <span className="content-link" onClick={ this.openVotesPanel }>
+                      { comment.score }
                     </span>
-                  </div>
-                  <div className="flex-center entry-actions__vote-wrapper">
-                    <VotePopover
-                      onSubmit={this.handleVote}
-                      type={actionTypes.commentDownvote}
-                      {...voteProps}
-                    />
-                  </div>
+                            </div>
+                            <div className="flex-center entry-actions__vote-wrapper">
+                                <VotePopover
+                                    onSubmit={ this.handleVote }
+                                    type={ actionTypes.commentDownvote }
+                                    { ...voteProps }
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="entry-actions__right-actions">
+                        { this.renderShareIcon() }
+                    </div>
                 </div>
-              </div>
-              <div className="entry-actions__right-actions">
-                {this.renderShareIcon()}
-              </div>
+                { this.state.showVotes &&
+                <VotesModal
+                    closeVotesPanel={ this.closeVotesPanel }
+                    content={ comment }
+                    contentTitle={ commentTitle }
+                    blockNr={ blockNr }
+                />
+                }
             </div>
-            {this.state.showVotes &&
-              <VotesModal
-                closeVotesPanel={this.closeVotesPanel}
-                content={comment}
-                contentTitle={commentTitle}
-                blockNr={blockNr}
-              />
-            }
-          </div>
         );
     }
+
     /* eslint-disable complexity */
     render () {
-        const { comment, entry, hideCommentSettings, isPending, large,
-            style } = this.props;
+        const {
+            comment, entry, hideCommentSettings, isPending, large,
+            style
+        } = this.props;
         const { content, expanded, hidden } = this.state;
         const entryId = entry && entry.get('entryId');
         const ethAddress = entry && (entry.getIn(['author', 'ethAddress']) || '0x0');
@@ -317,36 +336,36 @@ class CommentCard extends Component {
             'comment-card_large': large,
         });
         return (
-          <Card
-            className={cardClass}
-            style={style}
-            title={this.renderHeader()}
-          >
-            {isPending && <ContentPlaceholder />}
-            {hasContent && !isPending &&
-              [!hideContent &&
+            <Card
+                className={ cardClass }
+                style={ style }
+                title={ this.renderHeader() }
+            >
+                { isPending && <ContentPlaceholder/> }
+                { hasContent && !isPending &&
+                [!hideContent &&
                 <div className="comment-card__excerpt" key="excerpt">
-                  <Link
-                    className="unstyled-link"
-                    to={{
-                        pathname: `/${ethAddress}/${entryId}/comment/${commentId}`,
-                        state: { overlay: true }
-                    }}
-                  >
+                    <Link
+                        className="unstyled-link"
+                        to={ {
+                            pathname: `/${ ethAddress }/${ entryId }/comment/${ commentId }`,
+                            state: { overlay: true }
+                        } }
+                    >
                     <span className="content-link">
-                      {expanded !== false ? content : `${content.slice(0, 240)}...`}
+                      { expanded !== false ? content : `${ content.slice(0, 240) }...` }
                     </span>
-                  </Link>
+                    </Link>
                 </div>,
-              expanded !== null && this.renderExpandButton(),
-              hideContent && this.renderHiddenContent(entryId),
-              this.renderActions()
-              ]
-            }
-            {!hasContent && !isPending &&
+                    expanded !== null && this.renderExpandButton(),
+                    hideContent && this.renderHiddenContent(entryId),
+                    this.renderActions()
+                ]
+                }
+                { !hasContent && !isPending &&
                 this.renderUnresolvedPlaceholder()
-            }
-          </Card>
+                }
+            </Card>
         );
     }
 }
@@ -390,7 +409,7 @@ function mapStateToProps (state, ownProps) {
         entry: entrySelectors.selectEntryById(state, entryId),
         hideCommentSettings: settingsSelectors.getHideCommentSettings(state),
         isPending: commentSelectors.selectCommentIsPending(state, ownProps.contextId, ownProps.itemId),
-        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),        
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         vote: commentSelectors.selectCommentVote(state, ownProps.itemId),
         votePending: !!actionSelectors.getPendingCommentVote(state, ownProps.itemId)
     };

@@ -5,16 +5,35 @@ import { injectIntl } from 'react-intl';
 import { Col, Row } from 'antd';
 import { DraftJS } from 'megadraft';
 import { fromJS } from 'immutable';
-import { DataLoader, EditorFooter, NoDraftsPlaceholder, PublishOptionsPanel, TextEntryEditor, TagEditor,
-    WebsiteInfoCard } from '../components';
+import {
+    DataLoader,
+    EditorFooter,
+    NoDraftsPlaceholder,
+    PublishOptionsPanel,
+    TagEditor,
+    TextEntryEditor,
+    WebsiteInfoCard
+} from '../components';
 import { genId } from '../utils/dataModule';
-import { actionSelectors, appSelectors,draftSelectors, externalProcessSelectors,
-    licenseSelectors, profileSelectors, searchSelectors,
-    settingsSelectors } from '../local-flux/selectors';
+import {
+    actionSelectors,
+    appSelectors,
+    draftSelectors,
+    externalProcessSelectors,
+    licenseSelectors,
+    profileSelectors,
+    searchSelectors,
+    settingsSelectors
+} from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages';
 import { WebsiteParser } from '../utils/extract-website-info';
-import { draftAddTag, draftRemoveTag, draftCreate, draftUpdate,
-    draftRevertToVersion } from '../local-flux/actions/draft-actions';
+import {
+    draftAddTag,
+    draftCreate,
+    draftRemoveTag,
+    draftRevertToVersion,
+    draftUpdate
+} from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
@@ -35,6 +54,7 @@ class NewLinkEntryPage extends Component {
             infoExtracted: false,
         };
     }
+
     componentWillMount () {
         const { draftObj } = this.props;
         if (draftObj) {
@@ -44,6 +64,7 @@ class NewLinkEntryPage extends Component {
             }
         }
     }
+
     componentWillReceiveProps (nextProps) { // eslint-disable-line complexity
         const { draftObj, drafts } = nextProps;
         const { history } = this.props;
@@ -54,7 +75,7 @@ class NewLinkEntryPage extends Component {
             (!isSameEntry || isNewlyLoaded);
         const hasCardContent = draftObj &&
             (draftObj.getIn(['content', 'cardInfo', 'title']).length > 0 ||
-            draftObj.getIn(['content', 'cardInfo', 'description']).length > 0) &&
+                draftObj.getIn(['content', 'cardInfo', 'description']).length > 0) &&
             draftObj.getIn(['content', 'cardInfo', 'url']).length > 0;
         /** handle just published draft! */
         if (!draftObj && this.props.draftObj) {
@@ -62,7 +83,7 @@ class NewLinkEntryPage extends Component {
                 const draftId = drafts.first().get('id');
                 const draftType = drafts.first().getIn(['content', 'entryType']);
                 if (draftId) {
-                    history.push(`/draft/${draftType}/${draftId}`);
+                    history.push(`/draft/${ draftType }/${ draftId }`);
                 }
             } else {
                 history.push('/draft/article/noDraft');
@@ -87,6 +108,7 @@ class NewLinkEntryPage extends Component {
             });
         }
     }
+
     _createNewDraft = (ev) => {
         const { history, loggedProfile, userDefaultLicence } = this.props;
         const draftId = genId();
@@ -101,7 +123,7 @@ class NewLinkEntryPage extends Component {
             },
             tags: {},
         });
-        history.push(`/draft/link/${draftId}`);
+        history.push(`/draft/link/${ draftId }`);
         ev.preventDefault();
     };
     _processUrl = (newerDraft) => {
@@ -319,7 +341,9 @@ class NewLinkEntryPage extends Component {
     };
 
     _createRef = nodeName =>
-        (node) => { this[nodeName] = node; };
+        (node) => {
+            this[nodeName] = node;
+        };
 
     _calculateEditorMinHeight = () => {
         let height = '20%';
@@ -356,27 +380,33 @@ class NewLinkEntryPage extends Component {
         }
         return false;
     };
-    render () { // eslint-disable-line complexity
-        const { intl, baseUrl, darkTheme, draftObj, drafts, draftsFetched, licences,
-            match, tagSuggestions, tagSuggestionsCount, showSecondarySidebar,
-            loggedProfile, selectionState, canCreateTags } = this.props;
 
-        const { showPublishPanel, errors, shouldResetCaret, parsingInfo,
-            infoExtracted, urlInputHidden } = this.state;
+    render () { // eslint-disable-line complexity
+        const {
+            intl, baseUrl, darkTheme, draftObj, drafts, draftsFetched, licences,
+            match, tagSuggestions, tagSuggestionsCount, showSecondarySidebar,
+            loggedProfile, selectionState, canCreateTags
+        } = this.props;
+
+        const {
+            showPublishPanel, errors, shouldResetCaret, parsingInfo,
+            infoExtracted, urlInputHidden
+        } = this.state;
         const unpublishedDrafts = drafts.filter(drft => !drft.get('onChain'));
         const draftId = match.params.draftId;
 
         if (!draftObj && unpublishedDrafts.size === 0 && !draftId.startsWith('0x') && draftsFetched) {
-            return <NoDraftsPlaceholder darkTheme={darkTheme} onNewDraft={this._createNewDraft} />;
+            return <NoDraftsPlaceholder darkTheme={ darkTheme }
+                                        onNewDraft={ this._createNewDraft }/>;
         }
         if ((!draftObj || !draftObj.get('content'))) {
             return (
-              <DataLoader
-                flag
-                message={intl.formatMessage(entryMessages.loadingDrafts)}
-                size="large"
-                className="edit-entry-page__data-loader"
-              />
+                <DataLoader
+                    flag
+                    message={ intl.formatMessage(entryMessages.loadingDrafts) }
+                    size="large"
+                    className="edit-entry-page__data-loader"
+                />
             );
         }
         const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
@@ -392,106 +422,110 @@ class NewLinkEntryPage extends Component {
         }
         const editorMinHeight = this._calculateEditorMinHeight();
         return (
-          <div className="edit-entry-page link-page">
-            <Row type="flex" className="edit-entry-page__content">
-              <Col
-                span={showPublishPanel ? 17 : 24}
-                className="edit-entry-page__editor-wrapper"
-              >
-                <div
-                  className="edit-entry-page__editor"
-                  ref={(node) => { this.editorBaseNodeRef = node; }}
-                >
-                  {!urlInputHidden &&
-                    <input
-                      className="edit-entry-page__url-input-field"
-                      placeholder={intl.formatMessage(entryMessages.enterWebAddress)}
-                      onChange={this._handleUrlChange}
-                      onBlur={this._handleUrlBlur}
-                      onKeyDown={this._handleKeyPress}
-                      value={url}
+            <div className="edit-entry-page link-page">
+                <Row type="flex" className="edit-entry-page__content">
+                    <Col
+                        span={ showPublishPanel ? 17 : 24 }
+                        className="edit-entry-page__editor-wrapper"
+                    >
+                        <div
+                            className="edit-entry-page__editor"
+                            ref={ (node) => {
+                                this.editorBaseNodeRef = node;
+                            } }
+                        >
+                            { !urlInputHidden &&
+                            <input
+                                className="edit-entry-page__url-input-field"
+                                placeholder={ intl.formatMessage(entryMessages.enterWebAddress) }
+                                onChange={ this._handleUrlChange }
+                                onBlur={ this._handleUrlBlur }
+                                onKeyDown={ this._handleKeyPress }
+                                value={ url }
+                            />
+                            }
+                            <div className="edit-entry-page__info-card-wrapper">
+                                <WebsiteInfoCard
+                                    ref={ (node) => {
+                                        this.websiteInfoCard = node;
+                                    } }
+                                    baseUrl={ baseUrl }
+                                    cardInfo={ cardInfo }
+                                    intl={ intl }
+                                    hasCard={ !!(title.length > 0 || description.length > 0) }
+                                    url={ url }
+                                    onClose={ this._handleInfoCardClose }
+                                    isEdit
+                                    loading={ parsingInfo }
+                                    infoExtracted={ infoExtracted }
+                                    error={ errors.card && errors.card.toString() }
+                                />
+                            </div>
+                            { !parsingInfo && infoExtracted && !errors.card &&
+                            <div style={ { minHeight: editorMinHeight } }>
+                                <TextEntryEditor
+                                    ref={ this._createRef('editor') }
+                                    className={ `text-entry-editor${ showSecondarySidebar ? '' : '_full' } link-entry` }
+                                    onChange={ this._handleEditorChange }
+                                    editorState={ draftWithSelection }
+                                    selectionState={ currentSelection }
+                                    baseUrl={ baseUrl }
+                                    intl={ intl }
+                                />
+                            </div>
+                            }
+                            { !parsingInfo && infoExtracted && !errors.card &&
+                            <div className="edit-entry-page__tag-editor_wrapper">
+                                <TagEditor
+                                    canCreateTags={ canCreateTags }
+                                    className="edit-entry-page__tag-editor"
+                                    intl={ intl }
+                                    isUpdate={ onChain }
+                                    onChange={ this._handleTagInputChange }
+                                    onTagAdd={ this._handleTagAdd }
+                                    onTagRemove={ this._handleTagRemove }
+                                    searchResetResults={ this.props.searchResetResults }
+                                    searchTags={ this.props.searchTags }
+                                    tagErrors={ errors.tags }
+                                    tags={ tags }
+                                    tagSuggestions={ tagSuggestions }
+                                    tagSuggestionsCount={ tagSuggestionsCount }
+                                />
+                            </div>
+                            }
+                        </div>
+                    </Col>
+                    <Col
+                        span={ 6 }
+                        className={
+                            `edit-entry-page__publish-options-panel-wrapper
+                  edit-entry-page__publish-options-panel-wrapper${ showPublishPanel ? '_open' : '' }`
+                        }
+                    >
+                        <PublishOptionsPanel
+                            linkEntry
+                            errors={ errors }
+                            baseUrl={ baseUrl }
+                            intl={ intl }
+                            onClose={ this._togglePublishPanel }
+                            onLicenceChange={ this._handleDraftLicenceChange }
+                            onExcerptChange={ this._handleExcerptChange }
+                            excerpt={ excerpt }
+                            selectedLicence={ licence }
+                            licences={ licences }
+                        />
+                    </Col>
+                    <EditorFooter
+                        disabled={ this._checkIfDisabled() }
+                        draftObj={ draftObj }
+                        draftRevertToVersion={ this.props.draftRevertToVersion }
+                        latestVersion={ latestVersion }
+                        onPublish={ this._handlePublish }
+                        onPublishOptions={ this._togglePublishPanel }
+                        showSecondarySidebar={ showSecondarySidebar }
                     />
-                  }
-                  <div className="edit-entry-page__info-card-wrapper">
-                    <WebsiteInfoCard
-                      ref={(node) => { this.websiteInfoCard = node; }}
-                      baseUrl={baseUrl}
-                      cardInfo={cardInfo}
-                      intl={intl}
-                      hasCard={!!(title.length > 0 || description.length > 0)}
-                      url={url}
-                      onClose={this._handleInfoCardClose}
-                      isEdit
-                      loading={parsingInfo}
-                      infoExtracted={infoExtracted}
-                      error={errors.card && errors.card.toString()}
-                    />
-                  </div>
-                  {!parsingInfo && infoExtracted && !errors.card &&
-                    <div style={{ minHeight: editorMinHeight }}>
-                      <TextEntryEditor
-                        ref={this._createRef('editor')}
-                        className={`text-entry-editor${showSecondarySidebar ? '' : '_full'} link-entry`}
-                        onChange={this._handleEditorChange}
-                        editorState={draftWithSelection}
-                        selectionState={currentSelection}
-                        baseUrl={baseUrl}
-                        intl={intl}
-                      />
-                    </div>
-                  }
-                  {!parsingInfo && infoExtracted && !errors.card &&
-                    <div className="edit-entry-page__tag-editor_wrapper">
-                      <TagEditor
-                        canCreateTags={canCreateTags}
-                        className="edit-entry-page__tag-editor"
-                        intl={intl}
-                        isUpdate={onChain}
-                        onChange={this._handleTagInputChange}
-                        onTagAdd={this._handleTagAdd}
-                        onTagRemove={this._handleTagRemove}
-                        searchResetResults={this.props.searchResetResults}
-                        searchTags={this.props.searchTags}
-                        tagErrors={errors.tags}
-                        tags={tags}
-                        tagSuggestions={tagSuggestions}
-                        tagSuggestionsCount={tagSuggestionsCount}
-                      />
-                    </div>
-                  }
-                </div>
-              </Col>
-              <Col
-                span={6}
-                className={
-                  `edit-entry-page__publish-options-panel-wrapper
-                  edit-entry-page__publish-options-panel-wrapper${showPublishPanel ? '_open' : ''}`
-                }
-              >
-                <PublishOptionsPanel
-                  linkEntry
-                  errors={errors}
-                  baseUrl={baseUrl}
-                  intl={intl}
-                  onClose={this._togglePublishPanel}
-                  onLicenceChange={this._handleDraftLicenceChange}
-                  onExcerptChange={this._handleExcerptChange}
-                  excerpt={excerpt}
-                  selectedLicence={licence}
-                  licences={licences}
-                />
-              </Col>
-              <EditorFooter
-                disabled={this._checkIfDisabled()}
-                draftObj={draftObj}
-                draftRevertToVersion={this.props.draftRevertToVersion}
-                latestVersion={latestVersion}
-                onPublish={this._handlePublish}
-                onPublishOptions={this._togglePublishPanel}
-                showSecondarySidebar={showSecondarySidebar}
-              />
-            </Row>
-          </div>
+                </Row>
+            </div>
         );
     }
 }

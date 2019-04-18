@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import { Waypoint } from 'react-waypoint';
 import { profileSelectors, searchSelectors } from '../local-flux/selectors';
-import { profileMessages, generalMessages } from '../locale-data/messages';
+import { generalMessages, profileMessages } from '../locale-data/messages';
 import { DataLoader, ProfileCard } from './index';
 
 class ProfileList extends Component {
@@ -40,65 +40,66 @@ class ProfileList extends Component {
                 const isPending = pendingProfiles && pendingProfiles.get(profile.ethAddress);
                 return (
                     <ProfileCard
-                        containerRef={this.container}
-                        isOwnProfile={isOwnProfile}
-                        isPending={isPending}
-                        key={profile.ethAddress}
-                        profile={profile}
+                        containerRef={ this.container }
+                        isOwnProfile={ isOwnProfile }
+                        isPending={ isPending }
+                        key={ profile.ethAddress }
+                        profile={ profile }
                     />
                 );
             });
 
         return (
-            <div className="profile-list" style={Object.assign({}, style)} ref={this.getContainerRef}>
-                <DataLoader flag={fetchingProfiles} style={{ paddingTop: '80px' }}>
+            <div className="profile-list" style={ Object.assign({}, style) }
+                 ref={ this.getContainerRef }>
+                <DataLoader flag={ fetchingProfiles } style={ { paddingTop: '80px' } }>
                     <div className="profile-list__inner">
-                        {profiles.size === 0 && searching && (
+                        { profiles.size === 0 && searching && (
                             <div className="profile-list__placeholder">
                                 <div className="profile-list__placeholder-inner">
-                                    <div className="profile-list__placeholder_image" />
+                                    <div className="profile-list__placeholder_image"/>
                                     <div className="profile-list__placeholder_text">
-                                        {searchQuery.length === 0 &&
-                                            intl.formatMessage(generalMessages.startTypingToSearch)}
-                                        {searchQuery.length > 0 &&
-                                            (placeholderMessage ||
-                                                intl.formatMessage(generalMessages.searchingNoResults, {
-                                                    searchTerm: searchQuery,
-                                                    resource: intl.formatMessage(profileMessages.profiles)
-                                                }))}
+                                        { searchQuery.length === 0 &&
+                                        intl.formatMessage(generalMessages.startTypingToSearch) }
+                                        { searchQuery.length > 0 &&
+                                        (placeholderMessage ||
+                                            intl.formatMessage(generalMessages.searchingNoResults, {
+                                                searchTerm: searchQuery,
+                                                resource: intl.formatMessage(profileMessages.profiles)
+                                            })) }
                                     </div>
                                 </div>
                             </div>
-                        )}
-                        {profiles.size === 0 && !searching && (
+                        ) }
+                        { profiles.size === 0 && !searching && (
                             <div className="flex-center profile-list__empty-placeholder">
                                 <div className="profile-list__empty-placeholder-inner">
-                                    <div className="profile-list__empty-placeholder-image" />
+                                    <div className="profile-list__empty-placeholder-image"/>
                                     <div className="profile-list__empty-placeholder-text">
-                                        {placeholderMessage || intl.formatMessage(profileMessages.noProfiles)}
+                                        { placeholderMessage || intl.formatMessage(profileMessages.noProfiles) }
                                     </div>
                                 </div>
                             </div>
-                        )}
-                        {masonry ? (
+                        ) }
+                        { masonry ? (
                             <Masonry
-                                options={{ transitionDuration: 0, fitWidth: true }}
-                                style={{ margin: '0 auto' }}
+                                options={ { transitionDuration: 0, fitWidth: true } }
+                                style={ { margin: '0 auto' } }
                             >
-                                {profileRows}
+                                { profileRows }
                             </Masonry>
                         ) : (
                             profileRows
-                        )}
-                        {moreProfiles && (
-                            <div style={{ height: '35px' }}>
-                                <DataLoader flag={fetchingMoreProfiles} size="small">
+                        ) }
+                        { moreProfiles && (
+                            <div style={ { height: '35px' } }>
+                                <DataLoader flag={ fetchingMoreProfiles } size="small">
                                     <div className="flex-center">
-                                        <Waypoint onEnter={this.props.fetchMoreProfiles} />
+                                        <Waypoint onEnter={ this.props.fetchMoreProfiles }/>
                                     </div>
                                 </DataLoader>
                             </div>
-                        )}
+                        ) }
                     </div>
                 </DataLoader>
             </div>

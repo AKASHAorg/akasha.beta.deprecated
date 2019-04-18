@@ -11,7 +11,7 @@ const getTagEntriesCountS = {
   minItems: 1,
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getTagEntriesCountS, { throwError: true });
@@ -19,10 +19,10 @@ export default function init(sp, getService) {
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const requests = data.map((tag) => {
       return contracts.instance.Tags
-      .totalEntries(tag)
-      .then((count) => {
-        return { tag, count: count.toString(10) };
-      });
+        .totalEntries(tag)
+        .then((count) => {
+          return { tag, count: count.toString(10) };
+        });
     });
     const collection = yield Promise.all(requests);
     return { collection };
