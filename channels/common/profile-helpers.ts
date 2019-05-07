@@ -23,6 +23,8 @@ export default function init (sp, getService) {
       profileAddress = yield contracts.instance.ProfileResolver.addr(nameHash);
     } else if (data.ethAddress) {
       profileAddress = data.ethAddress;
+    } else {
+      profileAddress = web3Api.instance.eth.defaultAccount;
     }
 
     if (profileAddress && !!unpad(profileAddress)) {

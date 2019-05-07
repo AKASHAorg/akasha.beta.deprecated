@@ -196,7 +196,7 @@
     "@akashaproject/auth": "./channels/auth",
     "@akashaproject/comments": "./channels/comments",
     "@akashaproject/common": "./channels/common",
-    "@akashaproject/contracts.js": "1.3.12",
+    "@akashaproject/contracts.js": "1.3.14",
     "@akashaproject/core": "./channels/core",
     "@akashaproject/entry": "./channels/entry",
     "@akashaproject/geth": "./channels/geth",

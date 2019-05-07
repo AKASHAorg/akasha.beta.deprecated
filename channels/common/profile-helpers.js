@@ -21,6 +21,9 @@ export default function init(sp, getService) {
         else if (data.ethAddress) {
             profileAddress = data.ethAddress;
         }
+        else {
+            profileAddress = web3Api.instance.eth.defaultAccount;
+        }
         if (profileAddress && !!unpad(profileAddress)) {
             return blPromise.resolve(profileAddress);
         }

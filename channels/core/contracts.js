@@ -57,11 +57,11 @@ export default function init(sp, getService) {
                 let results = [];
                 let filterIndex;
                 if (!options.reversed) {
-                    filterIndex = (record) => record.blockNumber < toBlock ||
+                    filterIndex = record => record.blockNumber < toBlock ||
                         (record.blockNumber === toBlock && record.logIndex < options.lastIndex);
                 }
                 else {
-                    filterIndex = (record) => record.blockNumber > toBlock;
+                    filterIndex = record => record.blockNumber > toBlock;
                 }
                 const fetch = (to) => {
                     let fromBlock = (options.reversed) ? toBlock : to - step;

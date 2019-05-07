@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import { CORE_MODULE, ENTRY_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
     const cacheKey = 'ENTRY-TAG';
-    const calcKey = (id) => `${cacheKey}-${id}`;
+    const calcKey = id => `${cacheKey}-${id}`;
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const mixed = getService(CORE_MODULE.STASH).mixed;
     const web3Api = getService(CORE_MODULE.WEB3_API);
@@ -83,7 +83,7 @@ export default function init(sp, getService) {
     });
     const helpers = { fetchFromPublish, fetchFromTagIndex };
     const service = function () {
-        return service;
+        return helpers;
     };
     sp().service(ENTRY_MODULE.helpers, service);
     return helpers;
