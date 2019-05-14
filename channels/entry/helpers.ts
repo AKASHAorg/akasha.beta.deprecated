@@ -31,7 +31,7 @@ export default function init (sp, getService) {
           return web3Api.instance.utils.toUtf8(ev.args.tagName);
         });
 
-        author = yield getService(PROFILE_MODULE.resolveEthAddress)
+        author = yield getService(PROFILE_MODULE.getByAddress)
           .execute({ ethAddress: event.args.author });
 
         entryType = captureIndex.results.length ?
@@ -87,7 +87,7 @@ export default function init (sp, getService) {
         });
 
         author = fetchedPublish.results.length ?
-          yield getService(PROFILE_MODULE.resolveEthAddress)
+          yield getService(PROFILE_MODULE.getByAddress)
             .execute({ ethAddress: fetchedPublish.results[0].args.author }) :
           { ethAddress: null };
         entryType = event.args.entryType.toNumber();
