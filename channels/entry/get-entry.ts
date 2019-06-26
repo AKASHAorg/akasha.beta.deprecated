@@ -62,6 +62,8 @@ export default function init (sp, getService) {
 
     let ipfsHash;
     const st = getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.OP_WAIT_TIME);
+
+    console.log("waitTime", st);
     const dbs = getService(CORE_MODULE.DB_INDEX);
     if (!!unpad(hash)) {
       ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);

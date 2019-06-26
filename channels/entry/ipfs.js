@@ -166,7 +166,7 @@ export default function init(sp, getService) {
             [CARD_INFO]: '',
         };
         const root = yield getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api.get(hash);
-        const extraData = yield getService(CORE_MODULE.IPFS_CONNECTOR)
+        const extraData = yield (getService(CORE_MODULE.IPFS_CONNECTOR))
             .getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE, CARD_INFO]);
         for (let i = 0; i < extraData.length; i++) {
             response[extraData[i].name] = yield getService(CORE_MODULE.IPFS_CONNECTOR)

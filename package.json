@@ -203,7 +203,7 @@
     "@akashaproject/geth-connector": "1.8.18",
     "@akashaproject/ipfs": "./channels/ipfs",
     "@akashaproject/ipfs-connector": "1.11.3",
-    "@akashaproject/ipfs-js-connector": "1.1.2",
+    "@akashaproject/ipfs-js-connector": "1.0.33",
     "@akashaproject/jsonschema-web3": "1.0.2",
     "@akashaproject/licences": "./channels/licences",
     "@akashaproject/notifications": "./channels/notifications",

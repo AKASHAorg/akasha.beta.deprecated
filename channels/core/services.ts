@@ -20,6 +20,7 @@ export default function init (sp) {
   const web3Api = new Service();
   const ipfsApi = new Service();
   const ipfsProvider = new Service();
+  ipfsProvider.instance = {};
   const serviceW = function () {
     return web3Api;
   };
