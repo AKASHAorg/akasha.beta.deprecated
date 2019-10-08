@@ -35,7 +35,9 @@
     "generate-changelog": "standard-version",
     "postinstall": "npm run rebuild",
     "rebuild": "electron-rebuild",
-    "start-dapp": "tsc -p ./dapp/tsconfig.json && cross-env NODE_ENV=development node --max_old_space_size=4096 -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./dapp/webpack.config.dev.js"
+    "start-dapp": "tsc -p ./dapp/tsconfig.json && cross-env NODE_ENV=development node --max_old_space_size=4096 -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./dapp/webpack.config.dev.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -230,7 +232,8 @@
     "prop-types": "15.6.2",
     "ramda": "0.25.0",
     "request": "2.88.0",
-    "search-index": "https://github.com/kenshyx/search-index"
+    "search-index": "https://github.com/kenshyx/search-index",
+    "snyk": "^1.232.0"
   },
   "devEngines": {
     "npm": ">=6.x"
@@ -306,5 +309,6 @@
       "buildResources": "resources",
       "output": "release"
     }
-  }
+  },
+  "snyk": true
 }
